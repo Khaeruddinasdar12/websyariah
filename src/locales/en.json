@@ -1,0 +1,404 @@
+{
+  "common": {
+    "readMore": "Read More",
+    "seeAll": "See All",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "An Error Occurred",
+    "noData": "No data available",
+    "search": "Search",
+    "filter": "Filter",
+    "share": "Share"
+  },
+  "nav": {
+    "home": "Home",
+    "information": "Information",
+    "news": "News",
+    "announcements": "Announcements",
+    "lecturers": "Lecturers",
+    "about": "About",
+    "accreditation": "Accreditation",
+    "services": "Services",
+    "contact": "Contact",
+    "virtualTour": "Virtual Tour"
+  },
+  "home": {
+    "accredited": "Accredited by BAN-PT IAIN Bone",
+    "title": "Faculty of Sharia and Islamic Law",
+    "subtitle": "IAIN Bone",
+    "description": "Developing a deep understanding of Islamic law and sharia through high-quality education with modern and relevant approaches at IAIN Bone.",
+    "learnMore": "Learn More",
+    "lecturers": "Teaching Staff",
+    "activeStudents": "Active Students FSHI",
+    "expertLecturers": "Lecturers",
+    "graduationRate": "Graduation Rate",
+    "yearsExperience": "Years of Experience",
+    "studyPrograms": "Study Programs",
+    "announcements": {
+      "title": "Announcements",
+      "subtitle": "Important information about academic and administrative activities",
+      "badge": "Info"
+    },
+    "news": {
+      "title": "Latest News",
+      "subtitle": "Latest news and information from the Faculty of Sharia and Islamic Law"
+    },
+    "about": {
+      "title": "About the Faculty",
+      "description": "The Faculty of Sharia and Islamic Law IAIN Bone is committed to producing graduates who have a comprehensive understanding of Islamic law and can apply it in a modern context."
+    },
+    "vision": {
+      "title": "Vision",
+      "content": "To become a leading faculty in the development of sharia and Islamic law that is excellent, character-based, and contributes to building a just and civilized society at the national and international levels."
+    },
+    "mission": {
+      "title": "Mission",
+      "items": {
+        "0": "Organize quality higher education in the field of sharia and Islamic law",
+        "1": "Develop research and community service based on sharia and Islamic law",
+        "2": "Build character and academic integrity based on Islamic values",
+        "3": "Develop cooperation with various institutions at home and abroad"
+      }
+    },
+    "testimonials": {
+      "title": "Testimonials",
+      "subtitle": "What they say about the Faculty of Sharia and Islamic Law IAIN Bone"
+    },
+    "hero": {
+      "illustrationTitle": "Islamic Law Education",
+      "illustrationSubtitle": "Sharia & Modern Based"
+    },
+    "dean": {
+      "title": "Dean's Welcome",
+      "name": "Prof. Dr. Astuti, S.Ag., M.Pd.",
+      "position": "Dean of Faculty of Sharia and Islamic Law IAIN Bone",
+      "quote": "We are very pleased to present this website as a medium of information and communication for the academic community, students, the public, and our partners. Through this portal, we hope to showcase various study programs, academic activities, and student activities.",
+      "description": "Our faculty is committed to providing quality higher education, innovative research, and beneficial community service. Through this website, we hope to provide a complete picture of our vision, mission, study programs, academic activities, and various achievements we have made. We invite all members of the academic community to actively participate in every activity we organize. Let us work together to realize the vision and mission of the Faculty of Sharia and Islamic Law to create an innovative and moderate academic environment."
+    },
+    "aboutCards": {
+      "qualityEducation": {
+        "title": "Quality Education",
+        "description": "A curriculum designed with international standards and taught by expert lecturers in their fields with years of experience."
+      },
+      "practicalApproach": {
+        "title": "Practical Approach",
+        "description": "Combining Islamic law theory with practical applications in modern and professional life through case studies and internships."
+      },
+      "academicCommunity": {
+        "title": "Academic Community",
+        "description": "A supportive learning environment with an inclusive, collaborative, and character development-oriented academic community."
+      }
+    },
+    "programs": {
+      "title": "Study Programs",
+      "subtitle": "Choose a study program that suits your interests and career goals in Islamic law at IAIN Bone.",
+      "constitutionalLaw": {
+        "title": "Constitutional Law",
+        "description": "A study program that studies the Islamic state system, constitution, and the relationship between religion and state from an Islamic law perspective.",
+        "learnMore": "Learn More"
+      },
+      "familyLaw": {
+        "title": "Islamic Family Law",
+        "description": "A study program focused on family law in Islam, including marriage, inheritance, and family rights.",
+        "learnMore": "Learn More"
+      },
+      "economicLaw": {
+        "title": "Sharia Economic Law",
+        "description": "A study program that delves into Islamic muamalah laws and their applications in various aspects of modern life.",
+        "learnMore": "Learn More"
+      }
+    },
+    "facilities": {
+      "title": "Facilities",
+      "subtitle": "Complete and modern facilities to support optimal learning process",
+      "library": {
+        "title": "Library",
+        "description": "Complete collection of books and Islamic law journals"
+      },
+      "computerLab": {
+        "title": "Computer Lab",
+        "description": "Modern computer facilities for learning"
+      },
+      "discussionRoom": {
+        "title": "Discussion Room",
+        "description": "Comfortable room for discussion and presentation"
+      },
+      "wifi": {
+        "title": "Free WiFi",
+        "description": "Fast internet access throughout the campus area"
+      }
+    },
+    "testimonialItems": {
+      "putra": {
+        "name": "Putra Ramadhan, S.H., M.H.",
+        "role": "Alumni 2022 | Islamic Family Law (Ahwalu Syakhsiyah) | Civil Servant - Religious Affairs Officer Kemenag Bone",
+        "quote": "I am very grateful to have studied at the Islamic Family Law (HKI) Study Program, Faculty of Sharia and Islamic Law IAIN Bone, because the knowledge I gained is very useful for my current profession as a Religious Affairs Officer at the Ministry of Religion of Bone Regency."
+      },
+      "ahmad": {
+        "name": "Ahmad Afandi, S.H., M.H.",
+        "role": "Alumni 2023 | Constitutional Law (Siyasah Syar'iyyah) | Civil Servant - Religious Affairs Officer Kemenag Bone",
+        "quote": "I am proud to be part of the Faculty of Sharia and Islamic Law IAIN Bone. The knowledge and experience I gained not only strengthened my understanding of conventional law, but also Islamic law and shaped my character and professionalism. May this faculty continue to progress and produce graduates with integrity who are ready to face the challenges of the times."
+      },
+      "vivin": {
+        "name": "Vivin Sanjaya, S.H.",
+        "role": "Alumni 2014 | Constitutional Law | Civil Servant - Election Supervisory Agency (BAWASLU)",
+        "quote": "Studying at the Constitutional Law Study Program IAIN Bone was one of the best decisions in my life. Here, I not only learned about constitution and government law, but also ethical values, integrity, and responsibility as a just citizen. The lecturers at the HTN Study Program guided me with a critical yet exemplary academic approach. Discussions about democracy, elections, and Islamic politics that I gained in the classroom became important provisions in carrying out my duties as an official at BAWASLU. I am proud to be part of the HTN IAIN Bone family. This study program does not only produce law graduates, but forms a generation ready to guard democracy and maintain the nation's dignity with knowledge and character."
+      },
+      "taufiq": {
+        "name": "A. Muh. Taufiqurrahman, Y",
+        "role": "Alumni 2025 | Constitutional Law | Indonesian National Armed Forces (TNI)",
+        "quote": "Studying at the Constitutional Law Study Program IAIN Bone has given me very valuable provisions, not only in the academic field, but also in character building. The values of discipline, responsibility, and dedication to the nation that I learned on campus became a strong foundation in carrying out my duties as a TNI soldier. Studies about constitution, state, and leadership ethics taught at HTN opened my insight into the importance of maintaining legal sovereignty and national dignity. This study program does not only teach theory, but forms a leader's mentality ready to stand at the forefront for justice and national security. I am proud to be part of the HTN IAIN Bone family. Here I learned that dedication to the country must be based on knowledge, faith, and integrity."
+      }
+    },
+    "stats": {
+      "activeStudents": "Active Students FSHI",
+      "expertLecturers": "Lecturers",
+      "studyPrograms": "Study Programs",
+      "yearsExperience": "Years of Experience"
+    },
+    "partnership": {
+      "title": "Partnership",
+      "subtitle": "Collaborating with various institutions for educational development and community service",
+      "lapas": "Correctional Institution",
+      "kejaksaan": "Prosecutor's Office",
+      "pengadilanNegeri": "District Court",
+      "pengadilanAgama": "Religious Court",
+      "peradi": "PERADI",
+      "bsi": "BSI",
+      "kemenag": "Ministry of Religion Bone Regency",
+      "baznas": "BAZNAS"
+    },
+    "visionMission": {
+      "title": "Vision & Mission"
+    }
+  },
+  "footer": {
+    "facultyName": "Faculty of Sharia",
+    "facultySubtitle": "and Islamic Law IAIN Bone",
+    "description": "The Faculty of Sharia and Islamic Law IAIN Bone develops a deep understanding of Islamic law and sharia through high-quality education.",
+    "studyPrograms": "Study Programs",
+    "information": "Information",
+    "aboutUs": "About Us",
+    "news": "News",
+    "announcements": "Announcements",
+    "lecturers": "Lecturers",
+    "contact": "Contact",
+    "address": "Jalan Hos Cokroaminoto, Kec. Tanete Riattang, Kab. Bone",
+    "phone": "-",
+    "email": "fshiiainbone123@gmail.com",
+    "copyright": "All rights reserved."
+  },
+  "announcements": {
+    "title": "Announcements",
+    "subtitle": "Latest announcements list",
+    "description": "Important information about academic and administrative activities at the Faculty of Sharia and Islamic Law IAIN Bone.",
+    "search": "Search Announcements",
+    "searchPlaceholder": "Type title, announcement content, or keywords...",
+    "loading": "Loading announcements...",
+    "error": "An Error Occurred",
+    "noResults": "No announcements found",
+    "noResultsDescription": "Try different keywords or check your search again",
+    "noAnnouncements": "No announcements available",
+    "backToAnnouncements": "Back to Announcements",
+    "readMore": "Read More",
+    "showingResults": "Showing {{count}} results for \"{{term}}\"",
+    "detail": {
+      "title": "Announcement Detail",
+      "badge": "Info",
+      "share": "Share Announcement"
+    }
+  },
+  "news": {
+    "title": "News",
+    "subtitle": "Latest news and information",
+    "titlePage": "Latest News",
+    "description": "Latest information about academic activities and latest news from the Faculty of Sharia and Islamic Law IAIN Bone.",
+    "allCategories": "All",
+    "search": "Search News",
+    "searchPlaceholder": "Type title, news content, or keywords...",
+    "filterCategory": "Filter by Category",
+    "loading": "Loading news...",
+    "error": "An Error Occurred",
+    "noResults": "No news found",
+    "noResultsDescription": "Try different keywords or select a different category",
+    "showingResults": "Showing {{count}} results for \"{{term}}\"",
+    "showingPage": "Showing {{start}}-{{end}} of {{total}} news",
+    "previous": "Previous",
+    "next": "Next",
+    "readMore": "Read More",
+    "noNews": "No news available",
+    "backToNews": "Back to News",
+    "backToList": "Back to News List",
+    "share": "Share"
+  },
+  "about": {
+    "title": "About the Faculty",
+    "subtitle": "Get to know the Faculty of Sharia and Islamic Law IAIN Bone more closely",
+    "visionMission": "Vision & Mission",
+    "history": "History",
+    "structure": "Organizational Structure",
+    "values": "HADIS Values",
+    "visionMissionDescription": "Vision and mission of the Faculty of Sharia and Islamic Law IAIN Bone in developing quality Islamic law education.",
+    "vision": {
+      "title": "Vision",
+      "content": "To become a Reference Faculty that excels in the implementation of the Three Pillars of Higher Education and produces Human Resources who are Religious, Humanistic and experts in the field of Sharia and Islamic Law in the Eastern Indonesia Region."
+    },
+    "mission": {
+      "title": "Mission",
+      "items": {
+        "0": "Organize Quality and Excellent Education and Teaching both theoretically and practically in the field of Sharia and Islamic Law",
+        "1": "Develop Science through Research and Scientific Publications in the field of Sharia and Islamic Law",
+        "2": "Organize Community Service Based on Wisdom and Islamic Values and build Partnerships with Government and Non-Government Institutions as a form of Institutional Strengthening Commitment",
+        "3": "Organize Professional Governance in Supporting the Realization of Good Governance Principles of the Institute"
+      }
+    },
+    "historyDescription": "The long journey of the Faculty of Sharia and Islamic Law IAIN Bone in developing Islamic law education in Indonesia.",
+    "structureDescription": "Organizational structure of the Faculty of Sharia and Islamic Law IAIN Bone for the period 2024-2028.",
+    "valuesDescription": "HADIS values that form the foundation in the development of the State Islamic Institute (IAIN) Bone.",
+    "valuesTitle": "Organizational Values",
+    "dekan": "Dean",
+    "pembantuDekan": "Vice Dean",
+    "ketuaProdi": "Head of Study Program",
+    "hadis": {
+      "humanis": {
+        "title": "Humanistic",
+        "description": "Placing humans at the center of attention with a full empathy approach, respecting the dignity of every individual, and creating a caring and inclusive educational environment."
+      },
+      "adaptif": {
+        "title": "Adaptive",
+        "description": "The ability to adapt to changes in times, technology, and community needs with flexible and relevant responses."
+      },
+      "dedikatif": {
+        "title": "Dedicated",
+        "description": "High commitment to academic tasks, community service, and professionalism in every campus activity."
+      },
+      "inovatif": {
+        "title": "Innovative",
+        "description": "The drive to always innovate in research, learning methods, and solutions to local and global challenges."
+      },
+      "selebritif": {
+        "title": "Celebrative",
+        "description": "Reflecting the aspiration to excel, be creative, and become a role model; not just popular, but meaningful achievements that have a broad positive impact."
+      },
+      "acronym": "HADIS",
+      "acronymDescription": "Humanistic • Adaptive • Dedicated • Innovative • Celebrative",
+      "footerDescription": "Values that form the identity and character of IAIN Bone in developing quality Islamic education that is relevant to the needs of the times."
+    },
+    "historyContent": {
+      "p1": "The State Islamic Institute (IAIN) Bone is the only State Islamic Religious Higher Education Institution in Bone Regency, located in the capital city of Watampone. The existence of IAIN Bone began with the establishment of Universitas Islam Raya Bone in 1964.",
+      "p2": "In 1967, it changed status to become the Faculty of Sharia of the State Islamic Institute (IAIN) Alauddin Ujung Pandang in Watampone as a Branch Class based on Rector's Decree No. 14 of 1967. Then in 1968, it changed to the Faculty of Sharia Branch of IAIN Alauddin Ujung Pandang, specializing in Bachelor's degree programs.",
+      "p3": "Based on the Decree of the Minister of Religion of the Republic of Indonesia No. 56 of 1982, it changed status to become the Middle Faculty Branch of Alauddin Ujung Pandang, specializing in Master's degree programs. In 1997, the Faculty of Sharia Branch of IAIN Alauddin Ujung Pandang institutionally changed to the State Islamic College (STAIN) Watampone based on Presidential Decree No. 11 of 1997.",
+      "p4": "Based on Presidential Regulation No. 23 of 2018, STAIN Watampone transformed into the State Islamic Institute Bone. This institutional change is an effort to empower and enlighten higher education institutions, especially Islamic Higher Education as an anticipation of demands and changes in the global environment.",
+      "p5": "In 2005, the Faculty of Sharia changed to the Faculty of Sharia and Islamic Law, overseeing three study programs: Islamic Family Law (Ahwal Syakhshiyyah), Constitutional Law (Siyasah Syar'iyyah), and Sharia Economics."
+    },
+    "timeline": {
+      "1964": "Establishment of Universitas Islam Raya Bone",
+      "1967": "Faculty of Sharia IAIN Alauddin Makassar in Bone",
+      "1968": "Faculty of Sharia Branch IAIN Alauddin Makassar, Bachelor's program",
+      "1982": "Middle Faculty Branch Alauddin Makassar",
+      "1997": "State Islamic College (STAIN) Watampone",
+      "2005": "Faculty of Sharia becomes Faculty of Sharia and Islamic Law with 3 study programs",
+      "2018": "State Islamic Institute (IAIN) Bone"
+    },
+    "historyContent": {
+      "p1": "The Faculty of Sharia and Islamic Law IAIN Bone is one of the oldest faculties in the IAIN Bone environment. Established in 1964, this faculty has made a significant contribution to the development of Islamic law education in Indonesia, especially in the Eastern Indonesia region.",
+      "p2": "At the beginning of its establishment, this faculty only had one study program, namely the Islamic Law Study Program. Along with the times and the needs of the community, this faculty continues to develop and add new study programs.",
+      "p3": "In 1980, this faculty opened the Constitutional Law Study Program which focuses on the study of constitutional law from an Islamic perspective. Then in 1995, the Sharia Economic Law Study Program was opened which aims to produce graduates who are experts in the field of sharia economic law.",
+      "p4": "Not stopping there, in 2005, this faculty again opened the Islamic Family Law Study Program which focuses on the study of family law in Islam. Thus, currently the Faculty of Sharia and Islamic Law IAIN Bone has four study programs, all of which have been accredited A by BAN-PT.",
+      "p5": "For more than 50 years of existence, this faculty has graduated thousands of scholars spread throughout Indonesia. Alumni have contributed a lot in various sectors, both in government, private, and community."
+    }
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Access various digital services available to support academic and administrative activities",
+    "items": {
+      "pmb": {
+        "name": "PMB Online",
+        "description": "New Student Admission"
+      },
+      "tusita": {
+        "name": "Tusita",
+        "description": "Academic information system"
+      },
+      "elearning": {
+        "name": "E Learning",
+        "description": "Online learning and examination"
+      },
+      "digilib": {
+        "name": "Digilib",
+        "description": "Access catalog, e-journal, and library services"
+      },
+      "repository": {
+        "name": "Repository IAIN Bone",
+        "description": "Centralized digital storage system"
+      },
+      "perpusnas": {
+        "name": "Perpusnas",
+        "description": "National library"
+      },
+      "layanan": {
+        "name": "Services",
+        "description": "Public Service Information"
+      },
+      "lapor": {
+        "name": "Lapor !",
+        "description": "Online Public Aspiration and Complaint Service"
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Contact us",
+    "description": "Contact us for more information about the Faculty of Sharia and Islamic Law IAIN Bone.",
+    "contactInfo": "Contact Information",
+    "address": "Address",
+    "addressValue": "Jalan Hos Cokroaminoto, Kec. Tanete Riattang, Kab. Bone",
+    "phone": "Phone",
+    "phoneValue": "-",
+    "email": "Email",
+    "emailValue": "fshiiainbone123@gmail.com",
+    "hours": "Operating Hours",
+    "hoursValue": "Monday - Friday: 08:00 - 16:00",
+    "followUs": "Follow Us",
+    "location": "Our Location",
+    "viewOnMaps": "Open in Google Maps"
+  },
+  "lecturers": {
+    "title": "Lecturers",
+    "description": "Get to know the expert lecturers at the Faculty of Sharia and Islamic Law IAIN Bone who are committed to developing Islamic law education.",
+    "search": "Search Lecturers",
+    "searchPlaceholder": "Type lecturer name, position, or expertise...",
+    "filterProgram": "Filter by Study Program",
+    "allPrograms": "All",
+    "loading": "Loading lecturer data...",
+    "error": "An Error Occurred",
+    "noResults": "No lecturers found",
+    "noResultsDescription": "Try different keywords or select a different study program",
+    "showingResults": "Showing {{count}} results for \"{{term}}\"",
+    "showingPage": "Showing {{start}}-{{end}} of {{total}} lecturers",
+    "previous": "Previous",
+    "next": "Next",
+    "education": "Education",
+    "expertise": "Expertise"
+  },
+  "accreditation": {
+    "title": "Accreditation",
+    "subtitle": "Accreditation information for study programs at the Faculty of Sharia and Islamic Law IAIN Bone",
+    "viewAccreditation": "View Accreditation",
+    "items": {
+      "economicLaw": {
+        "title": "Sharia Economic Law Study Program Accreditation",
+        "description": "Accreditation information for Sharia Economic Law Study Program"
+      },
+      "familyLaw": {
+        "title": "Islamic Family Law Study Program Accreditation",
+        "description": "Accreditation information for Islamic Family Law Study Program"
+      },
+      "constitutionalLaw": {
+        "title": "Constitutional Law Study Program Accreditation",
+        "description": "Accreditation information for Constitutional Law Study Program"
+      }
+    }
+  }
+}
+

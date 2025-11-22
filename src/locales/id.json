@@ -1,0 +1,404 @@
+{
+  "common": {
+    "readMore": "Baca Selengkapnya",
+    "seeAll": "Lihat Semua",
+    "back": "Kembali",
+    "loading": "Memuat...",
+    "error": "Terjadi Kesalahan",
+    "noData": "Belum ada data",
+    "search": "Cari",
+    "filter": "Filter",
+    "share": "Bagikan"
+  },
+  "nav": {
+    "home": "Beranda",
+    "information": "Informasi",
+    "news": "Berita",
+    "announcements": "Pengumuman",
+    "lecturers": "Dosen",
+    "about": "Tentang",
+    "accreditation": "Akreditasi",
+    "services": "Layanan",
+    "contact": "Kontak",
+    "virtualTour": "Tur Virtual"
+  },
+  "home": {
+    "accredited": "Terakreditasi BAN-PT IAIN Bone",
+    "title": "Fakultas Syariah dan Hukum Islam",
+    "subtitle": "IAIN Bone",
+    "description": "Mengembangkan pemahaman mendalam tentang hukum Islam dan syariah melalui pendidikan berkualitas tinggi dengan pendekatan modern dan relevan di IAIN Bone.",
+    "learnMore": "Pelajari Lebih Lanjut",
+    "lecturers": "Tenaga Pengajar",
+    "activeStudents": "Mahasiswa Aktif FSHI",
+    "expertLecturers": "Dosen",
+    "graduationRate": "Tingkat Kelulusan",
+    "yearsExperience": "Tahun Pengalaman",
+    "studyPrograms": "Program Studi",
+    "announcements": {
+      "title": "Pengumuman",
+      "subtitle": "Informasi penting seputar kegiatan akademik dan administratif",
+      "badge": "Info"
+    },
+    "news": {
+      "title": "Berita Terkini",
+      "subtitle": "Berita dan informasi terbaru dari Fakultas Syariah dan Hukum Islam"
+    },
+    "about": {
+      "title": "Tentang Fakultas",
+      "description": "Fakultas Syariah dan Hukum Islam IAIN Bone berkomitmen untuk menghasilkan lulusan yang memiliki pemahaman komprehensif tentang hukum Islam dan mampu mengaplikasikannya dalam konteks modern."
+    },
+    "vision": {
+      "title": "Visi",
+      "content": "Menjadi fakultas terdepan dalam pengembangan ilmu syariah dan hukum Islam yang unggul, berkarakter, dan berkontribusi dalam pembangunan masyarakat yang berkeadilan dan beradab di tingkat nasional dan internasional."
+    },
+    "mission": {
+      "title": "Misi",
+      "items": {
+        "0": "Menyelenggarakan pendidikan tinggi yang berkualitas dalam bidang syariah dan hukum Islam",
+        "1": "Mengembangkan penelitian dan pengabdian masyarakat berbasis syariah dan hukum Islam",
+        "2": "Membangun karakter dan integritas akademik yang berlandaskan nilai-nilai Islam",
+        "3": "Mengembangkan kerjasama dengan berbagai institusi dalam dan luar negeri"
+      }
+    },
+    "testimonials": {
+      "title": "Testimoni",
+      "subtitle": "Apa kata mereka tentang Fakultas Syariah dan Hukum Islam IAIN Bone"
+    },
+    "hero": {
+      "illustrationTitle": "Pendidikan Hukum Islam",
+      "illustrationSubtitle": "Berbasis Syariah & Modern"
+    },
+    "dean": {
+      "title": "Sambutan Dekan",
+      "name": "Prof. Dr. Astuti, S.Ag., M.Pd.",
+      "position": "Dekan Fakultas Syariah dan Hukum Islam IAIN Bone",
+      "quote": "Kami sangat senang dapat mempersembahkan website ini sebagai media informasi dan komunikasi bagi civitas akademika, mahasiswa, masyarakat, dan para mitra kerja. Melalui portal ini, kami berharap dapat menampilkan berbagai program studi, kegiatan akademik, dan kemahasiswaan.",
+      "description": "Fakultas kami berkomitmen untuk menyelenggarakan pendidikan tinggi yang berkualitas, penelitian yang inovatif, serta pengabdian masyarakat yang bermanfaat. Melalui website ini, kami berharap dapat memberikan gambaran lengkap tentang visi, misi, program studi, kegiatan akademik, dan berbagai prestasi yang telah kami capai. Kami mengajak seluruh Civitas akademika untuk berpartisipasi aktif dalam setiap kegiatan yang kami selenggarakan. Mari bersama-sama mewujudkan visi dan misi Fakultas Syariah dan Hukum Islam untuk menciptakan lingkungan akademik yang inovatif dan moderat."
+    },
+    "aboutCards": {
+      "qualityEducation": {
+        "title": "Pendidikan Berkualitas",
+        "description": "Kurikulum yang dirancang dengan standar internasional dan diajar oleh dosen-dosen ahli di bidangnya dengan pengalaman bertahun-tahun."
+      },
+      "practicalApproach": {
+        "title": "Pendekatan Praktis",
+        "description": "Menggabungkan teori hukum Islam dengan aplikasi praktis dalam kehidupan modern dan profesional melalui studi kasus dan magang."
+      },
+      "academicCommunity": {
+        "title": "Komunitas Akademik",
+        "description": "Lingkungan belajar yang mendukung dengan komunitas akademik yang inklusif, kolaboratif, dan berorientasi pada pengembangan karakter."
+      }
+    },
+    "programs": {
+      "title": "Program Studi",
+      "subtitle": "Pilih program studi yang sesuai dengan minat dan karir yang Anda inginkan dalam bidang hukum Islam di IAIN Bone.",
+      "constitutionalLaw": {
+        "title": "Hukum Tata Negara",
+        "description": "Program studi yang mempelajari sistem ketatanegaraan Islam, konstitusi, dan hubungan antara agama dengan negara dalam perspektif hukum Islam.",
+        "learnMore": "Pelajari Lebih Lanjut"
+      },
+      "familyLaw": {
+        "title": "Hukum Keluarga Islam",
+        "description": "Program studi yang fokus pada hukum keluarga dalam Islam, termasuk pernikahan, waris, dan hak-hak keluarga.",
+        "learnMore": "Pelajari Lebih Lanjut"
+      },
+      "economicLaw": {
+        "title": "Hukum Ekonomi Syariah",
+        "description": "Program studi yang mendalami hukum-hukum muamalah Islam dan aplikasinya dalam berbagai aspek kehidupan modern.",
+        "learnMore": "Pelajari Lebih Lanjut"
+      }
+    },
+    "facilities": {
+      "title": "Fasilitas",
+      "subtitle": "Fasilitas lengkap dan modern untuk mendukung proses pembelajaran yang optimal",
+      "library": {
+        "title": "Perpustakaan",
+        "description": "Koleksi lengkap buku dan jurnal hukum Islam"
+      },
+      "computerLab": {
+        "title": "Lab Komputer",
+        "description": "Fasilitas komputer modern untuk pembelajaran"
+      },
+      "discussionRoom": {
+        "title": "Ruang Diskusi",
+        "description": "Ruang nyaman untuk diskusi dan presentasi"
+      },
+      "wifi": {
+        "title": "WiFi Gratis",
+        "description": "Akses internet cepat di seluruh area kampus"
+      }
+    },
+    "testimonialItems": {
+      "putra": {
+        "name": "Putra Ramadhan, S.H., M.H.",
+        "role": "Alumni 2022 | Hukum Keluarga Islam (Ahwalu Syakhsiyah) | ASN Penghulu Kemenag Bone",
+        "quote": "Saya sangat bersyukur pernah menempuh pendidikan di Prodi Hukum Keluarga Islam (HKI) Fakultas Syariah dan Hukum Islam IAIN Bone, karena ilmu yang diperoleh sangat bermanfaat bagi profesi yang saat ini diemban yakni sebagai Penghulu di Kementerian Agama Kab. Bone."
+      },
+      "ahmad": {
+        "name": "Ahmad Afandi, S.H., M.H.",
+        "role": "Alumni 2023 | Hukum Tatanegara (Siyasah Syar'iyyah) | ASN Penghulu Kemenag Bone",
+        "quote": "Saya bangga menjadi bagian dari Fakultas Syariah dan Hukum Islam IAIN Bone. Ilmu dan pengalaman yang saya peroleh tidak hanya memperkuat pemahaman hukum konvensional, tetapi juga hukum islam dan membentuk karakter serta profesionalitas saya. Semoga fakultas ini terus maju dan melahirkan lulusan yang berintegritas serta siap menghadapi tantangan zaman."
+      },
+      "vivin": {
+        "name": "Vivin Sanjaya, S.H.",
+        "role": "Alumni 2014 | Hukum Tata Negara | PNS Badan Pengawas Pemilu (BAWASLU)",
+        "quote": "Menempuh pendidikan di Prodi Hukum Tata Negara IAIN Bone adalah salah satu keputusan terbaik dalam hidup saya. Di sini, saya tidak hanya belajar tentang konstitusi dan hukum pemerintahan, tetapi juga nilai-nilai etika, integritas, dan tanggung jawab sebagai warga negara yang berkeadilan. Para dosen di Prodi HTN membimbing saya dengan pendekatan akademik yang kritis namun penuh keteladanan. Diskusi tentang demokrasi, pemilu, dan politik Islam yang saya peroleh di bangku kuliah menjadi bekal penting dalam menjalankan tugas sebagai aparatur di BAWASLU. Saya bangga menjadi bagian dari keluarga besar HTN IAIN Bone. Prodi ini bukan hanya mencetak sarjana hukum, tetapi membentuk generasi yang siap mengawal demokrasi dan menjaga marwah bangsa dengan ilmu dan akhlak."
+      },
+      "taufiq": {
+        "name": "A. Muh. Taufiqurrahman, Y",
+        "role": "Alumni 2025 | Hukum Tata Negara | Tentara Nasional Indonesia (TNI)",
+        "quote": "Belajar di Prodi Hukum Tata Negara IAIN Bone telah memberikan saya bekal yang sangat berharga, bukan hanya dalam bidang akademik, tetapi juga dalam pembentukan karakter. Nilai-nilai disiplin, tanggung jawab, dan pengabdian kepada bangsa yang saya pelajari di kampus menjadi dasar kuat dalam menjalankan tugas sebagai prajurit TNI. Kajian tentang konstitusi, negara, dan etika kepemimpinan yang diajarkan di HTN membuka wawasan saya tentang pentingnya menjaga kedaulatan hukum dan martabat bangsa. Prodi ini tidak hanya mengajarkan teori, tetapi membentuk mental pemimpin yang siap berdiri di garis terdepan demi keadilan dan keamanan negara. Saya bangga menjadi bagian dari keluarga besar HTN IAIN Bone. Di sinilah saya belajar bahwa pengabdian kepada negara harus didasari oleh ilmu, iman, dan integritas."
+      }
+    },
+    "stats": {
+      "activeStudents": "Mahasiswa Aktif FSHI",
+      "expertLecturers": "Dosen",
+      "studyPrograms": "Program Studi",
+      "yearsExperience": "Tahun Pengalaman"
+    },
+    "partnership": {
+      "title": "Kerjasama",
+      "subtitle": "Bekerja sama dengan berbagai instansi untuk pengembangan pendidikan dan pengabdian masyarakat",
+      "lapas": "Lapas",
+      "kejaksaan": "Kejaksaan",
+      "pengadilanNegeri": "Pengadilan Negeri",
+      "pengadilanAgama": "Pengadilan Agama",
+      "peradi": "PERADI",
+      "bsi": "BSI",
+      "kemenag": "KEMENAG Kab. Bone",
+      "baznas": "BAZNAS"
+    },
+    "visionMission": {
+      "title": "Visi & Misi"
+    }
+  },
+  "announcements": {
+    "title": "Pengumuman",
+    "subtitle": "Daftar pengumuman terbaru",
+    "description": "Informasi penting seputar kegiatan akademik dan administratif di Fakultas Syariah dan Hukum Islam IAIN Bone.",
+    "search": "Cari Pengumuman",
+    "searchPlaceholder": "Ketik judul, isi pengumuman, atau kata kunci...",
+    "loading": "Memuat pengumuman...",
+    "error": "Terjadi Kesalahan",
+    "noResults": "Tidak ada pengumuman ditemukan",
+    "noResultsDescription": "Coba kata kunci lain atau periksa kembali pencarian Anda",
+    "noAnnouncements": "Belum ada pengumuman",
+    "backToAnnouncements": "Kembali ke Pengumuman",
+    "readMore": "Baca Selengkapnya",
+    "showingResults": "Menampilkan {{count}} hasil untuk \"{{term}}\"",
+    "detail": {
+      "title": "Detail Pengumuman",
+      "badge": "Info",
+      "share": "Bagikan Pengumuman"
+    }
+  },
+  "news": {
+    "title": "Berita",
+    "subtitle": "Berita dan informasi terbaru",
+    "titlePage": "Berita Terkini",
+    "description": "Informasi terbaru seputar kegiatan akademik dan berita terkini dari Fakultas Syariah dan Hukum Islam IAIN Bone.",
+    "allCategories": "Semua",
+    "search": "Cari Berita",
+    "searchPlaceholder": "Ketik judul, isi berita, atau kata kunci...",
+    "filterCategory": "Filter Berdasarkan Kategori",
+    "loading": "Memuat berita...",
+    "error": "Terjadi Kesalahan",
+    "noResults": "Tidak ada berita ditemukan",
+    "noResultsDescription": "Coba kata kunci lain atau pilih kategori berbeda",
+    "showingResults": "Menampilkan {{count}} hasil untuk \"{{term}}\"",
+    "showingPage": "Menampilkan {{start}}-{{end}} dari {{total}} berita",
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya",
+    "readMore": "Baca Selengkapnya",
+    "noNews": "Belum ada berita",
+    "backToNews": "Kembali ke Berita",
+    "backToList": "Kembali ke Daftar Berita",
+    "share": "Bagikan"
+  },
+  "about": {
+    "title": "Tentang Fakultas",
+    "subtitle": "Mengenal lebih dekat Fakultas Syariah dan Hukum Islam IAIN Bone",
+    "visionMission": "Visi & Misi",
+    "history": "Sejarah",
+    "structure": "Struktur Organisasi",
+    "values": "Nilai-nilai HADIS",
+    "visionMissionDescription": "Visi dan misi Fakultas Syariah dan Hukum Islam IAIN Bone dalam mengembangkan pendidikan hukum Islam yang berkualitas.",
+    "vision": {
+      "title": "Visi",
+      "content": "Menjadi Fakultas Rujukan yang unggul dalam pelaksanaan Tridharma Perguruan Tinggi serta menghasilkan Sumber Daya Manusia yang Religius, Humanis dan ahli pada bidang Syariah dan Hukum Islam di Kawasan Indonesia Timur."
+    },
+    "mission": {
+      "title": "Misi",
+      "items": {
+        "0": "Menyelenggarakan Pendidikan dan Pengajaran yang Bermutu Unggul secara teoritis maupun praktis dalam Bidang Syariah dan Hukum Islam",
+        "1": "Mengembangkan ilmu Pengetahuan melalui Penelitian dan Publikasi ilmiah di Bidang Syariah dan Hukum Islam",
+        "2": "Menyelenggarakan Pengabdian Masyarakat Berdasarkan Nilai Kearifan dan Keislamanan serta membangun Kemitraan dengan Lembaga Pemerintahan dan Non Pemerintah sebagai Wujud Komitmen Penguatan Kelembagaan",
+        "3": "Menyelenggarakan Tata Pamong yang Profesional dalam Mendukung Terwujudnya Prinsip Tata Pamong Institut yang Baik (Good Governance)"
+      }
+    },
+    "historyDescription": "Perjalanan panjang Fakultas Syariah dan Hukum Islam IAIN Bone dalam mengembangkan pendidikan hukum Islam di Indonesia.",
+    "structureDescription": "Struktur organisasi Fakultas Syariah dan Hukum Islam IAIN Bone periode 2024-2028.",
+    "valuesDescription": "Nilai-nilai HADIS yang menjadi landasan dalam pengembangan Institut Agama Islam Negeri (IAIN) Bone.",
+    "valuesTitle": "Nilai-nilai Organisasi",
+    "dekan": "Dekan",
+    "pembantuDekan": "Pembantu Dekan",
+    "ketuaProdi": "Ketua Program Studi",
+    "hadis": {
+      "humanis": {
+        "title": "Humanis",
+        "description": "Menempatkan manusia sebagai pusat perhatian dengan pendekatan yang penuh empati, menghormati martabat setiap individu, serta menciptakan lingkungan pendidikan yang peduli dan inklusif."
+      },
+      "adaptif": {
+        "title": "Adaptif",
+        "description": "Kemampuan beradaptasi terhadap perubahan zaman, teknologi, dan kebutuhan masyarakat dengan respons yang fleksibel serta relevan."
+      },
+      "dedikatif": {
+        "title": "Dedikatif",
+        "description": "Komitmen tinggi terhadap tugas akademik, pengabdian, dan profesionalisme dalam setiap aktivitas kampus."
+      },
+      "inovatif": {
+        "title": "Inovatif",
+        "description": "Dorongan untuk selalu berinovasi baik dalam penelitian, metode pembelajaran, maupun solusi terhadap tantangan lokal maupun global."
+      },
+      "selebritif": {
+        "title": "Selebritif",
+        "description": "Mencerminkan aspirasi untuk unggul, kreatif, dan menjadi teladan; bukan sekadar populer, tetapi prestasi yang bermakna dan memberi dampak positif luas."
+      },
+      "acronym": "HADIS",
+      "acronymDescription": "Humanis • Adaptif • Dedikatif • Inovatif • Selebritif",
+      "footerDescription": "Nilai-nilai yang menjadi identitas dan karakter IAIN Bone dalam mengembangkan pendidikan Islam yang berkualitas dan relevan dengan kebutuhan zaman."
+    },
+    "historyContent": {
+      "p1": "Institut Agama Islam Negeri (IAIN) Bone merupakan satu-satunya Perguruan Tinggi Keagamaan Islam Negeri yang ada di Kabupaten Bone dan berkedudukan di Ibu Kota Watampone. Eksistensi IAIN Bone diawali dari sebuah Universitas Islam Raya Bone pada tahun 1964.",
+      "p2": "Pada tahun 1967 berubah status menjadi Fakultas Syariah Institut Agama Islam Negeri (IAIN) Alauddin Ujung Pandang di Watampone sebagai kelas Filial berdasarkan Keputusan Rektor IAIN Ujung Pandang Nomor 14 Tahun 1967. Selanjutnya pada tahun 1968 berubah menjadi Fakultas Syariah Cabang IAIN Alauddin Ujung Pandang dengan pengkhususan menyelenggarakan program Sarjana Muda.",
+      "p3": "Berdasarkan Surat Keputusan Menteri Agama RI Nomor 56 Tahun 1982 berubah status menjadi Fakultas Madya Cabang Alauddin Ujung Pandang dengan pengkhususan menyelenggarakan Program Sarjana. Tahun 1997 Fakultas Syariah Cabang IAIN Alauddin Ujung Pandang berubah secara kelembagaan menjadi Sekolah Tinggi Agama Islam Negeri (STAIN) Watampone berdasarkan Keputusan Presiden Nomor 11 Tahun 1997.",
+      "p4": "Berdasarkan Peraturan Presiden No. 23 Tahun 2018, STAIN Watampone beralih bentuk menjadi Institut Agama Islam Negeri Bone. Perubahan kelembagaan tersebut sebagai upaya pemberdayaan dan pencerahan lembaga pendidikan tinggi, khususnya Pendidikan Tinggi Agama Islam sebagai antisipasi tuntutan dan perubahan lingkungan global.",
+      "p5": "Pada tahun 2005 Fakultas Syariah berubah menjadi Fakultas Syariah dan Hukum Islam dengan membawahi tiga program studi yaitu Program Studi Hukum Keluarga Islam (Ahwal Syakhshiyyah), Program Studi Hukum Tata Negara (Siyasah Syar'iyyah), serta Program Studi Ekonomi Syariah."
+    },
+    "timeline": {
+      "1964": "Berdiri Universitas Islam Raya Bone",
+      "1967": "Fakultas Syariah IAIN Alauddin Makassar di Bone",
+      "1968": "Fakultas Syariah Cabang IAIN Alauddin Makassar, program Sarjana Muda",
+      "1982": "Fakultas Madya Cabang Alauddin Makassar",
+      "1997": "Sekolah Tinggi Agama Islam Negeri (STAIN) Watampone",
+      "2005": "Fakultas Syariah menjadi Fakultas Syariah dan Hukum Islam dengan 3 program studi",
+      "2018": "Institut Agama Islam Negeri (IAIN) Bone"
+    },
+    "historyContent": {
+      "p1": "Fakultas Syariah dan Hukum Islam IAIN Bone merupakan salah satu fakultas tertua di lingkungan IAIN Bone. Didirikan pada tahun 1964, fakultas ini telah berkontribusi signifikan dalam pengembangan pendidikan hukum Islam di Indonesia, khususnya di kawasan Indonesia Timur.",
+      "p2": "Pada awal berdirinya, fakultas ini hanya memiliki satu program studi yaitu Program Studi Hukum Islam. Seiring dengan perkembangan zaman dan kebutuhan masyarakat, fakultas ini terus berkembang dan menambah program studi baru.",
+      "p3": "Pada tahun 1980, fakultas ini membuka Program Studi Hukum Tata Negara yang fokus pada kajian hukum tata negara dari perspektif Islam. Kemudian pada tahun 1995, dibuka Program Studi Hukum Ekonomi Syariah yang bertujuan untuk menghasilkan lulusan yang ahli di bidang hukum ekonomi syariah.",
+      "p4": "Tidak berhenti sampai di situ, pada tahun 2005, fakultas ini kembali membuka Program Studi Hukum Keluarga Islam yang fokus pada kajian hukum keluarga dalam Islam. Dengan demikian, saat ini Fakultas Syariah dan Hukum Islam IAIN Bone memiliki empat program studi yang semuanya telah terakreditasi A oleh BAN-PT.",
+      "p5": "Selama lebih dari 50 tahun berdiri, fakultas ini telah meluluskan ribuan sarjana yang tersebar di seluruh Indonesia. Para alumni telah banyak berkontribusi dalam berbagai sektor, baik di pemerintahan, swasta, maupun masyarakat."
+    }
+  },
+  "services": {
+    "title": "Layanan",
+    "subtitle": "Akses berbagai layanan digital yang tersedia untuk mendukung aktivitas akademik dan administrasi",
+    "items": {
+      "pmb": {
+        "name": "PMB Online",
+        "description": "Penerimaan Mahasiswa Baru"
+      },
+      "tusita": {
+        "name": "Tusita",
+        "description": "Sistem informasi akademik"
+      },
+      "elearning": {
+        "name": "E Learning",
+        "description": "Pembelajaran daring kuliah dan ujian online"
+      },
+      "digilib": {
+        "name": "Digilib",
+        "description": "Akses katalog, e-journal, dan layanan perpustakaan"
+      },
+      "repository": {
+        "name": "Repository IAIN Bone",
+        "description": "Sistem penyimpanan digital terpusat"
+      },
+      "perpusnas": {
+        "name": "Perpusnas",
+        "description": "Perpustakaan nasional"
+      },
+      "layanan": {
+        "name": "Layanan",
+        "description": "Informasi Pelayanan Publik"
+      },
+      "lapor": {
+        "name": "Lapor !",
+        "description": "Layanan Aspirasi dan Pengaduan Online Rakyat"
+      }
+    }
+  },
+  "contact": {
+    "title": "Kontak",
+    "subtitle": "Hubungi kami",
+    "description": "Hubungi kami untuk informasi lebih lanjut tentang Fakultas Syariah dan Hukum Islam IAIN Bone.",
+    "contactInfo": "Informasi Kontak",
+    "address": "Alamat",
+    "addressValue": "Jalan Hos Cokroaminoto, Kec. Tanete Riattang, Kab. Bone",
+    "phone": "Telepon",
+    "phoneValue": "-",
+    "email": "Email",
+    "emailValue": "fshiiainbone123@gmail.com",
+    "hours": "Jam Operasional",
+    "hoursValue": "Senin - Jumat: 08:00 - 16:00",
+    "followUs": "Ikuti Kami",
+    "location": "Lokasi Kami",
+    "viewOnMaps": "Buka di Google Maps"
+  },
+  "footer": {
+    "facultyName": "Fakultas Syariah",
+    "facultySubtitle": "dan Hukum Islam IAIN Bone",
+    "description": "Fakultas Syariah dan Hukum Islam IAIN Bone mengembangkan pemahaman mendalam tentang hukum Islam dan syariah melalui pendidikan berkualitas tinggi.",
+    "studyPrograms": "Program Studi",
+    "information": "Informasi",
+    "aboutUs": "Tentang Kami",
+    "news": "Berita",
+    "announcements": "Pengumuman",
+    "lecturers": "Dosen",
+    "contact": "Kontak",
+    "address": "Jalan Hos Cokroaminoto, Kec. Tanete Riattang, Kab. Bone",
+    "phone": "-",
+    "email": "fshiiainbone123@gmail.com",
+    "copyright": "Semua hak dilindungi."
+  },
+  "lecturers": {
+    "title": "Dosen",
+    "description": "Mengenal lebih dekat dosen-dosen ahli di Fakultas Syariah dan Hukum Islam IAIN Bone yang berkomitmen dalam mengembangkan pendidikan hukum Islam.",
+    "search": "Cari Dosen",
+    "searchPlaceholder": "Ketik nama dosen, jabatan, atau keahlian...",
+    "filterProgram": "Filter Berdasarkan Program Studi",
+    "allPrograms": "Semua",
+    "loading": "Memuat data dosen...",
+    "error": "Terjadi Kesalahan",
+    "noResults": "Tidak ada dosen ditemukan",
+    "noResultsDescription": "Coba kata kunci lain atau pilih program studi berbeda",
+    "showingResults": "Menampilkan {{count}} hasil untuk \"{{term}}\"",
+    "showingPage": "Menampilkan {{start}}-{{end}} dari {{total}} dosen",
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya",
+    "education": "Pendidikan",
+    "expertise": "Keahlian"
+  },
+  "accreditation": {
+    "title": "Akreditasi",
+    "subtitle": "Informasi akreditasi program studi di Fakultas Syariah dan Hukum Islam IAIN Bone",
+    "viewAccreditation": "Lihat Akreditasi",
+    "items": {
+      "economicLaw": {
+        "title": "Akreditasi Program Studi Hukum Ekonomi Islam",
+        "description": "Informasi akreditasi Program Studi Hukum Ekonomi Islam"
+      },
+      "familyLaw": {
+        "title": "Akreditasi Program Studi Hukum Keluarga Islam",
+        "description": "Informasi akreditasi Program Studi Hukum Keluarga Islam"
+      },
+      "constitutionalLaw": {
+        "title": "Akreditasi Program Studi Hukum Tata Negara",
+        "description": "Informasi akreditasi Program Studi Hukum Tata Negara"
+      }
+    }
+  }
+}
+

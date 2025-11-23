@@ -50,14 +50,14 @@ export function transformI18nData<T extends Record<string, any>>(
   lang: Language
 ): T[] {
   return data.map(item => {
-    const transformed = { ...item };
-    
+    const transformed: Record<string, any> = { ...item };
+
     fields.forEach(field => {
       const langValue = getLangValue(item, field, lang);
       transformed[field] = langValue;
     });
-    
-    return transformed;
+
+    return transformed as T;
   });
 }
 

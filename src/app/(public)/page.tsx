@@ -548,7 +548,7 @@ export default function HomePage() {
           <p className="text-gray-600 mb-4 text-sm leading-relaxed">
             {t('home.programs.constitutionalLaw.description')}
           </p>
-          <a href="/dosen#hukum-tata-negara" className="inline-block bg-gradient-to-r from-orange-500 to-orange-400 text-white px-6 py-2.5 rounded-lg hover:from-orange-600 hover:to-orange-500 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105">
+          <a href="https://htn.iain-bone.ac.id/" target="_blank" rel="noopener noreferrer" className="inline-block bg-gradient-to-r from-orange-500 to-orange-400 text-white px-6 py-2.5 rounded-lg hover:from-orange-600 hover:to-orange-500 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105">
             {t('home.programs.constitutionalLaw.learnMore')}
           </a>
         </div>
@@ -565,7 +565,7 @@ export default function HomePage() {
           <p className="text-gray-600 mb-4 text-sm leading-relaxed">
             {t('home.programs.familyLaw.description')}
           </p>
-          <a href="/dosen#hukum-keluarga-islam" className="inline-block bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-500 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105">
+          <a href="https://hki.iain-bone.ac.id/" target="_blank" rel="noopener noreferrer" className="inline-block bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-500 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105">
             {t('home.programs.familyLaw.learnMore')}
           </a>
         </div>
@@ -582,9 +582,9 @@ export default function HomePage() {
           <p className="text-gray-600 mb-4 text-sm leading-relaxed">
             {t('home.programs.economicLaw.description')}
           </p>
-          <Link href="/dosen#hukum-ekonomi-syariah" className="inline-block bg-gradient-to-r from-emerald-500 to-emerald-400 text-white px-6 py-2.5 rounded-lg hover:from-emerald-600 hover:to-emerald-500 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105">
+          <a href="https://hes.iain-bone.ac.id/" target="_blank" rel="noopener noreferrer" className="inline-block bg-gradient-to-r from-emerald-500 to-emerald-400 text-white px-6 py-2.5 rounded-lg hover:from-emerald-600 hover:to-emerald-500 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg transform hover:scale-105">
           {t('home.programs.economicLaw.learnMore')}
-        </Link>
+        </a>
       </div>
     </div>
   </div>

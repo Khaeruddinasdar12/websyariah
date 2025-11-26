@@ -199,10 +199,105 @@ export default function BeritaDetailPage() {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none">
-          <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-            {getLocalizedContent(berita)}
-          </div>
+          <div 
+            className="text-gray-700 leading-relaxed berita-content"
+            dangerouslySetInnerHTML={{ __html: getLocalizedContent(berita) }}
+          />
         </div>
+        
+        <style jsx global>{`
+          .berita-content {
+            line-height: 1.8;
+          }
+          .berita-content p {
+            margin-bottom: 1.25em;
+            color: #374151;
+          }
+          .berita-content h1,
+          .berita-content h2,
+          .berita-content h3,
+          .berita-content h4,
+          .berita-content h5,
+          .berita-content h6 {
+            font-weight: 700;
+            margin-top: 1.5em;
+            margin-bottom: 0.75em;
+            color: #111827;
+          }
+          .berita-content h1 { font-size: 2em; }
+          .berita-content h2 { font-size: 1.5em; }
+          .berita-content h3 { font-size: 1.25em; }
+          .berita-content ul,
+          .berita-content ol {
+            margin: 1em 0;
+            padding-left: 2em;
+          }
+          .berita-content li {
+            margin: 0.5em 0;
+          }
+          .berita-content a {
+            color: #3b82f6;
+            text-decoration: underline;
+          }
+          .berita-content a:hover {
+            color: #2563eb;
+          }
+          .berita-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin: 1.5em 0;
+          }
+          .berita-content blockquote {
+            border-left: 4px solid #e5e7eb;
+            padding-left: 1em;
+            margin: 1.5em 0;
+            font-style: italic;
+            color: #6b7280;
+          }
+          .berita-content code {
+            background-color: #f3f4f6;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+            color: #dc2626;
+          }
+          .berita-content pre {
+            background-color: #1f2937;
+            color: #f9fafb;
+            padding: 1em;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1.5em 0;
+          }
+          .berita-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+          }
+          .dark .berita-content {
+            color: #d1d5db;
+          }
+          .dark .berita-content p {
+            color: #d1d5db;
+          }
+          .dark .berita-content h1,
+          .dark .berita-content h2,
+          .dark .berita-content h3,
+          .dark .berita-content h4,
+          .dark .berita-content h5,
+          .dark .berita-content h6 {
+            color: #f9fafb;
+          }
+          .dark .berita-content code {
+            background-color: #374151;
+            color: #fca5a5;
+          }
+          .dark .berita-content blockquote {
+            border-left-color: #4b5563;
+            color: #9ca3af;
+          }
+        `}</style>
 
         {/* Share Section */}
         <div className="mt-12 pt-8 border-t border-gray-200">

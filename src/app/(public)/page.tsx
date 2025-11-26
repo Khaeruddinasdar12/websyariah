@@ -44,10 +44,28 @@ function formatDate(dateString?: string, locale: string = 'id-ID'): string {
   });
 }
 
+// Helper function to strip HTML tags
+function stripHtml(html: string): string {
+  if (!html) return '';
+  // Use regex to strip HTML tags and decode HTML entities
+  return html
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+    .replace(/&amp;/g, '&') // Decode &amp;
+    .replace(/&lt;/g, '<') // Decode &lt;
+    .replace(/&gt;/g, '>') // Decode &gt;
+    .replace(/&quot;/g, '"') // Decode &quot;
+    .replace(/&#39;/g, "'") // Decode &#39;
+    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .trim();
+}
+
 // Helper function to create excerpt
 function createExcerpt(konten: string, maxLength: number = 100): string {
-  if (konten.length <= maxLength) return konten;
-  return konten.substring(0, maxLength).trim() + '...';
+  // Strip HTML tags first
+  const plainText = stripHtml(konten);
+  if (plainText.length <= maxLength) return plainText;
+  return plainText.substring(0, maxLength).trim() + '...';
 }
 
 // Helper function to create slug for berita

@@ -16,6 +16,7 @@ interface DosenSupabase {
   pendidikan?: string;
   email?: string;
   foto?: string;
+  gambar?: string;
   nidn?: string;
   urut?: number;
 }
@@ -24,7 +25,8 @@ interface DosenDisplay {
   id: number;
   name: string;
   position: string;
-  studyProgram: string;
+  studyProgram: string; // Display name
+  prodiCode: string; // Original prodi code from database (htn, hki, hes, semua)
   expertise: string[];
   pendidikan: string;
   imageUrl: string;
@@ -46,38 +48,117 @@ function parseKeahlian(keahlian?: string): string[] {
 }
 
 // Map prodi from Supabase to display name
-function mapProdiToDisplay(prodi: string): string {
+function mapProdiToDisplay(prodi: string, language: string = 'id'): string {
+  const prodiLower = prodi.toLowerCase();
+  
+  if (language === 'en') {
+    const mapping: { [key: string]: string } = {
+      'htn': 'Constitutional Law',
+      'hki': 'Islamic Family Law',
+      'hes': 'Sharia Economic Law',
+      'semua': 'All Programs',
+    };
+    return mapping[prodiLower] || prodi;
+  }
+  
+  if (language === 'ar') {
+    const mapping: { [key: string]: string } = {
+      'htn': 'القانون الدستوري',
+      'hki': 'قانون الأسرة الإسلامي',
+      'hes': 'القانون الاقتصادي الإسلامي',
+      'semua': 'جميع البرامج',
+    };
+    return mapping[prodiLower] || prodi;
+  }
+  
+  // Indonesian (default)
   const mapping: { [key: string]: string } = {
     'htn': 'Hukum Tata Negara',
     'hki': 'Hukum Keluarga Islam',
-    'hes': 'Hukum Ekonomi Islam',
-    'semua': '-',
+    'hes': 'Hukum Ekonomi Syariah',
+    'semua': 'Semua Program',
   };
-  return mapping[prodi.toLowerCase()] || prodi;
+  return mapping[prodiLower] || prodi;
 }
 
-// Map display name to prodi code
+// Map display name to prodi code (supports all languages)
 function mapDisplayToProdi(display: string): string {
-  const mapping: { [key: string]: string } = {
-    'Hukum Tata Negara': 'htn',
-    'Hukum Keluarga Islam': 'hki',
-    'Hukum Ekonomi Syariah': 'hes'
-  };
-  return mapping[display] || display.toLowerCase();
+  // Indonesian
+  if (display === 'Hukum Tata Negara') return 'htn';
+  if (display === 'Hukum Keluarga Islam') return 'hki';
+  if (display === 'Hukum Ekonomi Syariah') return 'hes';
+  if (display === 'Hukum Ekonomi Islam') return 'hes'; // Alias
+  
+  // English
+  if (display === 'Constitutional Law') return 'htn';
+  if (display === 'Islamic Family Law') return 'hki';
+  if (display === 'Sharia Economic Law') return 'hes';
+  
+  // Arabic
+  if (display === 'القانون الدستوري') return 'htn';
+  if (display === 'قانون الأسرة الإسلامي') return 'hki';
+  if (display === 'القانون الاقتصادي الإسلامي') return 'hes';
+  
+  // All Programs (any language) - return empty to show all
+  if (display === 'Semua Program' || display === 'All Programs' || display === 'جميع البرامج') {
+    return ''; // Empty means show all
+  }
+  
+  return display.toLowerCase();
 }
 
 export default function DosenPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   usePageTitle(t('nav.lecturers'));
   const [dosen, setDosen] = useState<DosenDisplay[]>([]);
   const [filteredDosen, setFilteredDosen] = useState<DosenDisplay[]>([]);
-  const studyPrograms = [t('lecturers.allPrograms'), t('home.programs.constitutionalLaw.title'), t('home.programs.economicLaw.title'), t('home.programs.familyLaw.title')];
-  const [selectedProgram, setSelectedProgram] = useState(studyPrograms[0]);
+  
+  // Get study programs with proper mapping based on language
+  const getAllProgramsText = () => {
+    if (language === 'en') return 'All Programs';
+    if (language === 'ar') return 'جميع البرامج';
+    return 'Semua Program';
+  };
+  
+  const getHukumTataNegaraText = () => {
+    if (language === 'en') return 'Constitutional Law';
+    if (language === 'ar') return 'القانون الدستوري';
+    return 'Hukum Tata Negara';
+  };
+  
+  const getHukumEkonomiSyariahText = () => {
+    if (language === 'en') return 'Sharia Economic Law';
+    if (language === 'ar') return 'القانون الاقتصادي الإسلامي';
+    return 'Hukum Ekonomi Syariah';
+  };
+  
+  const getHukumKeluargaIslamText = () => {
+    if (language === 'en') return 'Islamic Family Law';
+    if (language === 'ar') return 'قانون الأسرة الإسلامي';
+    return 'Hukum Keluarga Islam';
+  };
+  
+  const studyPrograms = [
+    getAllProgramsText(),
+    getHukumTataNegaraText(),
+    getHukumEkonomiSyariahText(),
+    getHukumKeluargaIslamText()
+  ];
+  
+  // Initialize selectedProgram with "All Programs" text
+  const [selectedProgram, setSelectedProgram] = useState<string>(getAllProgramsText());
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+  
+  // Initialize selectedProgram when component mounts or language changes
+  useEffect(() => {
+    const allPrograms = getAllProgramsText();
+    setSelectedProgram(allPrograms);
+    setCurrentPage(1);
+  }, [language]);
 
   // Fetch dosen from Supabase
   useEffect(() => {
@@ -117,10 +198,11 @@ export default function DosenPage() {
               id: item.id,
               name: item.nama || 'Tanpa Nama',
               position: item.jabatan || 'Dosen',
-              studyProgram: mapProdiToDisplay(item.prodi || ''),
+              studyProgram: mapProdiToDisplay(item.prodi || '', language),
+              prodiCode: (item.prodi || 'semua').toLowerCase(), // Store original prodi code
               expertise: parseKeahlian(item.keahlian),
               pendidikan: item.pendidikan || '',
-              imageUrl: item.foto || '/dosen-default.jpg',
+              imageUrl: item.foto || item.gambar || '/dosen-default.jpg',
               urut: item.urut || 999
             }))
             .sort((a, b) => a.urut - b.urut); // Sort by urut field
@@ -130,8 +212,12 @@ export default function DosenPage() {
           if (transformedData.length === 0) {
             console.warn('⚠️ No valid dosen items after transformation');
             setError('Data dosen tidak valid. Pastikan semua field (nama, prodi) terisi.');
+            setDosen([]);
+            setFilteredDosen([]);
           } else {
             setDosen(transformedData);
+            // Set filteredDosen to all dosen initially (show all by default)
+            // This will be updated by the filter useEffect
             setFilteredDosen(transformedData);
           }
         } else {
@@ -151,20 +237,39 @@ export default function DosenPage() {
     }
 
     fetchDosen();
-  }, []);
+  }, [language]);
   
   // Filter dosen based on study program and search term
   useEffect(() => {
-    let result = dosen;
-    
-    if (selectedProgram !== studyPrograms[0]) {
-      const prodiCode = mapDisplayToProdi(selectedProgram);
-      result = result.filter(item => {
-        const itemProdi = mapDisplayToProdi(item.studyProgram);
-        return itemProdi === prodiCode;
-      });
+    if (dosen.length === 0) {
+      setFilteredDosen([]);
+      return;
     }
     
+    // If selectedProgram is not set yet, show all
+    if (!selectedProgram) {
+      setFilteredDosen(dosen);
+      return;
+    }
+    
+    let result = dosen;
+    
+    // Get all programs text for current language
+    const allProgramsText = getAllProgramsText();
+    
+    // Filter by program if not "All Programs"
+    if (selectedProgram && selectedProgram !== allProgramsText) {
+      const prodiCode = mapDisplayToProdi(selectedProgram);
+      if (prodiCode && prodiCode !== '') { // Only filter if prodiCode is not empty (not "All Programs")
+        result = result.filter(item => {
+          // Use prodiCode directly from item (stored from database)
+          return item.prodiCode === prodiCode;
+        });
+      }
+    }
+    // If selectedProgram === allProgramsText, show all (result = dosen, no filtering)
+    
+    // Filter by search term
     if (searchTerm) {
       result = result.filter(item => 
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -176,7 +281,7 @@ export default function DosenPage() {
     
     setFilteredDosen(result);
     setCurrentPage(1); // Reset to first page when filter changes
-  }, [selectedProgram, searchTerm, dosen, t]);
+  }, [selectedProgram, searchTerm, dosen, language]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredDosen.length / itemsPerPage);

@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
   },
   // ------------------------
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
+    ],
+  },
+
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,

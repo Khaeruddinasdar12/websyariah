@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -13,7 +13,8 @@ interface Berita {
   judul: string;
   konten: string;
   gambar: string;
-  kategori: string;
+  kategori_id?: number;
+  kategori?: string; // For backward compatibility
   kategori_en?: string;
   kategori_ar?: string;
   judul_en?: string;
@@ -21,6 +22,12 @@ interface Berita {
   judul_ar?: string;
   konten_ar?: string;
   created_at?: string;
+  kategoris?: {
+    id: number;
+    kategori: string;
+    kategori_en?: string;
+    kategori_ar?: string;
+  };
 }
 
 interface BeritaDisplay {
@@ -30,6 +37,7 @@ interface BeritaDisplay {
   content: string;
   date: string;
   category: string;
+  categoryId?: number; // For filtering by kategori_id
   imageUrl: string;
   slug: string;
 }
@@ -60,10 +68,74 @@ function formatDate(dateString?: string): string {
   });
 }
 
+// Helper function to strip HTML tags
+function stripHtml(html: string): string {
+  if (!html) return '';
+  // Use regex to strip HTML tags and decode HTML entities
+  return html
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+    .replace(/&amp;/g, '&') // Decode &amp;
+    .replace(/&lt;/g, '<') // Decode &lt;
+    .replace(/&gt;/g, '>') // Decode &gt;
+    .replace(/&quot;/g, '"') // Decode &quot;
+    .replace(/&#39;/g, "'") // Decode &#39;
+    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .trim();
+}
+
 // Helper function to create excerpt from konten
 function createExcerpt(konten: string, maxLength: number = 150): string {
-  if (konten.length <= maxLength) return konten;
-  return konten.substring(0, maxLength).trim() + '...';
+  // Strip HTML tags first
+  const plainText = stripHtml(konten);
+  if (plainText.length <= maxLength) return plainText;
+  return plainText.substring(0, maxLength).trim() + '...';
+}
+
+// Component for individual berita card
+function BeritaCard({ item, capitalizeFirst, t }: { item: BeritaDisplay; capitalizeFirst: (str: string) => string; t: (key: string) => string }) {
+  const [imageError, setImageError] = useState(false);
+  const hasImage = item.imageUrl && item.imageUrl !== '' && !imageError;
+
+  return (
+    <article className="card-soft overflow-hidden">
+      <div className="h-48 relative bg-gray-200">
+        {hasImage ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.title}
+            fill
+            className="object-cover"
+            unoptimized={item.imageUrl.startsWith('http') || item.imageUrl.includes('assets')}
+            onError={() => {
+              // Show icon if image fails to load
+              setImageError(true);
+            }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+            <i className="fas fa-image text-4xl"></i>
+          </div>
+        )}
+        <div className="absolute top-4 right-4">
+          <span className="bg-white/95 backdrop-blur-sm text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg border-2" style={{color: 'var(--color-primary)', borderColor: 'rgba(134, 176, 189, 0.3)'}}>
+            {capitalizeFirst(item.category)}
+          </span>
+        </div>
+      </div>
+      <div className="p-6">
+        <div className="flex items-center text-gray-500 text-sm mb-3">
+          <i className="fas fa-calendar-alt mr-2"></i>
+          <span>{item.date}</span>
+        </div>
+        <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
+        <p className="text-gray-600 mb-4">{item.excerpt}</p>
+        <Link href={`/berita/${item.slug}`} className="text-primary hover:opacity-80 font-semibold inline-flex items-center transition-colors group">
+          {t('news.readMore')} <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+        </Link>
+      </div>
+    </article>
+  );
 }
 
 export default function BeritaPage() {
@@ -72,18 +144,71 @@ export default function BeritaPage() {
   const [berita, setBerita] = useState<BeritaDisplay[]>([]);
   const [filteredBerita, setFilteredBerita] = useState<BeritaDisplay[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(t('news.allCategories'));
+
+  // Reset selected category when language changes
+  useEffect(() => {
+    setSelectedCategory(t('news.allCategories'));
+  }, [language, t]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+  const [kategoris, setKategoris] = useState<any[]>([]);
 
-  // Helper function to get localized category
-  const getLocalizedCategory = (item: Berita): string => {
+  // Fetch kategoris from Supabase
+  useEffect(() => {
+    async function fetchKategoris() {
+      try {
+        const { data, error } = await supabase
+          .from('kategoris')
+          .select('*')
+          .order('kategori', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching kategoris:', error);
+          return;
+        }
+
+        if (data) {
+          setKategoris(data);
+        }
+      } catch (error: any) {
+        console.error('Error fetching kategoris:', error);
+      }
+    }
+
+    fetchKategoris();
+  }, []);
+
+  // Helper function to get localized category from kategoris relation
+  // Priority: kategoris relation > kategoris array by kategori_id > item's own fields
+  const getLocalizedCategory = useCallback((item: Berita, kategorisList: any[]): string => {
+    // First try to get from kategoris relation (foreign key from join)
+    if (item.kategoris) {
+      const kat = Array.isArray(item.kategoris) ? item.kategoris[0] : item.kategoris;
+      if (kat) {
+        if (language === 'en' && kat.kategori_en) return kat.kategori_en;
+        if (language === 'ar' && kat.kategori_ar) return kat.kategori_ar;
+        return kat.kategori || 'Umum';
+      }
+    }
+    
+    // Fallback: try to find in kategoris array by kategori_id
+    if (item.kategori_id) {
+      const kategoriData = kategorisList.find((kat: any) => kat.id === item.kategori_id);
+      if (kategoriData) {
+        if (language === 'en' && kategoriData.kategori_en) return kategoriData.kategori_en;
+        if (language === 'ar' && kategoriData.kategori_ar) return kategoriData.kategori_ar;
+        return kategoriData.kategori || 'Umum';
+      }
+    }
+    
+    // Fallback to item's kategori_en/kategori_ar (backward compatibility)
     if (language === 'en' && item.kategori_en) return item.kategori_en;
     if (language === 'ar' && item.kategori_ar) return item.kategori_ar;
     return item.kategori || 'Umum';
-  };
+  }, [language]);
   
   // Helper function to get localized title
   const getLocalizedTitle = (item: Berita): string => {
@@ -101,6 +226,8 @@ export default function BeritaPage() {
 
   // Fetch berita from Supabase
   useEffect(() => {
+    let isMounted = true;
+    
     async function fetchBerita() {
       try {
         setLoading(true);
@@ -110,12 +237,39 @@ export default function BeritaPage() {
         console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Set' : '✗ Missing');
         console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✓ Set' : '✗ Missing');
 
-        const { data, error: fetchError } = await supabase
+        // Try to fetch with join first, fallback to simple select if join fails
+        let { data, error: fetchError } = await supabase
           .from('beritas')
-          .select('*')
+          .select(`
+            *,
+            kategoris (
+              id,
+              kategori,
+              kategori_en,
+              kategori_ar
+            )
+          `)
           .order('created_at', { ascending: false });
 
+        // If join fails (foreign key not configured), try without join
+        if (fetchError && (fetchError.message?.includes('relation') || fetchError.message?.includes('foreign key'))) {
+          console.warn('⚠️ Join with kategoris failed, fetching without join:', fetchError.message);
+          const { data: simpleData, error: simpleError } = await supabase
+            .from('beritas')
+            .select('*')
+            .order('created_at', { ascending: false });
+          
+          if (simpleError) {
+            fetchError = simpleError;
+          } else {
+            data = simpleData;
+            fetchError = null;
+          }
+        }
+
         console.log('📊 Supabase Response:', { data, error: fetchError });
+
+        if (!isMounted) return;
 
         if (fetchError) {
           console.error('❌ Supabase Error:', fetchError);
@@ -128,8 +282,10 @@ export default function BeritaPage() {
           
           if (data.length === 0) {
             console.warn('⚠️ Data array is empty - no berita found in database');
-            setBerita([]);
-            setFilteredBerita([]);
+            if (isMounted) {
+              setBerita([]);
+              setFilteredBerita([]);
+            }
             return;
           }
           
@@ -139,7 +295,27 @@ export default function BeritaPage() {
             .map((item: Berita) => {
               const localizedTitle = getLocalizedTitle(item);
               const localizedContent = getLocalizedContent(item);
-              const localizedCategory = getLocalizedCategory(item);
+              const localizedCategory = getLocalizedCategory(item, kategoris);
+              
+              // Get kategori_id from item or from kategoris relation
+              let kategoriId: number | undefined = item.kategori_id;
+              if (!kategoriId && item.kategoris) {
+                if (Array.isArray(item.kategoris) && item.kategoris.length > 0) {
+                  kategoriId = item.kategoris[0].id;
+                } else if (typeof item.kategoris === 'object' && item.kategoris.id) {
+                  kategoriId = item.kategoris.id;
+                }
+              }
+              
+              // Handle image URL - use valid path or placeholder
+              let imageUrl = item.gambar || '';
+              if (!imageUrl || imageUrl.trim() === '') {
+                // Use a placeholder from assets folder
+                imageUrl = '/assets/banner.jpeg';
+              } else if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/')) {
+                // If relative path doesn't start with /, add it
+                imageUrl = '/' + imageUrl;
+              }
               
               return {
                 id: item.id,
@@ -148,12 +324,15 @@ export default function BeritaPage() {
                 content: localizedContent,
                 date: formatDate(item.created_at),
                 category: localizedCategory,
-                imageUrl: item.gambar || '/banner.jpeg', // fallback image
+                categoryId: kategoriId, // Add categoryId for filtering
+                imageUrl: imageUrl,
                 slug: createSlug(localizedTitle) + '-' + item.id
               };
             });
 
           console.log('🔄 Transformed data:', transformedData);
+          
+          if (!isMounted) return;
           
           if (transformedData.length === 0) {
             console.warn('⚠️ No valid berita items after transformation');
@@ -165,39 +344,84 @@ export default function BeritaPage() {
         } else {
           console.warn('⚠️ No data returned from Supabase or data is not an array');
           console.warn('Data type:', typeof data);
-          setBerita([]);
-          setFilteredBerita([]);
+          if (isMounted) {
+            setBerita([]);
+            setFilteredBerita([]);
+          }
         }
       } catch (err: any) {
         console.error('❌ Error fetching berita:', err);
-        const errorMessage = err?.message || 'Gagal memuat data berita. Silakan coba lagi nanti.';
-        setError(errorMessage);
-        setBerita([]);
-        setFilteredBerita([]);
+        if (isMounted) {
+          const errorMessage = err?.message || 'Gagal memuat data berita. Silakan coba lagi nanti.';
+          setError(errorMessage);
+          setBerita([]);
+          setFilteredBerita([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     fetchBerita();
-  }, [language]);
-  
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [language, kategoris]); // Depend on language and kategoris
+
   // Helper function to capitalize first letter
-  function capitalizeFirst(str: string): string {
+  const capitalizeFirst = (str: string): string => {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  }
+  };
 
-  // Get unique categories with capitalized names
-  const categories = [t('news.allCategories'), ...Array.from(new Set(berita.map(item => item.category))).map(cat => capitalizeFirst(cat))];
+  // Get categories from kategoris table with localized names
+  // Show all categories from kategoris table
+  const categories = useMemo(() => {
+    const allCategories = [
+      t('news.allCategories'),
+      ...kategoris
+        .map((kat: any) => {
+          // Get localized category name based on current language
+          let categoryName = kat.kategori || 'Kategori';
+          if (language === 'en' && kat.kategori_en) {
+            categoryName = kat.kategori_en;
+          } else if (language === 'ar' && kat.kategori_ar) {
+            categoryName = kat.kategori_ar;
+          }
+          return categoryName;
+        })
+    ];
+    return allCategories;
+  }, [kategoris, language, t]);
 
   // Filter berita based on category and search term
   useEffect(() => {
     let result = berita;
 
     if (selectedCategory !== t('news.allCategories')) {
-      // Compare with capitalized category
-      result = result.filter(item => capitalizeFirst(item.category) === selectedCategory);
+      // Find the kategori_id from kategoris table based on selected category name
+      const selectedKategori = kategoris.find((kat: any) => {
+        const katName = language === 'en' && kat.kategori_en ? kat.kategori_en :
+                       language === 'ar' && kat.kategori_ar ? kat.kategori_ar :
+                       kat.kategori;
+        return katName === selectedCategory;
+      });
+      
+      if (selectedKategori) {
+        // Filter by kategori_id (foreign key)
+        result = result.filter((item) => {
+          return item.categoryId === selectedKategori.id;
+        });
+      } else {
+        // Fallback: filter by localized category name
+        result = result.filter((item) => {
+          const itemCategory = item.category;
+          return itemCategory === selectedCategory;
+        });
+      }
     }
 
     if (searchTerm) {
@@ -210,7 +434,7 @@ export default function BeritaPage() {
 
     setFilteredBerita(result);
     setCurrentPage(1); // Reset to first page when filter changes
-  }, [selectedCategory, searchTerm, berita, t, language]);
+  }, [selectedCategory, searchTerm, berita, t, language, kategoris]);
   
 
   // Pagination calculations
@@ -331,41 +555,7 @@ export default function BeritaPage() {
             <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {currentBerita.map((item) => (
-                <article key={item.id} className="card-soft overflow-hidden">
-                  <div className="h-48 relative">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const nextSibling = target.nextElementSibling as HTMLElement;
-                        if (nextSibling) nextSibling.style.display = 'flex';
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100" style={{display: 'none'}}>
-                      <i className="fas fa-newspaper text-4xl text-sage-green/50"></i>
-                    </div>
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-white/95 backdrop-blur-sm text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg border-2" style={{color: 'var(--color-primary)', borderColor: 'rgba(134, 176, 189, 0.3)'}}>
-                        {capitalizeFirst(item.category)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center text-gray-500 text-sm mb-3">
-                      <i className="fas fa-calendar-alt mr-2"></i>
-                      <span>{item.date}</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
-                    <p className="text-gray-600 mb-4">{item.excerpt}</p>
-                    <Link href={`/berita/${item.slug}`} className="text-primary hover:opacity-80 font-semibold inline-flex items-center transition-colors group">
-                      {t('news.readMore')} <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-                    </Link>
-                  </div>
-                </article>
+                <BeritaCard key={item.id} item={item} capitalizeFirst={capitalizeFirst} t={t} />
               ))}
             </div>
             

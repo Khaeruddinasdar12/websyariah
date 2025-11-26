@@ -16,6 +16,7 @@ interface Pengumuman {
   konten_en?: string;
   judul_ar?: string;
   konten_ar?: string;
+  file?: string;
   created_at?: string;
 }
 
@@ -188,14 +189,40 @@ export default function PengumumanDetailPage() {
 
               {/* Content */}
               <div className="mb-8">
-                <div className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap">
-                  {getLocalizedContent(pengumuman).split('\n').map((line, index) => (
-                    <p key={index} className="mb-4">
-                      {line}
-                    </p>
-                  ))}
-                </div>
+                <div 
+                  className="text-gray-700 leading-relaxed text-lg pengumuman-content"
+                  dangerouslySetInnerHTML={{ __html: getLocalizedContent(pengumuman) }}
+                />
               </div>
+
+              {/* File Download/Preview */}
+              {pengumuman.file && (
+                <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    <i className="fas fa-file mr-2"></i>
+                    {language === 'en' ? 'Attachment' : language === 'ar' ? 'مرفق' : 'Lampiran'}
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href={pengumuman.file}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                      <i className="fas fa-eye mr-2"></i>
+                      {language === 'en' ? 'Preview' : language === 'ar' ? 'معاينة' : 'Preview'}
+                    </a>
+                    <a
+                      href={pengumuman.file}
+                      download
+                      className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    >
+                      <i className="fas fa-download mr-2"></i>
+                      {language === 'en' ? 'Download' : language === 'ar' ? 'تحميل' : 'Download'}
+                    </a>
+                  </div>
+                </div>
+              )}
 
               {/* Share Button */}
               <div className="pt-6 border-t border-gray-200">
@@ -207,6 +234,100 @@ export default function PengumumanDetailPage() {
                   {t('announcements.detail.share')}
                 </button>
               </div>
+              
+              <style jsx global>{`
+                .pengumuman-content {
+                  line-height: 1.8;
+                }
+                .pengumuman-content p {
+                  margin-bottom: 1.25em;
+                  color: #374151;
+                }
+                .pengumuman-content h1,
+                .pengumuman-content h2,
+                .pengumuman-content h3,
+                .pengumuman-content h4,
+                .pengumuman-content h5,
+                .pengumuman-content h6 {
+                  font-weight: 700;
+                  margin-top: 1.5em;
+                  margin-bottom: 0.75em;
+                  color: #111827;
+                }
+                .pengumuman-content h1 { font-size: 2em; }
+                .pengumuman-content h2 { font-size: 1.5em; }
+                .pengumuman-content h3 { font-size: 1.25em; }
+                .pengumuman-content ul,
+                .pengumuman-content ol {
+                  margin: 1em 0;
+                  padding-left: 2em;
+                }
+                .pengumuman-content li {
+                  margin: 0.5em 0;
+                }
+                .pengumuman-content a {
+                  color: #3b82f6;
+                  text-decoration: underline;
+                }
+                .pengumuman-content a:hover {
+                  color: #2563eb;
+                }
+                .pengumuman-content img {
+                  max-width: 100%;
+                  height: auto;
+                  border-radius: 0.5rem;
+                  margin: 1.5em 0;
+                }
+                .pengumuman-content blockquote {
+                  border-left: 4px solid #e5e7eb;
+                  padding-left: 1em;
+                  margin: 1.5em 0;
+                  font-style: italic;
+                  color: #6b7280;
+                }
+                .pengumuman-content code {
+                  background-color: #f3f4f6;
+                  padding: 0.2em 0.4em;
+                  border-radius: 0.25rem;
+                  font-size: 0.9em;
+                  color: #dc2626;
+                }
+                .pengumuman-content pre {
+                  background-color: #1f2937;
+                  color: #f9fafb;
+                  padding: 1em;
+                  border-radius: 0.5rem;
+                  overflow-x: auto;
+                  margin: 1.5em 0;
+                }
+                .pengumuman-content pre code {
+                  background-color: transparent;
+                  padding: 0;
+                  color: inherit;
+                }
+                .dark .pengumuman-content {
+                  color: #d1d5db;
+                }
+                .dark .pengumuman-content p {
+                  color: #d1d5db;
+                }
+                .dark .pengumuman-content h1,
+                .dark .pengumuman-content h2,
+                .dark .pengumuman-content h3,
+                .dark .pengumuman-content h4,
+                .dark .pengumuman-content h5,
+                .dark .pengumuman-content h6 {
+                  color: #f9fafb;
+                }
+                .dark .pengumuman-content code {
+                  background-color: #374151;
+                  color: #fca5a5;
+                }
+                .dark .pengumuman-content blockquote {
+                  border-left-color: #4b5563;
+                  color: #9ca3af;
+                }
+              `}</style>
             </article>
           </div>
         </div>

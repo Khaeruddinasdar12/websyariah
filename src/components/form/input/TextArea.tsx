@@ -9,6 +9,8 @@ interface TextareaProps {
   disabled?: boolean; // Disabled state
   error?: boolean; // Error state
   hint?: string; // Hint text to display
+  required?: boolean; // Required field
+  dir?: string; // Text direction (for RTL languages)
 }
 
 const TextArea: React.FC<TextareaProps> = ({
@@ -20,6 +22,8 @@ const TextArea: React.FC<TextareaProps> = ({
   disabled = false, // Disabled state
   error = false, // Error state
   hint = "", // Default hint text
+  required = false, // Required field
+  dir, // Text direction
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (onChange) {
@@ -45,6 +49,8 @@ const TextArea: React.FC<TextareaProps> = ({
         value={value}
         onChange={handleChange}
         disabled={disabled}
+        required={required}
+        dir={dir}
         className={textareaClasses}
       />
       {hint && (

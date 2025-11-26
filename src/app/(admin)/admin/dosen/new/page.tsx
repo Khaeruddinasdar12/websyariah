@@ -133,7 +133,7 @@ export default function NewDosenPage() {
     }
   };
 
-  const handleInputChange = (field: keyof Dosen, value: string | number) => {
+  const handleInputChange = (field: keyof Dosen, value: string | number | undefined) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 

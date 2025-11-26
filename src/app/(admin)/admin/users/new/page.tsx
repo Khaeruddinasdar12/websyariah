@@ -24,15 +24,15 @@ export default function NewUserPage() {
 
     // Validate form
     if (!formData.nama.trim()) {
-      toast.showError('Nama harus diisi');
+      toast.showError('Validasi Gagal', 'Nama harus diisi');
       return;
     }
     if (!formData.email.trim()) {
-      toast.showError('Email harus diisi');
+      toast.showError('Validasi Gagal', 'Email harus diisi');
       return;
     }
     if (!formData.password || formData.password.length < 6) {
-      toast.showError('Password minimal 6 karakter');
+      toast.showError('Validasi Gagal', 'Password minimal 6 karakter');
       return;
     }
 
@@ -136,7 +136,7 @@ export default function NewUserPage() {
       }
 
       console.log('User created successfully');
-      toast.showSuccess('User berhasil ditambahkan');
+      toast.showSuccess('Berhasil', 'User berhasil ditambahkan');
       router.push('/admin/users');
     } catch (error: any) {
       console.error('Error saving user - Full error object:', error);
@@ -176,7 +176,7 @@ export default function NewUserPage() {
         }
       }
       
-      toast.showError('Gagal menambahkan user: ' + errorMessage);
+      toast.showError('Gagal menambahkan user', errorMessage);
     } finally {
       setLoading(false);
     }

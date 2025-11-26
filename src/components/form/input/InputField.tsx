@@ -12,6 +12,8 @@ interface InputProps {
   min?: string;
   max?: string;
   step?: number;
+  minLength?: number;
+  maxLength?: number;
   disabled?: boolean;
   success?: boolean;
   error?: boolean;
@@ -33,6 +35,8 @@ const Input: FC<InputProps> = ({
   min,
   max,
   step,
+  minLength,
+  maxLength,
   disabled = false,
   success = false,
   error = false,
@@ -68,6 +72,8 @@ const Input: FC<InputProps> = ({
         min={min}
         max={max}
         step={step}
+        minLength={minLength}
+        maxLength={maxLength}
         disabled={disabled}
         readOnly={readOnly}
         required={required}

@@ -515,21 +515,23 @@ export default function EditBeritaPage() {
           });
         } else {
           // If not found in kategoris, use translate as fallback
-          console.log('Kategori not found in kategoris table, translating...');
-          try {
-            const [kategoriEn, kategoriAr] = await Promise.all([
-              translateText(formData.kategori, 'en'),
-              translateText(formData.kategori, 'ar'),
-            ]);
-            
-            updatedFormData.kategori_en = kategoriEn;
-            updatedFormData.kategori_ar = kategoriAr;
-            console.log('Kategori translated:', { en: updatedFormData.kategori_en, ar: updatedFormData.kategori_ar });
-          } catch (error: any) {
-            console.error('Error translating kategori:', error);
-            translationErrors.push(`Kategori: ${error.message}`);
-            updatedFormData.kategori_en = formData.kategori;
-            updatedFormData.kategori_ar = formData.kategori;
+          if (formData.kategori) {
+            console.log('Kategori not found in kategoris table, translating...');
+            try {
+              const [kategoriEn, kategoriAr] = await Promise.all([
+                translateText(formData.kategori, 'en'),
+                translateText(formData.kategori, 'ar'),
+              ]);
+              
+              updatedFormData.kategori_en = kategoriEn;
+              updatedFormData.kategori_ar = kategoriAr;
+              console.log('Kategori translated:', { en: updatedFormData.kategori_en, ar: updatedFormData.kategori_ar });
+            } catch (error: any) {
+              console.error('Error translating kategori:', error);
+              translationErrors.push(`Kategori: ${error.message}`);
+              updatedFormData.kategori_en = formData.kategori;
+              updatedFormData.kategori_ar = formData.kategori;
+            }
           }
         }
       }

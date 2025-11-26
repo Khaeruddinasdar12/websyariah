@@ -25,6 +25,7 @@ interface Pengumuman {
   konten_ar?: string;
   user_id: string;
   file?: string;
+  created_at?: string;
 }
 
 export default function NewPengumumanPage() {

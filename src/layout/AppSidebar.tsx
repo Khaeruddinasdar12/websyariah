@@ -285,16 +285,16 @@ const AppSidebar: React.FC = () => {
             <Image
               src="/assets/iain.png"
               alt="FSHI IAIN Bone"
-              width={120}
-              height={32}
+              width={80}
+              height={24}
               className="object-contain"
             />
           ) : (
             <Image
               src="/assets/iain.png"
               alt="FSHI IAIN Bone"
-              width={32}
-              height={32}
+              width={24}
+              height={24}
               className="object-contain"
             />
           )}

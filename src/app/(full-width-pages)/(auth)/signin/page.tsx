@@ -3,8 +3,8 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Signin Page TailAdmin Dashboard Template",
+  title: "Masuk | FSHI IAIN Bone",
+  description: "Halaman masuk admin Fakultas Syariah dan Hukum Islam IAIN Bone",
 };
 
 export default function SignIn() {

@@ -5,7 +5,7 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { renderIcon } from "@/utils/renderIcon";
@@ -21,6 +21,20 @@ export default function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/admin';
+  const resetSuccess = searchParams.get('reset');
+  
+  // Show success message if coming from password reset
+  useEffect(() => {
+    if (resetSuccess === 'success') {
+      // Clear the query parameter from URL after showing message
+      const timer = setTimeout(() => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('reset');
+        window.history.replaceState({}, '', url.toString());
+      }, 5000); // Clear after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [resetSuccess]);
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -53,11 +67,18 @@ export default function SignInForm() {
                 if (error) {
                   setError(error.message);
                 } else {
-                  router.push(redirect);
+                  // Use window.location for hard redirect to ensure session is properly set
+                  // This is especially important in production where cookies need to be properly set
+                  window.location.href = redirect;
                 }
               }}
             >
               <div className="space-y-6">
+                {resetSuccess === 'success' && (
+                  <div className="p-3 text-sm text-green-600 bg-green-50 rounded-lg dark:bg-green-900/20 dark:text-green-400">
+                    Password berhasil diubah! Silakan login dengan password baru Anda.
+                  </div>
+                )}
                 {error && (
                   <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg dark:bg-red-900/20 dark:text-red-400">
                     {error}

@@ -29,8 +29,12 @@ export default function ResetPasswordForm() {
     }
 
     try {
-      // Get the current URL origin for redirect
-      const redirectTo = `${window.location.origin}/reset-password/confirm`;
+      // Use environment variable if available, otherwise use current origin
+      // NEXT_PUBLIC_SITE_URL should be set in Vercel environment variables
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                      (typeof window !== 'undefined' ? window.location.origin : '');
+      
+      const redirectTo = `${siteUrl}/reset-password/confirm`;
       
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: redirectTo,

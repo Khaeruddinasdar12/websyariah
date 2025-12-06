@@ -102,16 +102,42 @@ export default function ResetPasswordConfirmForm() {
 
       if (error) {
         setError(error.message || "Gagal mengubah password");
+        setLoading(false);
       } else {
         setSuccess(true);
-        // Redirect to signin after 2 seconds
+        
+        // Sign out from recovery session to ensure clean state
+        // This is important especially in production where cookies might persist
+        try {
+          await supabase.auth.signOut();
+          
+          // Clear all Supabase-related cookies manually to ensure clean state
+          if (typeof document !== 'undefined') {
+            // Clear all cookies that might be related to Supabase
+            const cookies = document.cookie.split(';');
+            cookies.forEach(cookie => {
+              const eqPos = cookie.indexOf('=');
+              const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+              // Clear Supabase auth cookies
+              if (name.includes('supabase') || name.includes('sb-')) {
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
+              }
+            });
+          }
+        } catch (signOutError) {
+          console.error('Error signing out:', signOutError);
+          // Continue anyway - the password has been updated
+        }
+        
+        // Wait a bit to ensure sign out completes, then redirect with cache bust
         setTimeout(() => {
-          router.push("/signin");
+          // Use window.location with cache bust to ensure fresh page load
+          window.location.href = "/signin?reset=success";
         }, 2000);
       }
     } catch (err: any) {
       setError(err.message || "Terjadi kesalahan saat mengubah password");
-    } finally {
       setLoading(false);
     }
   };

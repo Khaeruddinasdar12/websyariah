@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // ---- Tambahkan ini ----
+  // Disable turbopack so that custom webpack config works
+  turbopack: false,
+
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // ------------------------
 
   images: {
     remotePatterns: [

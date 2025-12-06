@@ -8,6 +8,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
+import { renderIcon } from "@/utils/renderIcon";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,7 @@ export default function SignInForm() {
           href="/"
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
-          <ChevronLeftIcon />
+          {renderIcon(ChevronLeftIcon, "w-4 h-4 mr-1")}
           Kembali ke beranda
         </Link>
       </div>
@@ -91,9 +92,9 @@ export default function SignInForm() {
                       className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
                     >
                       {showPassword ? (
-                        <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
+                        renderIcon(EyeIcon, "fill-gray-500 dark:fill-gray-400")
                       ) : (
-                        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                        renderIcon(EyeCloseIcon, "fill-gray-500 dark:fill-gray-400")
                       )}
                     </span>
                   </div>

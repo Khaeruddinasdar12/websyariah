@@ -101,3 +101,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 - Environment variables harus di-set manual di Vercel Dashboard
 - Pastikan `.env.local` tidak di-commit ke Git (sudah ada di .gitignore)
 
+

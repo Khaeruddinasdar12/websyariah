@@ -174,7 +174,7 @@ export default function HomePage() {
               {/* Stats Preview */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center p-3 bg-white/60 backdrop-blur-sm rounded-lg">
-                  <div className="text-2xl md:text-3xl font-bold mb-1" style={{color: 'var(--color-primary)'}}>2200+</div>
+                  <div className="text-2xl md:text-3xl font-bold mb-1" style={{color: 'var(--color-primary)'}}>1566</div>
                   <p className="text-gray-600 text-xs">{t('home.activeStudents')}</p>
                 </div>
                 <div className="text-center p-3 bg-white/60 backdrop-blur-sm rounded-lg">
@@ -840,7 +840,7 @@ export default function HomePage() {
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <div className="grid md:grid-cols-4 gap-8 text-center">
       <div className="group">
-        <div className="text-4xl font-bold text-gray-800 mb-3 group-hover:scale-110 transition-transform duration-300">2200+</div>
+        <div className="text-4xl font-bold text-gray-800 mb-3 group-hover:scale-110 transition-transform duration-300">1566</div>
         <p className="text-gray-700 text-base">{t('home.stats.activeStudents')}</p>
       </div>
       <div className="group">

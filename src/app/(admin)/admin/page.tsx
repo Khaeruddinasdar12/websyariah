@@ -5,6 +5,7 @@ import ComponentCard from "@/components/common/ComponentCard";
 import React from "react";
 import Link from "next/link";
 import { DocsIcon, UserCircleIcon } from "@/icons";
+import { renderIcon } from "@/utils/renderIcon";
 
 export default function AdminDashboard() {
   return (
@@ -18,7 +19,7 @@ export default function AdminDashboard() {
               className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800 transition-colors"
             >
               <div className="p-3 bg-brand-100 dark:bg-brand-900/30 rounded-lg">
-                <DocsIcon className="w-6 h-6 text-brand-600 dark:text-brand-400" />
+                {renderIcon(DocsIcon, "w-6 h-6 text-brand-600 dark:text-brand-400")}
               </div>
               <div>
                 <h3 className="font-semibold text-gray-800 dark:text-white/90">
@@ -34,7 +35,7 @@ export default function AdminDashboard() {
               className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800 transition-colors"
             >
               <div className="p-3 bg-brand-100 dark:bg-brand-900/30 rounded-lg">
-                <UserCircleIcon className="w-6 h-6 text-brand-600 dark:text-brand-400" />
+                {renderIcon(UserCircleIcon, "w-6 h-6 text-brand-600 dark:text-brand-400")}
               </div>
               <div>
                 <h3 className="font-semibold text-gray-800 dark:text-white/90">

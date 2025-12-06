@@ -9,6 +9,7 @@ import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
 import { TrashBinIcon, PencilIcon } from '@/icons';
+import { renderIcon } from '@/utils/renderIcon';
 import { useRouter } from 'next/navigation';
 
 interface Pengumuman {
@@ -172,13 +173,13 @@ export default function PengumumanPage() {
                           onClick={() => handleEdit(item)}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded"
                         >
-                          <PencilIcon className="w-4 h-4" />
+                          {renderIcon(PencilIcon, "w-4 h-4")}
                         </button>
                         <button
                           onClick={() => handleDelete(item.id!)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded"
                         >
-                          <TrashBinIcon className="w-4 h-4" />
+                          {renderIcon(TrashBinIcon, "w-4 h-4")}
                         </button>
                       </div>
                     </td>

@@ -6,6 +6,7 @@ import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { supabase } from '@/lib/supabase';
 import { TrashBinIcon, PencilIcon } from '@/icons';
+import { renderIcon } from '@/utils/renderIcon';
 
 interface User {
   id: number; // bigint (auto-increment)
@@ -151,13 +152,13 @@ export default function UsersPage() {
                         onClick={() => handleEdit(user)}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded"
                       >
-                        <PencilIcon className="w-4 h-4" />
+                        {renderIcon(PencilIcon, "w-4 h-4")}
                       </button>
                       <button
                         onClick={() => handleDelete(user.id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded"
                       >
-                        <TrashBinIcon className="w-4 h-4" />
+                        {renderIcon(TrashBinIcon, "w-4 h-4")}
                       </button>
                     </div>
                   </td>

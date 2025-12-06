@@ -24,40 +24,10 @@ import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   path?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
-
-const navItems: NavItem[] = [
-  {
-    icon: DocsIcon,
-    name: "Beritas",
-    path: "/admin/beritas",
-  },
-  {
-    icon: PageIcon,
-    name: "Pengumuman",
-    path: "/admin/pengumuman",
-  },
-  {
-    icon: GridIcon,
-    name: "Kategori",
-    path: "/admin/kategori",
-  },
-  {
-    icon: UserCircleIcon,
-    name: "Dosen",
-    path: "/admin/dosen",
-  },
-  {
-    icon: UserCircleIcon,
-    name: "Users",
-    path: "/admin/users",
-  },
-];
-
-const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -68,6 +38,59 @@ const AppSidebar: React.FC = () => {
   const handleLogout = async () => {
     await signOut();
     router.push('/signin');
+  };
+
+  // Define navItems inside component to ensure icons are properly rendered
+  const navItems: NavItem[] = [
+    {
+      icon: DocsIcon,
+      name: "Beritas",
+      path: "/admin/beritas",
+    },
+    {
+      icon: PageIcon,
+      name: "Pengumuman",
+      path: "/admin/pengumuman",
+    },
+    {
+      icon: GridIcon,
+      name: "Kategori",
+      path: "/admin/kategori",
+    },
+    {
+      icon: UserCircleIcon,
+      name: "Dosen",
+      path: "/admin/dosen",
+    },
+    {
+      icon: UserCircleIcon,
+      name: "Users",
+      path: "/admin/users",
+    },
+  ];
+
+  const othersItems: NavItem[] = [];
+
+  // Import renderIcon utility
+  const renderIcon = (IconComponent: React.ComponentType<React.SVGProps<SVGSVGElement>>, className?: string) => {
+    if (!IconComponent) {
+      return null;
+    }
+    
+    // Handle different export formats from @svgr/webpack
+    const Component = (IconComponent as any).default || IconComponent;
+    
+    // Check if it's a valid React component
+    if (typeof Component === 'function') {
+      return React.createElement(Component, { className: className || "w-5 h-5" });
+    }
+    
+    // Fallback: try to render as JSX if it's already a valid element
+    if (React.isValidElement(Component)) {
+      return Component;
+    }
+    
+    return null;
   };
 
   const renderMenuItems = (
@@ -97,20 +120,18 @@ const AppSidebar: React.FC = () => {
                     : "menu-item-icon-inactive"
                 }`}
               >
-                <nav.icon className="w-5 h-5" />
+                {renderIcon(nav.icon, "w-5 h-5")}
               </span>
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span className={`menu-item-text`}>{nav.name}</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200  ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
+                renderIcon(ChevronDownIcon, `ml-auto w-5 h-5 transition-transform duration-200 ${
+                  openSubmenu?.type === menuType &&
+                  openSubmenu?.index === index
+                    ? "rotate-180 text-brand-500"
+                    : ""
+                }`)
               )}
             </button>
           ) : (
@@ -128,7 +149,7 @@ const AppSidebar: React.FC = () => {
                       : "menu-item-icon-inactive"
                   }`}
                 >
-                  <nav.icon className="w-5 h-5" />
+                  {renderIcon(nav.icon, "w-5 h-5")}
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <span className={`menu-item-text`}>{nav.name}</span>
@@ -314,7 +335,7 @@ const AppSidebar: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Menu"
                 ) : (
-                  <HorizontaLDots />
+                  renderIcon(HorizontaLDots)
                 )}
               </h2>
               {renderMenuItems(navItems, "main")}
@@ -331,7 +352,7 @@ const AppSidebar: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Others"
                 ) : (
-                  <HorizontaLDots />
+                  renderIcon(HorizontaLDots)
                 )}
               </h2>
               {renderMenuItems(othersItems, "others")}
@@ -349,7 +370,7 @@ const AppSidebar: React.FC = () => {
             }`}
           >
             <span className="menu-item-icon-inactive">
-              <ArrowRightIcon className="w-5 h-5 rotate-180" />
+              {renderIcon(ArrowRightIcon, "w-5 h-5 rotate-180")}
             </span>
             {(isExpanded || isHovered || isMobileOpen) && (
               <span className="menu-item-text">Logout</span>

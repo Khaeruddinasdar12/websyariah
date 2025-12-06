@@ -1,9 +1,17 @@
 "use client";
 
-import SignUpForm from "@/components/auth/SignUpForm";
-import React from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function RegisterAdmin() {
-  return <SignUpForm />;
+  const router = useRouter();
+  
+  useEffect(() => {
+    router.replace("/signin");
+  }, [router]);
+
+  return null;
 }
+
+export const dynamic = 'force-dynamic';
 

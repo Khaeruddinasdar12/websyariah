@@ -1,12 +1,16 @@
-import SignUpForm from "@/components/auth/SignUpForm";
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Next.js SignUp Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js SignUp Page TailAdmin Dashboard Template",
-  // other metadata
-};
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function SignUp() {
-  return <SignUpForm />;
+  const router = useRouter();
+  
+  useEffect(() => {
+    router.replace("/signin");
+  }, [router]);
+
+  return null;
 }
+
+export const dynamic = 'force-dynamic';

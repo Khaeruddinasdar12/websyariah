@@ -790,9 +790,9 @@ span.flatpickr-weekday,
   cursor: grabbing; /* Changes the cursor to indicate dragging */
 }
 
-// Variabel warna untuk halaman public - HAPUS (sudah ada di bawah)
+/* Variabel warna untuk halaman public - HAPUS (sudah ada di bawah) */
 
-// Tambahkan animasi untuk halaman public
+/* Tambahkan animasi untuk halaman public */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -808,7 +808,7 @@ span.flatpickr-weekday,
   50% { transform: translateY(-10px); }
 }
 
-// Tambahan utility classes untuk halaman public
+/* Tambahan utility classes untuk halaman public */
 @layer utilities {
   .hero-pattern {
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");

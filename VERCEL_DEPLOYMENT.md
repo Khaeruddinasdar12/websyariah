@@ -102,3 +102,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 - Pastikan `.env.local` tidak di-commit ke Git (sudah ada di .gitignore)
 
 
+

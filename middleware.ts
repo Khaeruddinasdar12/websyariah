@@ -40,7 +40,8 @@ export async function middleware(request: NextRequest) {
       },
     });
 
-    // Check if user is authenticated
+    // Refresh session to ensure we have the latest session state
+    // This is important after login when cookies might have just been set
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -52,6 +53,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(signInUrl);
     }
 
+    // Ensure cookies are properly set in response
+    // This helps with cookie persistence in production
     return response;
   }
 

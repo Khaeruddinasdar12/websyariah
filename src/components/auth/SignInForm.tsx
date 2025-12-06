@@ -9,6 +9,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { renderIcon } from "@/utils/renderIcon";
+import { supabase } from "@/lib/supabase";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -62,14 +63,44 @@ export default function SignInForm() {
                 e.preventDefault();
                 setError("");
                 setLoading(true);
+                
                 const { error } = await signIn(email, password);
-                setLoading(false);
+                
                 if (error) {
                   setError(error.message);
+                  setLoading(false);
                 } else {
-                  // Use window.location for hard redirect to ensure session is properly set
-                  // This is especially important in production where cookies need to be properly set
-                  window.location.href = redirect;
+                  // Wait for session to be properly set before redirecting
+                  // This is critical in production where cookies need time to be set
+                  try {
+                    // Verify session is set
+                    const { data: { session } } = await supabase.auth.getSession();
+                    
+                    if (session) {
+                      // Give a small delay to ensure cookies are set on server
+                      await new Promise(resolve => setTimeout(resolve, 500));
+                      
+                      // Use window.location for hard redirect to ensure session is properly set
+                      window.location.href = redirect;
+                    } else {
+                      // If session not set, wait a bit more and try again
+                      await new Promise(resolve => setTimeout(resolve, 1000));
+                      const { data: { session: retrySession } } = await supabase.auth.getSession();
+                      
+                      if (retrySession) {
+                        window.location.href = redirect;
+                      } else {
+                        setError("Session tidak ter-set. Silakan coba lagi.");
+                        setLoading(false);
+                      }
+                    }
+                  } catch (sessionError) {
+                    console.error('Error checking session:', sessionError);
+                    // Try redirect anyway after delay
+                    setTimeout(() => {
+                      window.location.href = redirect;
+                    }, 1000);
+                  }
                 }
               }}
             >

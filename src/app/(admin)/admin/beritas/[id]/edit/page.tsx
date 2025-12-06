@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Berita {
   id?: string;
@@ -42,12 +43,16 @@ export default function EditBeritaPage() {
   const params = useParams();
   const toast = useToast();
   const { confirm, isOpen, options, isLoading, handleConfirm, handleCancel } = useConfirm();
+  const { language, t } = useLanguage();
   const id = params.id as string;
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>('');
   const [translating, setTranslating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [slugError, setSlugError] = useState<string>('');
+  const [slugWarning, setSlugWarning] = useState<string>('');
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<Berita>({
@@ -191,6 +196,47 @@ export default function EditBeritaPage() {
       .replace(/(^-|-$)/g, '');
   };
 
+  const validateSlug = (slug: string) => {
+    setSlugError('');
+    setSlugWarning('');
+
+    if (!slug || slug.trim() === '') {
+      setSlugError('Slug tidak boleh kosong');
+      return false;
+    }
+
+    // Check for spaces
+    if (slug.includes(' ')) {
+      setSlugWarning('Slug tidak boleh mengandung spasi. Gunakan dash (-) atau underscore (_) sebagai pengganti.');
+      return false;
+    }
+
+    // Check for valid slug format (lowercase letters, numbers, dash, underscore only)
+    const slugRegex = /^[a-z0-9-_]+$/;
+    if (!slugRegex.test(slug)) {
+      const invalidChars = slug.match(/[^a-z0-9-_]/g);
+      if (invalidChars) {
+        setSlugError(`Slug mengandung karakter tidak valid: ${invalidChars.join(', ')}. Slug hanya boleh mengandung huruf kecil, angka, dash (-), dan underscore (_).`);
+      } else {
+        setSlugError('Format slug tidak valid. Slug hanya boleh mengandung huruf kecil, angka, dash (-), dan underscore (_).');
+      }
+      return false;
+    }
+
+    // Check if slug starts or ends with dash/underscore
+    if (slug.startsWith('-') || slug.startsWith('_') || slug.endsWith('-') || slug.endsWith('_')) {
+      setSlugWarning('Slug sebaiknya tidak dimulai atau diakhiri dengan dash (-) atau underscore (_).');
+    }
+
+    return true;
+  };
+
+  const handleSlugChange = (value: string) => {
+    setSlugManuallyEdited(true); // Mark slug as manually edited
+    handleInputChange('slug', value);
+    validateSlug(value);
+  };
+
   const translateText = async (text: string, targetLang: 'en' | 'ar'): Promise<string> => {
     if (!text || !text.trim()) return '';
     
@@ -311,7 +357,8 @@ export default function EditBeritaPage() {
   const handleInputChange = (field: keyof Berita, value: string) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      if (field === 'judul') {
+      // Only auto-generate slug from judul if slug hasn't been manually edited
+      if (field === 'judul' && !slugManuallyEdited) {
         updated.slug = generateSlug(value);
       }
       return updated;
@@ -340,25 +387,7 @@ export default function EditBeritaPage() {
 
       console.log('Uploading to path:', filePath);
 
-      // Check if bucket exists
-      const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-      
-      if (listError) {
-        console.error('Error listing buckets:', listError);
-        throw new Error('Cannot access storage. Please check your Supabase configuration.');
-      }
-
-      console.log('Available buckets:', buckets?.map(b => b.name));
-
-      const bucketExists = buckets?.some(bucket => bucket.name === 'images');
-      
-      if (!bucketExists) {
-        const errorMsg = 'Bucket "images" tidak ditemukan di Supabase Storage.\n\nSilakan buat bucket "images" di Supabase Dashboard:\n1. Buka Supabase Dashboard\n2. Pilih Storage\n3. Klik "New bucket"\n4. Nama: "images"\n5. Pilih "Public bucket"\n6. Klik "Create bucket"';
-        toast.showError('Bucket Tidak Ditemukan', errorMsg, 10000);
-        setUploading(false);
-        return;
-      }
-
+      // Skip bucket check - langsung upload, error akan muncul jika bucket tidak ada atau policy salah
       // Upload file
       console.log('Uploading file to bucket...');
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -392,12 +421,44 @@ export default function EditBeritaPage() {
           
           console.log('Upload successful, URL:', urlData.publicUrl);
           handleInputChange('gambar', urlData.publicUrl);
-        } else if (uploadError.message.includes('Bucket not found') || uploadError.message.includes('new row violates row-level security')) {
-          toast.showError('Error Upload', uploadError.message + '\n\nPastikan:\n1. Bucket "images" sudah dibuat\n2. Storage policy sudah di-set untuk authenticated users\n3. Cek SUPABASE_STORAGE_SETUP.md untuk panduan', 10000);
-          throw uploadError;
+        } else if (uploadError.message.includes('Bucket not found') || uploadError.message.includes('not found')) {
+          const errorTitles: Record<string, string> = {
+            id: 'Bucket Tidak Ditemukan',
+            en: 'Bucket Not Found',
+            ar: 'الحاوية غير موجودة'
+          };
+          const errorDetails: Record<string, string> = {
+            id: 'Bucket "images" tidak ditemukan.\n\nPastikan:\n1. Bucket "images" sudah dibuat di Supabase Dashboard\n2. Nama bucket harus exact: "images" (huruf kecil)\n3. Bucket harus di-set sebagai Public\n\nCara membuat:\n1. Buka Supabase Dashboard > Storage\n2. Klik "New bucket"\n3. Nama: "images"\n4. Centang "Public bucket"\n5. Klik "Create bucket"',
+            en: 'Bucket "images" not found.\n\nMake sure:\n1. Bucket "images" has been created in Supabase Dashboard\n2. Bucket name must be exact: "images" (lowercase)\n3. Bucket must be set as Public\n\nHow to create:\n1. Open Supabase Dashboard > Storage\n2. Click "New bucket"\n3. Name: "images"\n4. Check "Public bucket"\n5. Click "Create bucket"',
+            ar: 'لم يتم العثور على الحاوية "images".\n\nتأكد من:\n1. تم إنشاء الحاوية "images" في لوحة تحكم Supabase\n2. يجب أن يكون اسم الحاوية بالضبط: "images" (أحرف صغيرة)\n3. يجب تعيين الحاوية كعامة\n\nكيفية الإنشاء:\n1. افتح لوحة تحكم Supabase > Storage\n2. انقر على "New bucket"\n3. الاسم: "images"\n4. حدد "Public bucket"\n5. انقر على "Create bucket"'
+          };
+          toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 10000);
+        } else if (uploadError.message.includes('row-level security') || uploadError.message.includes('RLS')) {
+          const errorTitles: Record<string, string> = {
+            id: 'Storage Policy Belum Dikonfigurasi',
+            en: 'Storage Policy Not Configured',
+            ar: 'سياسة التخزين غير مُكوّنة'
+          };
+          const errorDetails: Record<string, string> = {
+            id: 'Storage policy belum dikonfigurasi.\n\nSilakan jalankan SQL di Supabase:\n1. Buka Supabase Dashboard > SQL Editor\n2. Copy SQL dari file "supabase-storage-policy.sql"\n3. Paste dan klik "Run"\n\nAtau lihat CARA_KONFIGURASI_STORAGE.md untuk panduan lengkap.',
+            en: 'Storage policy has not been configured.\n\nPlease run SQL in Supabase:\n1. Open Supabase Dashboard > SQL Editor\n2. Copy SQL from "supabase-storage-policy.sql" file\n3. Paste and click "Run"\n\nOr see CARA_KONFIGURASI_STORAGE.md for complete guide.',
+            ar: 'لم يتم تكوين سياسة التخزين.\n\nيرجى تشغيل SQL في Supabase:\n1. افتح لوحة تحكم Supabase > محرر SQL\n2. انسخ SQL من ملف "supabase-storage-policy.sql"\n3. الصق وانقر على "Run"\n\nأو راجع CARA_KONFIGURASI_STORAGE.md للحصول على دليل كامل.'
+          };
+          toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 10000);
         } else {
-          throw uploadError;
+          const errorTitles: Record<string, string> = {
+            id: 'Error Upload Gambar',
+            en: 'Image Upload Error',
+            ar: 'خطأ في رفع الصورة'
+          };
+          const errorDetails: Record<string, string> = {
+            id: uploadError.message + '\n\nCek console (F12) untuk detail error.',
+            en: uploadError.message + '\n\nCheck console (F12) for error details.',
+            ar: uploadError.message + '\n\nتحقق من وحدة التحكم (F12) للحصول على تفاصيل الخطأ.'
+          };
+          toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 8000);
         }
+        throw uploadError;
       } else {
         // Get public URL
         const { data: urlData } = supabase.storage
@@ -406,18 +467,58 @@ export default function EditBeritaPage() {
 
         console.log('Upload successful, URL:', urlData.publicUrl);
         handleInputChange('gambar', urlData.publicUrl);
-        toast.showSuccess('Upload Berhasil', 'Gambar berhasil diupload!');
+        const successMessages: Record<string, string> = {
+          id: 'Upload Berhasil',
+          en: 'Upload Successful',
+          ar: 'تم الرفع بنجاح'
+        };
+        const successDetails: Record<string, string> = {
+          id: 'Gambar berhasil diupload!',
+          en: 'Image uploaded successfully!',
+          ar: 'تم رفع الصورة بنجاح!'
+        };
+        toast.showSuccess(successMessages[language] || successMessages.id, successDetails[language] || successDetails.id);
       }
     } catch (error: any) {
       console.error('Error uploading image:', error);
       const errorMessage = error.message || 'Unknown error';
       
       if (errorMessage.includes('Bucket not found')) {
-        toast.showError('Bucket Tidak Ditemukan', 'Bucket "images" tidak ditemukan di Supabase Storage.\n\nCara membuat bucket:\n1. Buka Supabase Dashboard\n2. Pilih menu "Storage"\n3. Klik "New bucket"\n4. Nama bucket: "images"\n5. Pilih "Public bucket" (agar bisa diakses public)\n6. Klik "Create bucket"\n\nSetelah bucket dibuat, coba upload gambar lagi.', 10000);
+        const errorTitles: Record<string, string> = {
+          id: 'Bucket Tidak Ditemukan',
+          en: 'Bucket Not Found',
+          ar: 'الحاوية غير موجودة'
+        };
+        const errorDetails: Record<string, string> = {
+          id: 'Bucket "images" tidak ditemukan di Supabase Storage.\n\nCara membuat bucket:\n1. Buka Supabase Dashboard\n2. Pilih menu "Storage"\n3. Klik "New bucket"\n4. Nama bucket: "images"\n5. Pilih "Public bucket" (agar bisa diakses public)\n6. Klik "Create bucket"\n\nSetelah bucket dibuat, coba upload gambar lagi.',
+          en: 'Bucket "images" not found in Supabase Storage.\n\nHow to create bucket:\n1. Open Supabase Dashboard\n2. Select "Storage" menu\n3. Click "New bucket"\n4. Bucket name: "images"\n5. Select "Public bucket" (to make it publicly accessible)\n6. Click "Create bucket"\n\nAfter the bucket is created, try uploading the image again.',
+          ar: 'لم يتم العثور على الحاوية "images" في Supabase Storage.\n\nكيفية إنشاء الحاوية:\n1. افتح لوحة تحكم Supabase\n2. اختر قائمة "Storage"\n3. انقر على "New bucket"\n4. اسم الحاوية: "images"\n5. اختر "Public bucket" (لجعله متاحًا للجمهور)\n6. انقر على "Create bucket"\n\nبعد إنشاء الحاوية، حاول رفع الصورة مرة أخرى.'
+        };
+        toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 10000);
       } else if (errorMessage.includes('row-level security')) {
-        toast.showError('Storage Policy Belum Dikonfigurasi', 'Storage policy belum dikonfigurasi.\n\nSilakan set policy di Supabase Storage:\n1. Buka Storage > Policies\n2. Buat policy untuk INSERT dengan role: authenticated\n3. Lihat SUPABASE_STORAGE_SETUP.md untuk detail', 10000);
+        const errorTitles: Record<string, string> = {
+          id: 'Storage Policy Belum Dikonfigurasi',
+          en: 'Storage Policy Not Configured',
+          ar: 'سياسة التخزين غير مُكوّنة'
+        };
+        const errorDetails: Record<string, string> = {
+          id: 'Storage policy belum dikonfigurasi.\n\nSilakan set policy di Supabase Storage:\n1. Buka Storage > Policies\n2. Buat policy untuk INSERT dengan role: authenticated\n3. Lihat SUPABASE_STORAGE_SETUP.md untuk detail',
+          en: 'Storage policy has not been configured.\n\nPlease set policy in Supabase Storage:\n1. Open Storage > Policies\n2. Create policy for INSERT with role: authenticated\n3. See SUPABASE_STORAGE_SETUP.md for details',
+          ar: 'لم يتم تكوين سياسة التخزين.\n\nيرجى تعيين السياسة في Supabase Storage:\n1. افتح Storage > Policies\n2. أنشئ سياسة لـ INSERT مع الدور: authenticated\n3. راجع SUPABASE_STORAGE_SETUP.md للتفاصيل'
+        };
+        toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 10000);
       } else {
-        toast.showError('Error Upload Gambar', errorMessage + '\n\nCek console untuk detail error.', 8000);
+        const errorTitles: Record<string, string> = {
+          id: 'Error Upload Gambar',
+          en: 'Image Upload Error',
+          ar: 'خطأ في رفع الصورة'
+        };
+        const errorDetails: Record<string, string> = {
+          id: errorMessage + '\n\nCek console untuk detail error.',
+          en: errorMessage + '\n\nCheck console for error details.',
+          ar: errorMessage + '\n\nتحقق من وحدة التحكم للحصول على تفاصيل الخطأ.'
+        };
+        toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 8000);
       }
     } finally {
       setUploading(false);
@@ -647,15 +748,26 @@ export default function EditBeritaPage() {
                 />
               </div>
               <div>
-                <Label>Slug (Auto-generated)</Label>
+                <Label>
+                  Slug
+                  <span className="text-error-500 ml-1">*</span>
+                </Label>
                 <Input
                   type="text"
                   value={formData.slug}
-                  readOnly
-                  disabled
-                  className="bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed"
+                  onChange={(e) => handleSlugChange(e.target.value)}
+                  placeholder="contoh-slug-berita"
+                  className={`w-full ${slugError ? 'border-red-500' : slugWarning ? 'border-yellow-500' : ''}`}
                 />
-                <p className="text-xs text-gray-500 mt-1">Slug otomatis dibuat dari judul</p>
+                {slugError && (
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-1">{slugError}</p>
+                )}
+                {slugWarning && !slugError && (
+                  <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">{slugWarning}</p>
+                )}
+                {!slugError && !slugWarning && (
+                  <p className="text-xs text-gray-500 mt-1">Slug hanya boleh mengandung huruf kecil, angka, dash (-), dan underscore (_). Tidak boleh ada spasi.</p>
+                )}
               </div>
               <div>
                 <Label>Tanggal Dibuat (Created At)</Label>

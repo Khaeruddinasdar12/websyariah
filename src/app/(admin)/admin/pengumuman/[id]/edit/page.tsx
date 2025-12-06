@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Pengumuman {
   id?: string;
@@ -33,6 +34,7 @@ export default function EditPengumumanPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const toast = useToast();
+  const { language, t } = useLanguage();
   const { confirm, isOpen, options, isLoading, handleConfirm, handleCancel } = useConfirm();
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -40,6 +42,9 @@ export default function EditPengumumanPage() {
   const [saving, setSaving] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string>('');
+  const [slugError, setSlugError] = useState<string>('');
+  const [slugWarning, setSlugWarning] = useState<string>('');
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   const [formData, setFormData] = useState<Pengumuman>({
     judul: '',
@@ -88,6 +93,47 @@ export default function EditPengumumanPage() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
+  };
+
+  const validateSlug = (slug: string) => {
+    setSlugError('');
+    setSlugWarning('');
+
+    if (!slug || slug.trim() === '') {
+      setSlugError('Slug tidak boleh kosong');
+      return false;
+    }
+
+    // Check for spaces
+    if (slug.includes(' ')) {
+      setSlugWarning('Slug tidak boleh mengandung spasi. Gunakan dash (-) atau underscore (_) sebagai pengganti.');
+      return false;
+    }
+
+    // Check for valid slug format (lowercase letters, numbers, dash, underscore only)
+    const slugRegex = /^[a-z0-9-_]+$/;
+    if (!slugRegex.test(slug)) {
+      const invalidChars = slug.match(/[^a-z0-9-_]/g);
+      if (invalidChars) {
+        setSlugError(`Slug mengandung karakter tidak valid: ${invalidChars.join(', ')}. Slug hanya boleh mengandung huruf kecil, angka, dash (-), dan underscore (_).`);
+      } else {
+        setSlugError('Format slug tidak valid. Slug hanya boleh mengandung huruf kecil, angka, dash (-), dan underscore (_).');
+      }
+      return false;
+    }
+
+    // Check if slug starts or ends with dash/underscore
+    if (slug.startsWith('-') || slug.startsWith('_') || slug.endsWith('-') || slug.endsWith('_')) {
+      setSlugWarning('Slug sebaiknya tidak dimulai atau diakhiri dengan dash (-) atau underscore (_).');
+    }
+
+    return true;
+  };
+
+  const handleSlugChange = (value: string) => {
+    setSlugManuallyEdited(true); // Mark slug as manually edited
+    handleInputChange('slug', value);
+    validateSlug(value);
   };
 
   const translateText = async (text: string, targetLang: 'en' | 'ar'): Promise<string> => {
@@ -162,7 +208,8 @@ export default function EditPengumumanPage() {
   const handleInputChange = (field: keyof Pengumuman, value: string) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      if (field === 'judul') {
+      // Only auto-generate slug from judul if slug hasn't been manually edited
+      if (field === 'judul' && !slugManuallyEdited) {
         updated.slug = generateSlug(value);
       }
       return updated;
@@ -210,7 +257,26 @@ export default function EditPengumumanPage() {
         uploadData = data1;
       }
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        // Check if bucket not found error
+        if (uploadError.message?.includes('Bucket not found') || uploadError.message?.includes('not found')) {
+          const errorTitles: Record<string, string> = {
+            id: 'Bucket Tidak Ditemukan',
+            en: 'Bucket Not Found',
+            ar: 'الحاوية غير موجودة'
+          };
+          const errorDetails: Record<string, string> = {
+            id: 'Bucket "files" dan "images" tidak ditemukan di Supabase Storage.\n\nSilakan buat bucket di Supabase Dashboard:\n1. Buka Supabase Dashboard\n2. Pilih Storage\n3. Klik "New bucket"\n4. Nama: "files" atau "images"\n5. Pilih "Public bucket"\n6. Klik "Create bucket"',
+            en: 'Buckets "files" and "images" not found in Supabase Storage.\n\nPlease create a bucket in Supabase Dashboard:\n1. Open Supabase Dashboard\n2. Select Storage\n3. Click "New bucket"\n4. Name: "files" or "images"\n5. Select "Public bucket"\n6. Click "Create bucket"',
+            ar: 'لم يتم العثور على الحاويات "files" و "images" في Supabase Storage.\n\nيرجى إنشاء حاوية في لوحة تحكم Supabase:\n1. افتح لوحة تحكم Supabase\n2. اختر Storage\n3. انقر على "New bucket"\n4. الاسم: "files" أو "images"\n5. اختر "Public bucket"\n6. انقر على "Create bucket"'
+          };
+          toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 10000);
+          setUploadedFile(null);
+          setUploading(false);
+          return;
+        }
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from(bucketName)
@@ -218,13 +284,45 @@ export default function EditPengumumanPage() {
 
       setFileUrl(publicUrl);
       setFormData(prev => ({ ...prev, file: publicUrl }));
-      toast.showSuccess('Upload Berhasil', 'File berhasil diupload!');
+      const successTitles: Record<string, string> = {
+        id: 'Upload Berhasil',
+        en: 'Upload Successful',
+        ar: 'تم الرفع بنجاح'
+      };
+      const successDetails: Record<string, string> = {
+        id: 'File berhasil diupload!',
+        en: 'File uploaded successfully!',
+        ar: 'تم رفع الملف بنجاح!'
+      };
+      toast.showSuccess(successTitles[language] || successTitles.id, successDetails[language] || successDetails.id);
     } catch (error: any) {
       console.error('File upload error:', error);
+      const errorTitles: Record<string, string> = {
+        id: 'Upload Gagal',
+        en: 'Upload Failed',
+        ar: 'فشل الرفع'
+      };
       if (error.message?.includes('mime type')) {
-        toast.showError('Upload Gagal', 'Jenis file tidak didukung. Pastikan bucket storage mengizinkan file PDF dan jenis file lainnya.');
+        const errorDetails: Record<string, string> = {
+          id: 'Jenis file tidak didukung. Pastikan bucket storage mengizinkan file PDF dan jenis file lainnya.',
+          en: 'File type not supported. Make sure the storage bucket allows PDF files and other file types.',
+          ar: 'نوع الملف غير مدعوم. تأكد من أن حاوية التخزين تسمح بملفات PDF وأنواع الملفات الأخرى.'
+        };
+        toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id);
+      } else if (error.message?.includes('Bucket not found')) {
+        const errorDetails: Record<string, string> = {
+          id: 'Bucket tidak ditemukan. Silakan buat bucket "files" atau "images" di Supabase Dashboard.',
+          en: 'Bucket not found. Please create "files" or "images" bucket in Supabase Dashboard.',
+          ar: 'لم يتم العثور على الحاوية. يرجى إنشاء حاوية "files" أو "images" في لوحة تحكم Supabase.'
+        };
+        toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id, 10000);
       } else {
-        toast.showError('Upload Gagal', error.message || 'Gagal mengupload file');
+        const errorDetails: Record<string, string> = {
+          id: error.message || 'Gagal mengupload file',
+          en: error.message || 'Failed to upload file',
+          ar: error.message || 'فشل رفع الملف'
+        };
+        toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id);
       }
       setUploadedFile(null);
     } finally {
@@ -237,6 +335,22 @@ export default function EditPengumumanPage() {
 
     if (!formData.judul || !formData.konten) {
       toast.showError('Form Tidak Lengkap', 'Judul dan konten wajib diisi');
+      return;
+    }
+
+    // Validate slug before submit
+    if (!validateSlug(formData.slug)) {
+      const errorTitles: Record<string, string> = {
+        id: 'Slug Tidak Valid',
+        en: 'Invalid Slug',
+        ar: 'الرابط غير صالح'
+      };
+      const errorDetails: Record<string, string> = {
+        id: slugError || slugWarning || 'Slug tidak valid. Perbaiki format slug sebelum menyimpan.',
+        en: slugError || slugWarning || 'Invalid slug. Please fix the slug format before saving.',
+        ar: slugError || slugWarning || 'الرابط غير صالح. يرجى إصلاح تنسيق الرابط قبل الحفظ.'
+      };
+      toast.showError(errorTitles[language] || errorTitles.id, errorDetails[language] || errorDetails.id);
       return;
     }
 
@@ -288,13 +402,26 @@ export default function EditPengumumanPage() {
 
           {/* Slug */}
           <div>
-            <Label>Slug</Label>
+            <Label>
+              Slug
+              <span className="text-error-500 ml-1">*</span>
+            </Label>
             <Input
               type="text"
               value={formData.slug}
-              onChange={(e) => handleInputChange('slug', e.target.value)}
-              placeholder="Slug"
+              onChange={(e) => handleSlugChange(e.target.value)}
+              placeholder="contoh-slug-pengumuman"
+              className={`w-full ${slugError ? 'border-red-500' : slugWarning ? 'border-yellow-500' : ''}`}
             />
+            {slugError && (
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1">{slugError}</p>
+            )}
+            {slugWarning && !slugError && (
+              <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">{slugWarning}</p>
+            )}
+            {!slugError && !slugWarning && (
+              <p className="text-xs text-gray-500 mt-1">Slug hanya boleh mengandung huruf kecil, angka, dash (-), dan underscore (_). Tidak boleh ada spasi.</p>
+            )}
           </div>
 
           {/* Created At */}

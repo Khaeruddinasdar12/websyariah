@@ -1,22 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Disable turbopack so that custom webpack config works
-  turbopack: false,
-
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Enable empty Turbopack config (wajib agar tidak error)
+  turbopack: {},
 
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**.supabase.co',
+        protocol: "https",
+        hostname: "**.supabase.co",
       },
     ],
   },
 
+  // Webpack config masih didukung, tetapi hanya jika turbopack aktif
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,

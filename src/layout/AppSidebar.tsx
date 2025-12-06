@@ -24,34 +24,34 @@ import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
   path?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
 const navItems: NavItem[] = [
   {
-    icon: <DocsIcon />,
+    icon: DocsIcon,
     name: "Beritas",
     path: "/admin/beritas",
   },
   {
-    icon: <PageIcon />,
+    icon: PageIcon,
     name: "Pengumuman",
     path: "/admin/pengumuman",
   },
   {
-    icon: <GridIcon />,
+    icon: GridIcon,
     name: "Kategori",
     path: "/admin/kategori",
   },
   {
-    icon: <UserCircleIcon />,
+    icon: UserCircleIcon,
     name: "Dosen",
     path: "/admin/dosen",
   },
   {
-    icon: <UserCircleIcon />,
+    icon: UserCircleIcon,
     name: "Users",
     path: "/admin/users",
   },
@@ -97,7 +97,7 @@ const AppSidebar: React.FC = () => {
                     : "menu-item-icon-inactive"
                 }`}
               >
-                {nav.icon}
+                <nav.icon className="w-5 h-5" />
               </span>
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span className={`menu-item-text`}>{nav.name}</span>
@@ -128,7 +128,7 @@ const AppSidebar: React.FC = () => {
                       : "menu-item-icon-inactive"
                   }`}
                 >
-                  {nav.icon}
+                  <nav.icon className="w-5 h-5" />
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <span className={`menu-item-text`}>{nav.name}</span>

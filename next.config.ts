@@ -13,11 +13,21 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Webpack config masih didukung, tetapi hanya jika turbopack aktif
-  webpack(config) {
+  // Webpack config untuk SVG handling
+  webpack(config, { isServer }) {
+    // SVG handling with @svgr/webpack
     config.module.rules.push({
       test: /\.svg$/,
-      use: ["@svgr/webpack"],
+      use: [
+        {
+          loader: "@svgr/webpack",
+          options: {
+            svgo: false,
+            titleProp: true,
+            ref: true,
+          },
+        },
+      ],
     });
     return config;
   },

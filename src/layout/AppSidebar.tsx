@@ -71,26 +71,52 @@ const AppSidebar: React.FC = () => {
 
   const othersItems: NavItem[] = [];
 
-  // Import renderIcon utility
-  const renderIcon = (IconComponent: React.ComponentType<React.SVGProps<SVGSVGElement>>, className?: string) => {
+  // Import renderIcon utility - always returns valid React element
+  const renderIcon = (IconComponent: React.ComponentType<React.SVGProps<SVGSVGElement>> | any, className?: string): React.ReactElement => {
     if (!IconComponent) {
-      return null;
+      // Return fallback SVG
+      return (
+        <svg className={className || "w-5 h-5"} width="1em" height="1em" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+      );
     }
     
-    // Handle different export formats from @svgr/webpack
-    const Component = (IconComponent as any).default || IconComponent;
-    
-    // Check if it's a valid React component
-    if (typeof Component === 'function') {
-      return React.createElement(Component, { className: className || "w-5 h-5" });
+    try {
+      // Handle different export formats from @svgr/webpack
+      let Component = IconComponent;
+      
+      // Check for default export (common in production builds)
+      if (IconComponent && typeof IconComponent === 'object' && !React.isValidElement(IconComponent)) {
+        if (IconComponent.__esModule && IconComponent.default) {
+          Component = IconComponent.default;
+        } else if ('default' in IconComponent && IconComponent.default) {
+          Component = IconComponent.default;
+        }
+      }
+      
+      // Check if it's a valid React component (function)
+      if (typeof Component === 'function') {
+        const element = React.createElement(Component, { className: className || "w-5 h-5", width: "1em", height: "1em", fill: "currentColor" });
+        if (React.isValidElement(element)) {
+          return element;
+        }
+      }
+      
+      // Fallback: try to render as JSX if it's already a valid element
+      if (React.isValidElement(Component)) {
+        return Component as React.ReactElement;
+      }
+    } catch (error) {
+      console.error('Error rendering icon:', error);
     }
     
-    // Fallback: try to render as JSX if it's already a valid element
-    if (React.isValidElement(Component)) {
-      return Component;
-    }
-    
-    return null;
+    // Final fallback: return empty SVG
+    return (
+      <svg className={className || "w-5 h-5"} width="1em" height="1em" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+    );
   };
 
   const renderMenuItems = (

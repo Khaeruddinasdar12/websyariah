@@ -840,7 +840,7 @@ export default function HomePage() {
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
     <div className="grid md:grid-cols-4 gap-8 text-center">
       <div className="group">
-        <div className="text-4xl font-bold text-gray-800 mb-3 group-hover:scale-110 transition-transform duration-300">2200+</div>
+        <div className="text-4xl font-bold text-gray-800 mb-3 group-hover:scale-110 transition-transform duration-300">1566</div>
         <p className="text-gray-700 text-base">{t('home.stats.activeStudents')}</p>
       </div>
       <div className="group">

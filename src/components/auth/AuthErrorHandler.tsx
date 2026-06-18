@@ -10,30 +10,36 @@ export default function AuthErrorHandler() {
   const [errorDescription, setErrorDescription] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for error in URL hash (Supabase auth errors)
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
       const hashParams = new URLSearchParams(hash.substring(1));
-      
+
       const errorParam = hashParams.get('error');
       const errorDescriptionParam = hashParams.get('error_description');
-      
+
       if (errorParam) {
         setError(errorParam);
         setErrorDescription(errorDescriptionParam);
-        
-        // Clean up the URL
         window.history.replaceState(null, '', window.location.pathname);
       }
 
-      // Also check for error in query params
       const urlParams = new URLSearchParams(window.location.search);
       const queryError = urlParams.get('error');
       const queryErrorDesc = urlParams.get('error_description');
-      
-      if (queryError) {
+
+      if (queryError && !errorParam) {
         setError(queryError);
         setErrorDescription(queryErrorDesc);
+        if (queryError !== 'auth_callback_error') {
+          urlParams.delete('error');
+          urlParams.delete('error_description');
+          const cleanSearch = urlParams.toString();
+          window.history.replaceState(
+            null,
+            '',
+            cleanSearch ? `${window.location.pathname}?${cleanSearch}` : window.location.pathname
+          );
+        }
       }
     }
   }, []);
@@ -41,15 +47,36 @@ export default function AuthErrorHandler() {
   if (!error) return null;
 
   const getErrorMessage = () => {
-    if (error === 'access_denied' || error === 'otp_expired') {
+    if (error === 'otp_expired') {
       return {
-        title: 'Link Verifikasi Expired',
-        message: 'Link verifikasi email sudah kadaluarsa atau tidak valid. Silakan daftar ulang atau hubungi administrator.',
-        action: 'Daftar Ulang',
-        actionLink: '/signup',
+        title: 'Link Reset Password Expired',
+        message:
+          'Link reset password sudah kadaluarsa atau sudah pernah digunakan. Link hanya berlaku 1 jam. Silakan minta link reset password baru.',
+        action: 'Minta Link Baru',
+        actionLink: '/reset-password',
       };
     }
-    
+
+    if (error === 'access_denied') {
+      return {
+        title: 'Link Reset Password Tidak Valid',
+        message:
+          'Link tidak dapat diproses. Pastikan redirect URL sudah dikonfigurasi di Supabase, lalu minta link reset password baru.',
+        action: 'Minta Link Baru',
+        actionLink: '/reset-password',
+      };
+    }
+
+    if (error === 'auth_callback_error') {
+      return {
+        title: 'Gagal Memproses Link',
+        message:
+          'Link reset password gagal diproses. Silakan minta link reset password baru dan pastikan link dibuka dalam 1 jam.',
+        action: 'Minta Link Baru',
+        actionLink: '/reset-password',
+      };
+    }
+
     return {
       title: 'Error Autentikasi',
       message: errorDescription || 'Terjadi kesalahan saat proses autentikasi. Silakan coba lagi.',
@@ -108,4 +135,3 @@ export default function AuthErrorHandler() {
     </div>
   );
 }
-

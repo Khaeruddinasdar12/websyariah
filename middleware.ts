@@ -3,65 +3,55 @@ import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
-  // Only protect admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    let response = NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+  if (!request.nextUrl.pathname.startsWith('/admin')) {
+    return NextResponse.next();
+  }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-    if (!supabaseUrl || !supabaseAnonKey) {
-      // If Supabase is not configured, allow access (for development)
-      return response;
-    }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    // Create Supabase client for server-side
-    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: any) {
-          // In middleware, we can only write to response.cookies
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-        },
-        remove(name: string, options: any) {
-          // In middleware, we can only write to response.cookies
-          response.cookies.delete(name);
-        },
-      },
-    });
-
-    // Refresh session to ensure we have the latest session state
-    // This is important after login when cookies might have just been set
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    // If no session, redirect to signin
-    if (!session) {
-      const signInUrl = new URL('/signin', request.url);
-      signInUrl.searchParams.set('redirect', request.nextUrl.pathname);
-      return NextResponse.redirect(signInUrl);
-    }
-
-    // Ensure cookies are properly set in response
-    // This helps with cookie persistence in production
+  if (!supabaseUrl || !supabaseAnonKey) {
     return response;
   }
 
-  return NextResponse.next();
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    const signInUrl = new URL('/signin', request.url);
+    signInUrl.searchParams.set('redirect', request.nextUrl.pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  return response;
 }
 
 export const config = {
   matcher: ['/admin/:path*'],
 };
-

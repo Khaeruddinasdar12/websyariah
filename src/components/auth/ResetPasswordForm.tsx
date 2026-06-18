@@ -34,10 +34,10 @@ export default function ResetPasswordForm() {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
                       (typeof window !== 'undefined' ? window.location.origin : '');
       
-      const redirectTo = `${siteUrl}/reset-password/confirm`;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: redirectTo,
+      const redirectTo = `${siteUrl}/auth/callback?next=${encodeURIComponent('/reset-password/confirm')}`;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+        redirectTo,
       });
 
       if (error) {
@@ -115,7 +115,7 @@ export default function ResetPasswordForm() {
                     />
                   </div>
                   <div>
-                    <Button className="w-full" size="sm" disabled={loading}>
+                    <Button className="w-full" size="sm" type="submit" disabled={loading}>
                       {loading ? "Mengirim..." : "Kirim Link Reset Password"}
                     </Button>
                   </div>

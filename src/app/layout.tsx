@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import AuthErrorWrapper from '@/components/auth/AuthErrorWrapper';
+import AuthRecoveryRedirect from '@/components/auth/AuthRecoveryRedirect';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
             <ToastProvider>
               <SidebarProvider>
                 {children}
+                <AuthRecoveryRedirect />
                 <AuthErrorWrapper />
               </SidebarProvider>
             </ToastProvider>

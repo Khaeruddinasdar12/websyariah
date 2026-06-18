@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { renderIcon } from "@/utils/renderIcon";
 import { supabase } from "@/lib/supabase";
+import { getAuthErrorMessage } from "@/lib/auth-errors";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -67,7 +68,7 @@ export default function SignInForm() {
                 const { error } = await signIn(email, password);
                 
                 if (error) {
-                  setError(error.message);
+                  setError(getAuthErrorMessage(error.message));
                   setLoading(false);
                 } else {
                   // Wait for session to be properly set before redirecting
@@ -166,7 +167,7 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm" disabled={loading}>
+                  <Button className="w-full" size="sm" type="submit" disabled={loading}>
                     {loading ? "Memproses..." : "Masuk"}
                   </Button>
                 </div>

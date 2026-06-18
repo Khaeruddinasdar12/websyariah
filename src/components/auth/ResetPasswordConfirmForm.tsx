@@ -6,8 +6,75 @@ import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
 import { renderIcon } from "@/utils/renderIcon";
+
+function cleanupAuthUrl() {
+  window.history.replaceState(null, "", window.location.pathname);
+}
+
+async function hasActiveSession(): Promise<boolean> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return !!session;
+}
+
+async function establishRecoverySession(): Promise<boolean> {
+  if (await hasActiveSession()) {
+    cleanupAuthUrl();
+    return true;
+  }
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const code = searchParams.get("code");
+  const tokenHash = searchParams.get("token_hash");
+  const type = searchParams.get("type");
+
+  if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && (await hasActiveSession())) {
+      cleanupAuthUrl();
+      return true;
+    }
+    // Code may have been exchanged already by another listener
+    if (await hasActiveSession()) {
+      cleanupAuthUrl();
+      return true;
+    }
+    return false;
+  }
+
+  if (tokenHash && type === "recovery") {
+    const { data, error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "recovery",
+    });
+    if (!error && data.session) {
+      cleanupAuthUrl();
+      return true;
+    }
+    return false;
+  }
+
+  if (window.location.hash) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get("access_token");
+    const hashType = hashParams.get("type");
+    const refreshToken = hashParams.get("refresh_token");
+
+    if (accessToken && hashType === "recovery" && refreshToken) {
+      const { data, error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (!error && data.session) {
+        cleanupAuthUrl();
+        return true;
+      }
+      return false;
+    }
+  }
+
+  return hasActiveSession();
+}
 
 export default function ResetPasswordConfirmForm() {
   const [password, setPassword] = useState("");
@@ -18,58 +85,51 @@ export default function ResetPasswordConfirmForm() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
-    // Check if there's a valid session from the reset password link
-    const checkSession = async () => {
-      try {
-        // First, check URL hash for access token (Supabase includes it in the hash)
-        // Format: #access_token=...&type=recovery&refresh_token=...
-        if (typeof window !== 'undefined' && window.location.hash) {
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const accessToken = hashParams.get('access_token');
-          const type = hashParams.get('type');
-          const refreshToken = hashParams.get('refresh_token');
-          
-          if (accessToken && type === 'recovery' && refreshToken) {
-            // Exchange the token for a session
-            const { data, error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-            
-            if (error) {
-              setIsValidToken(false);
-              setError("Link reset password tidak valid atau sudah kadaluarsa");
-              return;
-            }
-            
-            if (data.session) {
-              setIsValidToken(true);
-              // Clear the hash from URL
-              window.history.replaceState(null, '', window.location.pathname);
-              return;
-            }
-          }
-        }
-        
-        // If no hash, check for existing session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session) {
+    let active = true;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!active) return;
+        if (
+          session &&
+          (event === "PASSWORD_RECOVERY" ||
+            event === "SIGNED_IN" ||
+            event === "INITIAL_SESSION" ||
+            event === "TOKEN_REFRESHED")
+        ) {
           setIsValidToken(true);
-        } else {
-          setIsValidToken(false);
-          setError("Link reset password tidak valid atau sudah kadaluarsa. Silakan request reset password baru.");
+          cleanupAuthUrl();
         }
-      } catch (err: any) {
+      }
+    );
+
+    const init = async () => {
+      // Allow Supabase client and auth/callback cookies to settle
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      if (!active) return;
+
+      const valid = await establishRecoverySession();
+      if (!active) return;
+
+      if (valid) {
+        setIsValidToken(true);
+      } else {
         setIsValidToken(false);
-        setError("Terjadi kesalahan saat memvalidasi link reset password");
+        setError(
+          "Link reset password tidak valid atau sudah kadaluarsa. Silakan request reset password baru."
+        );
       }
     };
 
-    checkSession();
+    init();
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,7 +137,6 @@ export default function ResetPasswordConfirmForm() {
     setError("");
     setSuccess(false);
 
-    // Validation
     if (!password.trim()) {
       setError("Password harus diisi");
       return;
@@ -96,48 +155,35 @@ export default function ResetPasswordConfirmForm() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: password,
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        setError(
+          "Sesi reset password tidak ditemukan. Silakan buka ulang link dari email Anda."
+        );
+        setLoading(false);
+        return;
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password,
       });
 
-      if (error) {
-        setError(error.message || "Gagal mengubah password");
+      if (updateError) {
+        setError(updateError.message || "Gagal mengubah password");
         setLoading(false);
-      } else {
-        setSuccess(true);
-        
-        // Sign out from recovery session to ensure clean state
-        // This is important especially in production where cookies might persist
-        try {
-          await supabase.auth.signOut();
-          
-          // Clear all Supabase-related cookies manually to ensure clean state
-          if (typeof document !== 'undefined') {
-            // Clear all cookies that might be related to Supabase
-            const cookies = document.cookie.split(';');
-            cookies.forEach(cookie => {
-              const eqPos = cookie.indexOf('=');
-              const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-              // Clear Supabase auth cookies
-              if (name.includes('supabase') || name.includes('sb-')) {
-                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
-              }
-            });
-          }
-        } catch (signOutError) {
-          console.error('Error signing out:', signOutError);
-          // Continue anyway - the password has been updated
-        }
-        
-        // Wait a bit to ensure sign out completes, then redirect with cache bust
-        setTimeout(() => {
-          // Use window.location with cache bust to ensure fresh page load
-          window.location.href = "/signin?reset=success";
-        }, 2000);
+        return;
       }
-    } catch (err: any) {
-      setError(err.message || "Terjadi kesalahan saat mengubah password");
+
+      setSuccess(true);
+      await supabase.auth.signOut();
+      setTimeout(() => {
+        window.location.href = "/signin?reset=success";
+      }, 2000);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Terjadi kesalahan saat mengubah password";
+      setError(message);
       setLoading(false);
     }
   };
@@ -147,7 +193,9 @@ export default function ResetPasswordConfirmForm() {
       <div className="flex flex-col flex-1 lg:w-1/2 w-full">
         <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
           <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400">Memvalidasi link reset password...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Memvalidasi link reset password...
+            </p>
           </div>
         </div>
       </div>
@@ -172,7 +220,8 @@ export default function ResetPasswordConfirmForm() {
               Link Tidak Valid
             </h3>
             <p className="text-sm text-red-700 dark:text-red-300 mb-4">
-              {error || "Link reset password tidak valid atau sudah kadaluarsa. Silakan request reset password baru."}
+              {error ||
+                "Link reset password tidak valid atau sudah kadaluarsa. Silakan request reset password baru."}
             </p>
             <Link
               href="/reset-password"
@@ -278,7 +327,7 @@ export default function ResetPasswordConfirmForm() {
                     </div>
                   </div>
                   <div>
-                    <Button className="w-full" size="sm" disabled={loading}>
+                    <Button className="w-full" size="sm" type="submit" disabled={loading}>
                       {loading ? "Mengubah Password..." : "Ubah Password"}
                     </Button>
                   </div>
@@ -291,4 +340,3 @@ export default function ResetPasswordConfirmForm() {
     </div>
   );
 }
-

@@ -472,11 +472,11 @@ export default function BeritaPage() {
                   <input
                     type="text"
                     placeholder={t('news.searchPlaceholder')}
-                    className="input-soft w-full pl-12 pr-4 py-3 text-base"
+                    className="input-soft input-soft-icon w-full text-base"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-ink-400 text-lg"></i>
+                  <i className="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400 text-base pointer-events-none" aria-hidden="true"></i>
                   {searchTerm && (
                     <button
                       onClick={() => setSearchTerm('')}

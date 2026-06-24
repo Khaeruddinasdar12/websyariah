@@ -957,9 +957,15 @@ span.flatpickr-weekday,
   .input-soft {
     border: 1px solid rgba(var(--color-primary-rgb), 0.15);
     border-radius: 0.75rem;
-    padding: 0.625rem 1rem;
     transition: all 0.2s ease;
     background: white;
+  }
+
+  .input-soft-icon {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-right: 1rem;
+    padding-left: 2.75rem;
   }
   
   .input-soft:focus {

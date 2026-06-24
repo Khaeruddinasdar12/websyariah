@@ -290,13 +290,13 @@ export default function DosenPage() {
   const currentDosen = filteredDosen.slice(startIndex, endIndex);
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-outfit">
+    <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
       {/* Page Header */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">{t('lecturers.title')}</h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-ink-900 mb-4">{t('lecturers.title')}</h1>
+            <p className="text-lg text-ink-600 max-w-2xl mx-auto">
               {t('lecturers.description')}
             </p>
           </div>
@@ -310,7 +310,7 @@ export default function DosenPage() {
             <div className="bg-white card-soft p-6 mb-6">
               {/* Search Form */}
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-ink-800 mb-2">
                   <i className="fas fa-search mr-2 text-primary"></i>
                   {t('lecturers.search')}
                 </label>
@@ -322,18 +322,18 @@ export default function DosenPage() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-ink-400 text-lg"></i>
                   {searchTerm && (
                     <button
                       onClick={() => setSearchTerm('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-ink-400 hover:text-ink-600 transition-colors"
                     >
                       <i className="fas fa-times"></i>
                     </button>
                   )}
                 </div>
                 {searchTerm && (
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-sm text-ink-500">
                     {t('lecturers.showingResults', { count: filteredDosen.length, term: searchTerm })}
                   </p>
                 )}
@@ -341,7 +341,7 @@ export default function DosenPage() {
               
               {/* Program Studi Filter */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                <label className="block text-sm font-semibold text-ink-800 mb-3">
                   <i className="fas fa-filter mr-2 text-primary"></i>
                   {t('lecturers.filterProgram')}
                 </label>
@@ -352,7 +352,7 @@ export default function DosenPage() {
                       className={`whitespace-nowrap text-sm font-medium transition-all duration-200 rounded-xl px-5 py-2.5 ${
                         selectedProgram === program
                           ? 'text-white shadow-lg transform scale-105'
-                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary'
+                          : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary'
                       }`}
                       style={selectedProgram === program ? {
                         background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
@@ -372,7 +372,7 @@ export default function DosenPage() {
           {loading && (
             <div className="text-center py-12">
               <i className="fas fa-spinner fa-spin text-4xl text-primary mb-4"></i>
-              <p className="text-gray-600">{t('lecturers.loading')}</p>
+              <p className="text-ink-600">{t('lecturers.loading')}</p>
             </div>
           )}
 
@@ -380,8 +380,8 @@ export default function DosenPage() {
           {error && !loading && (
             <div className="text-center py-12">
               <i className="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('lecturers.error')}</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
+              <h3 className="text-xl font-semibold text-ink-800 mb-2">{t('lecturers.error')}</h3>
+              <p className="text-ink-600 mb-4">{error}</p>
             </div>
           )}
           
@@ -390,10 +390,10 @@ export default function DosenPage() {
             <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {currentDosen.map((item) => (
-                <div key={item.id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 card-hover">
+                <div key={item.id} className="bg-white rounded-xl shadow-lg border border-ink-100 overflow-hidden group hover:shadow-xl transition-all duration-300 card-hover">
                   <div className="p-6">
                     <div className="flex flex-col items-center mb-5">
-                      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-4 mx-auto shadow-lg border-2" style={{borderColor: 'rgba(134, 176, 189, 0.3)'}}>
+                      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-4 mx-auto shadow-lg border-2" style={{borderColor: 'rgba(var(--color-primary-rgb), 0.3)'}}>
                         <Image
                           src={item.imageUrl}
                           alt={item.name}
@@ -407,35 +407,35 @@ export default function DosenPage() {
                             if (nextSibling) nextSibling.style.display = 'flex';
                           }}
                         />
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200" style={{display: 'none'}}>
-                          <i className="fas fa-user-tie text-3xl" style={{color: 'rgba(134, 176, 189, 0.6)'}}></i>
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-ink-50 to-ink-100" style={{display: 'none'}}>
+                          <i className="fas fa-user-tie text-3xl" style={{color: 'rgba(var(--color-primary-rgb), 0.6)'}}></i>
                         </div>
                       </div>
-                      <h3 className="text-lg font-bold text-gray-800 text-center mb-1">{item.name}</h3>
+                      <h3 className="text-lg font-bold text-ink-900 text-center mb-1">{item.name}</h3>
                       <p className="font-semibold text-center mb-1" style={{color: 'var(--color-primary)', fontSize: '0.875rem'}}>{item.position}</p>
-                      <p className="text-gray-500 text-xs text-center">{item.studyProgram}</p>
+                      <p className="text-ink-500 text-xs text-center">{item.studyProgram}</p>
                     </div>
                     
-                    <div className="border-t border-gray-100 pt-4">
+                    <div className="border-t border-ink-100 pt-4">
                       {item.pendidikan && (
                         <div className="mb-4">
-                          <h4 className="font-semibold text-gray-800 mb-2 text-sm flex items-center">
+                          <h4 className="font-semibold text-ink-900 mb-2 text-sm flex items-center">
                             <i className="fas fa-graduation-cap mr-2 text-primary text-xs"></i>
                             {t('lecturers.education')}
                           </h4>
-                          <p className="text-gray-600 text-sm leading-relaxed">{item.pendidikan}</p>
+                          <p className="text-ink-600 text-sm leading-relaxed">{item.pendidikan}</p>
                         </div>
                       )}
                       
                       {item.expertise.length > 0 && (
                         <div>
-                          <h4 className="font-semibold text-gray-800 mb-3 text-sm flex items-center">
+                          <h4 className="font-semibold text-ink-900 mb-3 text-sm flex items-center">
                             <i className="fas fa-star mr-2 text-primary text-xs"></i>
                             {t('lecturers.expertise')}
                           </h4>
                           <div className="flex flex-wrap gap-2">
                             {item.expertise.map((skill, index) => (
-                              <span key={index} className="px-2.5 py-1 text-xs rounded-lg font-medium" style={{backgroundColor: 'rgba(134, 176, 189, 0.12)', color: 'var(--color-primary)', border: '1px solid rgba(134, 176, 189, 0.2)'}}>
+                              <span key={index} className="px-2.5 py-1 text-xs rounded-lg font-medium" style={{backgroundColor: 'rgba(var(--color-primary-rgb), 0.12)', color: 'var(--color-primary)', border: '1px solid rgba(var(--color-primary-rgb), 0.2)'}}>
                                 {skill}
                               </span>
                             ))}
@@ -452,7 +452,7 @@ export default function DosenPage() {
             {totalPages > 1 && (
               <div className="mt-12">
                 <div className="flex flex-col items-center gap-4">
-                  <div className="text-sm text-gray-600 mb-2">
+                  <div className="text-sm text-ink-600 mb-2">
                     {t('lecturers.showingPage', { start: startIndex + 1, end: Math.min(endIndex, filteredDosen.length), total: filteredDosen.length })}
                   </div>
                   
@@ -462,8 +462,8 @@ export default function DosenPage() {
                       disabled={currentPage === 1}
                       className={`inline-flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                         currentPage === 1
-                          ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400'
-                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary hover:shadow-md'
+                          ? 'opacity-50 cursor-not-allowed bg-ink-100 text-ink-400'
+                          : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
                       }`}
                     >
                       <i className="fas fa-chevron-left mr-2"></i>
@@ -484,7 +484,7 @@ export default function DosenPage() {
                               className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${
                                 currentPage === page
                                   ? 'text-white shadow-lg transform scale-105'
-                                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary'
+                                  : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary'
                               }`}
                               style={currentPage === page ? {
                                 background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
@@ -499,7 +499,7 @@ export default function DosenPage() {
                           page === currentPage + 2
                         ) {
                           return (
-                            <span key={page} className="w-10 h-10 flex items-center justify-center text-gray-400 font-medium">
+                            <span key={page} className="w-10 h-10 flex items-center justify-center text-ink-400 font-medium">
                               ...
                             </span>
                           );
@@ -513,8 +513,8 @@ export default function DosenPage() {
                       disabled={currentPage === totalPages}
                       className={`inline-flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                         currentPage === totalPages
-                          ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400'
-                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary hover:shadow-md'
+                          ? 'opacity-50 cursor-not-allowed bg-ink-100 text-ink-400'
+                          : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
                       }`}
                     >
                       {t('lecturers.next')}
@@ -527,9 +527,9 @@ export default function DosenPage() {
             </>
           ) : !loading && !error ? (
             <div className="text-center py-12">
-              <i className="fas fa-user-tie text-4xl text-gray-300 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('lecturers.noResults')}</h3>
-              <p className="text-gray-600">{t('lecturers.noResultsDescription')}</p>
+              <i className="fas fa-user-tie text-4xl text-ink-300 mb-4"></i>
+              <h3 className="text-xl font-semibold text-ink-800 mb-2">{t('lecturers.noResults')}</h3>
+              <p className="text-ink-600">{t('lecturers.noResultsDescription')}</p>
             </div>
           ) : null}
           </div>

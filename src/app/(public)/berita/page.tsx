@@ -99,7 +99,7 @@ function BeritaCard({ item, capitalizeFirst, t }: { item: BeritaDisplay; capital
 
   return (
     <article className="card-soft overflow-hidden">
-      <div className="h-48 relative bg-gray-200">
+      <div className="h-48 relative bg-ink-100">
         {hasImage ? (
           <Image
             src={item.imageUrl}
@@ -113,23 +113,23 @@ function BeritaCard({ item, capitalizeFirst, t }: { item: BeritaDisplay; capital
             }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+          <div className="w-full h-full flex items-center justify-center bg-ink-100 text-ink-400">
             <i className="fas fa-image text-4xl"></i>
           </div>
         )}
         <div className="absolute top-4 right-4">
-          <span className="bg-white/95 backdrop-blur-sm text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg border-2" style={{color: 'var(--color-primary)', borderColor: 'rgba(134, 176, 189, 0.3)'}}>
+          <span className="bg-white/95 backdrop-blur-sm text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg border-2" style={{color: 'var(--color-primary)', borderColor: 'rgba(var(--color-primary-rgb), 0.3)'}}>
             {capitalizeFirst(item.category)}
           </span>
         </div>
       </div>
       <div className="p-6">
-        <div className="flex items-center text-gray-500 text-sm mb-3">
+        <div className="flex items-center text-ink-500 text-sm mb-3">
           <i className="fas fa-calendar-alt mr-2"></i>
           <span>{item.date}</span>
         </div>
-        <h3 className="text-xl font-bold text-gray-800 mb-3">{item.title}</h3>
-        <p className="text-gray-600 mb-4">{item.excerpt}</p>
+        <h3 className="text-xl font-bold text-ink-900 mb-3">{item.title}</h3>
+        <p className="text-ink-600 mb-4">{item.excerpt}</p>
         <Link href={`/berita/${item.slug}`} className="text-primary hover:opacity-80 font-semibold inline-flex items-center transition-colors group">
           {t('news.readMore')} <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
         </Link>
@@ -444,13 +444,13 @@ export default function BeritaPage() {
   const currentBerita = filteredBerita.slice(startIndex, endIndex);
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-outfit">
+    <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
       {/* Page Header */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">{t('news.titlePage')}</h1>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto ">
+            <h1 className="text-3xl md:text-4xl font-bold text-ink-900 mb-4">{t('news.titlePage')}</h1>
+            <p className="text-lg text-ink-800 max-w-2xl mx-auto ">
               {t('news.description')}
             </p>
           </div>
@@ -464,7 +464,7 @@ export default function BeritaPage() {
             <div className="bg-white card-soft p-6 mb-6">
               {/* Search Form */}
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-ink-800 mb-2">
                   <i className="fas fa-search mr-2 text-primary"></i>
                   {t('news.search')}
                 </label>
@@ -476,18 +476,18 @@ export default function BeritaPage() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-ink-400 text-lg"></i>
                   {searchTerm && (
                     <button
                       onClick={() => setSearchTerm('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-ink-400 hover:text-ink-600 transition-colors"
                     >
                       <i className="fas fa-times"></i>
                     </button>
                   )}
                 </div>
                 {searchTerm && (
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-sm text-ink-500">
                     {t('news.showingResults', { count: filteredBerita.length, term: searchTerm })}
                   </p>
                 )}
@@ -495,7 +495,7 @@ export default function BeritaPage() {
               
               {/* Category Filter */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                <label className="block text-sm font-semibold text-ink-800 mb-3">
                   <i className="fas fa-filter mr-2 text-primary"></i>
                   {t('news.filterCategory')}
                 </label>
@@ -506,7 +506,7 @@ export default function BeritaPage() {
                       className={`whitespace-nowrap text-sm font-medium transition-all duration-200 rounded-xl px-5 py-2.5 ${
                         selectedCategory === category
                           ? 'text-white shadow-lg transform scale-105'
-                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary'
+                          : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary'
                       }`}
                       style={selectedCategory === category ? {
                         background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
@@ -526,7 +526,7 @@ export default function BeritaPage() {
           {loading && (
             <div className="text-center py-12">
               <i className="fas fa-spinner fa-spin text-4xl text-sage-green mb-4"></i>
-              <p className="text-gray-600">{t('news.loading')}</p>
+              <p className="text-ink-600">{t('news.loading')}</p>
             </div>
           )}
 
@@ -534,11 +534,11 @@ export default function BeritaPage() {
           {error && !loading && (
             <div className="text-center py-12">
               <i className="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('news.error')}</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
-              <div className="mt-4 p-4 bg-gray-100 rounded-lg text-left max-w-2xl mx-auto">
-                <p className="text-sm text-gray-700 mb-2"><strong>Tips untuk memperbaiki:</strong></p>
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+              <h3 className="text-xl font-semibold text-ink-800 mb-2">{t('news.error')}</h3>
+              <p className="text-ink-600 mb-4">{error}</p>
+              <div className="mt-4 p-4 bg-ink-100 rounded-lg text-left max-w-2xl mx-auto">
+                <p className="text-sm text-ink-800 mb-2"><strong>Tips untuk memperbaiki:</strong></p>
+                <ul className="text-sm text-ink-600 space-y-1 list-disc list-inside">
                   <li>Pastikan file .env.local ada di root project</li>
                   <li>Pastikan NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY sudah diisi</li>
                   <li>Restart development server setelah mengubah .env.local</li>
@@ -563,7 +563,7 @@ export default function BeritaPage() {
             {totalPages > 1 && (
               <div className="mt-12">
                 <div className="flex flex-col items-center gap-4">
-                  <div className="text-sm text-gray-600 mb-2">
+                  <div className="text-sm text-ink-600 mb-2">
                     {t('news.showingPage', { start: startIndex + 1, end: Math.min(endIndex, filteredBerita.length), total: filteredBerita.length })}
                   </div>
                   
@@ -573,8 +573,8 @@ export default function BeritaPage() {
                       disabled={currentPage === 1}
                       className={`inline-flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                         currentPage === 1
-                          ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400'
-                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary hover:shadow-md'
+                          ? 'opacity-50 cursor-not-allowed bg-ink-100 text-ink-400'
+                          : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
                       }`}
                     >
                       <i className="fas fa-chevron-left mr-2"></i>
@@ -595,7 +595,7 @@ export default function BeritaPage() {
                               className={`w-10 h-10 rounded-xl font-medium transition-all duration-200 ${
                                 currentPage === page
                                   ? 'text-white shadow-lg transform scale-105'
-                                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary'
+                                  : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary'
                               }`}
                               style={currentPage === page ? {
                                 background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
@@ -610,7 +610,7 @@ export default function BeritaPage() {
                           page === currentPage + 2
                         ) {
                           return (
-                            <span key={page} className="w-10 h-10 flex items-center justify-center text-gray-400 font-medium">
+                            <span key={page} className="w-10 h-10 flex items-center justify-center text-ink-400 font-medium">
                               ...
                             </span>
                           );
@@ -624,8 +624,8 @@ export default function BeritaPage() {
                       disabled={currentPage === totalPages}
                       className={`inline-flex items-center px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                         currentPage === totalPages
-                          ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400'
-                          : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-primary hover:text-primary hover:shadow-md'
+                          ? 'opacity-50 cursor-not-allowed bg-ink-100 text-ink-400'
+                          : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
                       }`}
                     >
                       {t('news.next')}
@@ -638,9 +638,9 @@ export default function BeritaPage() {
             </>
           ) : !loading && !error ? (
             <div className="text-center py-12">
-              <i className="fas fa-search text-4xl text-gray-300 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('news.noResults')}</h3>
-              <p className="text-gray-600">{t('news.noResultsDescription')}</p>
+              <i className="fas fa-search text-4xl text-ink-300 mb-4"></i>
+              <h3 className="text-xl font-semibold text-ink-800 mb-2">{t('news.noResults')}</h3>
+              <p className="text-ink-600">{t('news.noResultsDescription')}</p>
             </div>
           ) : null}
           </div>

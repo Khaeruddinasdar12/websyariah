@@ -8,8 +8,9 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
-import { TrashBinIcon, PencilIcon } from '@/icons';
-import { renderIcon } from '@/utils/renderIcon';
+import AdminTableActions from '@/components/admin/AdminTableActions';
+import Icon from '@/components/ui/icon/Icon';
+import { FileIcon } from '@/icons';
 import { useRouter } from 'next/navigation';
 
 interface Pengumuman {
@@ -153,9 +154,9 @@ export default function PengumumanPage() {
                           href={item.file}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="inline-flex items-center gap-2 text-blue-600 hover:underline"
                         >
-                          <i className="fas fa-file mr-2"></i>
+                          <Icon icon={FileIcon} className="w-4 h-4" />
                           Lihat File
                         </a>
                       ) : (
@@ -168,32 +169,12 @@ export default function PengumumanPage() {
                         : '-'}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-2 items-center">
-                        <button
-                          onClick={() => handleEdit(item)}
-                          className="flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors min-w-[32px] min-h-[32px]"
-                          title="Edit"
-                          aria-label="Edit pengumuman"
-                        >
-                          {renderIcon(PencilIcon, "w-4 h-4") || (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          )}
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id!)}
-                          className="flex items-center justify-center p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors min-w-[32px] min-h-[32px]"
-                          title="Hapus"
-                          aria-label="Hapus pengumuman"
-                        >
-                          {renderIcon(TrashBinIcon, "w-4 h-4") || (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          )}
-                        </button>
-                      </div>
+                      <AdminTableActions
+                        onEdit={() => handleEdit(item)}
+                        onDelete={() => handleDelete(item.id!)}
+                        editLabel="Edit pengumuman"
+                        deleteLabel="Hapus pengumuman"
+                      />
                     </td>
                   </tr>
                 ))

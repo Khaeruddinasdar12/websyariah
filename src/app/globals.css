@@ -178,12 +178,26 @@
 
   --color-theme-purple-500: #7a5af8;
 
-  /* Custom Colors for Tailwind */
-  --color-sage-green: #86B0BD;
-  --color-soft-green: #A8C8D3;
-  --color-gold: #f59e0b;
-  --color-deep-blue: #1e40af;
-  --color-warm-gray: #f8fafc;
+  /* Islamic Modern Palette */
+  --color-sage-green: #1B7A6A;
+  --color-soft-green: #2D9B88;
+  --color-gold: #C9A227;
+  --color-gold-light: #E8C547;
+  --color-deep-blue: #0D4A42;
+  --color-warm-gray: #f4fbf9;
+  --color-cream: #fffdf8;
+  --color-cream-warm: #fff9f0;
+
+  --color-ink-50: #f4fbf9;
+  --color-ink-100: #e0f5f0;
+  --color-ink-200: #b8e0d8;
+  --color-ink-300: #7ec4b8;
+  --color-ink-400: #4da89a;
+  --color-ink-500: #2d8779;
+  --color-ink-600: #1f6b60;
+  --color-ink-700: #185850;
+  --color-ink-800: #124540;
+  --color-ink-900: #0a2e28;
 
   --shadow-theme-md:
     0px 4px 8px -2px rgba(16, 24, 40, 0.1),
@@ -865,9 +879,9 @@ span.flatpickr-weekday,
   
   /* Soft Button Styles ala React.dev */
   .btn-soft-primary {
-    background-color: rgba(134, 176, 189, 0.1);
+    background-color: rgba(var(--color-primary-rgb), 0.1);
     color: var(--color-primary);
-    border: 1px solid rgba(134, 176, 189, 0.2);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.2);
     border-radius: 0.75rem;
     padding: 0.625rem 1.25rem;
     font-weight: 500;
@@ -876,8 +890,8 @@ span.flatpickr-weekday,
   }
   
   .btn-soft-primary:hover {
-    background-color: rgba(134, 176, 189, 0.15);
-    border-color: rgba(134, 176, 189, 0.3);
+    background-color: rgba(var(--color-primary-rgb), 0.15);
+    border-color: rgba(var(--color-primary-rgb), 0.3);
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   }
   
@@ -885,7 +899,7 @@ span.flatpickr-weekday,
     background-color: var(--color-primary);
     color: white;
     border-color: var(--color-primary);
-    box-shadow: 0 1px 3px 0 rgba(134, 176, 189, 0.2);
+    box-shadow: 0 1px 3px 0 rgba(var(--color-primary-rgb), 0.2);
   }
   
   .btn-soft-primary-active:hover {
@@ -901,20 +915,20 @@ span.flatpickr-weekday,
     padding: 0.75rem 1.5rem;
     font-weight: 500;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 2px 0 rgba(134, 176, 189, 0.2);
+    box-shadow: 0 1px 2px 0 rgba(var(--color-primary-rgb), 0.2);
   }
   
   .btn-soft-filled:hover {
     background-color: var(--color-primary-dark);
     border-color: var(--color-primary-dark);
-    box-shadow: 0 2px 4px 0 rgba(134, 176, 189, 0.3);
+    box-shadow: 0 2px 4px 0 rgba(var(--color-primary-rgb), 0.3);
     transform: translateY(-1px);
   }
   
   .btn-soft-outline {
     background-color: transparent;
     color: var(--color-primary);
-    border: 1.5px solid rgba(134, 176, 189, 0.3);
+    border: 1.5px solid rgba(var(--color-primary-rgb), 0.3);
     border-radius: 0.75rem;
     padding: 0.75rem 1.5rem;
     font-weight: 500;
@@ -922,14 +936,14 @@ span.flatpickr-weekday,
   }
   
   .btn-soft-outline:hover {
-    background-color: rgba(134, 176, 189, 0.08);
+    background-color: rgba(var(--color-primary-rgb), 0.08);
     border-color: var(--color-primary);
     color: var(--color-primary-dark);
   }
   
   .card-soft {
     background: white;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.08);
     border-radius: 1rem;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
@@ -937,11 +951,11 @@ span.flatpickr-weekday,
   
   .card-soft:hover {
     box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
-    border-color: rgba(134, 176, 189, 0.2);
+    border-color: rgba(var(--color-primary-rgb), 0.2);
   }
   
   .input-soft {
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.15);
     border-radius: 0.75rem;
     padding: 0.625rem 1rem;
     transition: all 0.2s ease;
@@ -951,7 +965,7 @@ span.flatpickr-weekday,
   .input-soft:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(134, 176, 189, 0.1);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
   }
   
   .news-image:hover {
@@ -1017,24 +1031,40 @@ span.flatpickr-weekday,
 
 @layer base {
   :root {
-    /* Primary Color - Base color yang bisa diganti */
-    --color-primary: #86B0BD; /* Base color utama */
-    --color-primary-light: #A8C8D3; /* Warna lebih terang untuk gradients */
-    --color-primary-dark: #6B8F9A; /* Warna lebih gelap untuk hover */
-    
-    /* Alias untuk kompatibilitas */
+    /* Primary — Teal Islam Modern */
+    --color-primary: #1B7A6A;
+    --color-primary-light: #2D9B88;
+    --color-primary-dark: #145A4E;
+    --color-primary-rgb: 27, 122, 106;
+    --color-primary-light-rgb: 45, 155, 136;
+
+    /* Alias */
     --color-sage-green: var(--color-primary);
     --color-soft-green: var(--color-primary-light);
-    
-    /* Accent Colors */
-    --color-gold: #f59e0b;
-    --color-deep-blue: #1e40af;
+
+    /* Accent */
+    --color-gold: #C9A227;
+    --color-gold-light: #E8C547;
+    --color-deep-blue: #0D4A42;
     --color-soft-white: #ffffff;
-    --color-warm-gray: #f8fafc;
-    
-    /* Program Studi Colors - More visible but still soft */
-    --color-orange-soft: #fb923c; /* orange-400 - visible orange */
-    --color-blue-soft: #60a5fa; /* blue-400 - visible blue */
-    --color-green-soft: var(--color-primary); /* menggunakan primary color */
+    --color-warm-gray: #f4fbf9;
+    --color-cream: #fffdf8;
+
+    /* Teks — nuansa teal, bukan abu-abu */
+    --color-ink-50: #f4fbf9;
+    --color-ink-100: #e0f5f0;
+    --color-ink-200: #b8e0d8;
+    --color-ink-300: #7ec4b8;
+    --color-ink-400: #4da89a;
+    --color-ink-500: #2d8779;
+    --color-ink-600: #1f6b60;
+    --color-ink-700: #185850;
+    --color-ink-800: #124540;
+    --color-ink-900: #0a2e28;
+
+    /* Program Studi */
+    --color-orange-soft: #e07b39;
+    --color-blue-soft: #2b7a9e;
+    --color-green-soft: var(--color-primary);
   }
 }

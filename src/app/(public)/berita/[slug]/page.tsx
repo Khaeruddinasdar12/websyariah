@@ -118,10 +118,10 @@ export default function BeritaDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-ink-50">
         <div className="text-center">
           <i className="fas fa-spinner fa-spin text-4xl text-sage-green mb-4"></i>
-          <p className="text-gray-600">{t('news.loading')}</p>
+          <p className="text-ink-600">{t('news.loading')}</p>
         </div>
       </div>
     );
@@ -129,11 +129,11 @@ export default function BeritaDetailPage() {
 
   if (error || !berita) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-ink-50">
         <div className="text-center max-w-md mx-auto px-4">
           <i className="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">{t('news.noNews')}</h2>
-          <p className="text-gray-600 mb-6">{error || t('news.noNews')}</p>
+          <h2 className="text-2xl font-bold text-ink-900 mb-2">{t('news.noNews')}</h2>
+          <p className="text-ink-600 mb-6">{error || t('news.noNews')}</p>
           <Link
             href="/berita"
             className="inline-block bg-gradient-to-r from-sage-green to-soft-green text-white px-6 py-3 rounded-lg hover:from-emerald-600 hover:to-emerald-500 transition-all duration-300 font-medium shadow-md hover:shadow-lg"
@@ -147,23 +147,23 @@ export default function BeritaDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-outfit">
+    <div className="min-h-screen bg-ink-50 text-ink-900 font-outfit">
       {/* Header */}
       <div className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/berita"
-            className="inline-flex items-center text-gray-700 hover:text-primary transition-colors font-medium mb-4 text-base"
+            className="inline-flex items-center text-ink-800 hover:text-primary transition-colors font-medium mb-4 text-base"
           >
             <i className="fas fa-arrow-left mr-2"></i>
             {t('news.backToNews')}
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-            <div className="flex items-center text-gray-600 text-sm">
+            <div className="flex items-center text-ink-600 text-sm">
               <i className="fas fa-calendar-alt mr-2"></i>
               <span>{formatDate(berita.created_at)}</span>
             </div>
-            <span className="hidden sm:inline text-gray-400">•</span>
+            <span className="hidden sm:inline text-ink-400">•</span>
             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-primary/10 text-primary">
               {getLocalizedCategory(berita)}
             </span>
@@ -174,7 +174,7 @@ export default function BeritaDetailPage() {
       {/* Content */}
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">{getLocalizedTitle(berita)}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-ink-900 mb-6">{getLocalizedTitle(berita)}</h1>
 
         {/* Featured Image */}
         {berita.gambar && (
@@ -191,7 +191,7 @@ export default function BeritaDetailPage() {
                 if (nextSibling) nextSibling.style.display = 'flex';
               }}
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100" style={{ display: 'none' }}>
+            <div className="absolute inset-0 flex items-center justify-center bg-ink-100" style={{ display: 'none' }}>
               <i className="fas fa-image text-4xl text-sage-green/50"></i>
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function BeritaDetailPage() {
         {/* Content */}
         <div className="prose prose-lg max-w-none">
           <div 
-            className="text-gray-700 leading-relaxed berita-content"
+            className="text-ink-800 leading-relaxed berita-content"
             dangerouslySetInnerHTML={{ __html: getLocalizedContent(berita) }}
           />
         </div>
@@ -300,10 +300,10 @@ export default function BeritaDetailPage() {
         `}</style>
 
         {/* Share Section */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        <div className="mt-12 pt-8 border-t border-ink-200">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className="text-gray-600 font-medium">{t('news.share')}:</span>
+              <span className="text-ink-600 font-medium">{t('news.share')}:</span>
               <div className="flex gap-3">
                 <a
                   href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}

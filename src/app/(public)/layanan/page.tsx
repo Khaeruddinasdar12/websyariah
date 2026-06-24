@@ -59,13 +59,13 @@ export default function LayananPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-outfit">
+    <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
       {/* Hero Section */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-500 mb-4">{t('services.title')}</h1>
-            <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('services.title')}</h1>
+            <p className="text-xl text-ink-500 max-w-2xl mx-auto">
               {t('services.subtitle')}
             </p>
           </div>
@@ -82,16 +82,16 @@ export default function LayananPage() {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-6 rounded-lg border border-gray-200 hover:border-primary hover:shadow-lg transition-all duration-300 group bg-white"
+                className="p-6 rounded-lg border border-ink-200 hover:border-primary hover:shadow-lg transition-all duration-300 group bg-white"
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors duration-300 group-hover:scale-110">
                     <i className={`fas ${item.icon} text-2xl`} style={{color: 'var(--color-primary)'}}></i>
                   </div>
-                  <h3 className="font-semibold text-base text-gray-800 mb-2 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="font-semibold text-base text-ink-900 mb-2 group-hover:text-primary transition-colors duration-300">
                     {item.name}
                   </h3>
-                  <p className="text-sm text-gray-600 leading-tight">
+                  <p className="text-sm text-ink-600 leading-tight">
                     {item.description}
                   </p>
                 </div>

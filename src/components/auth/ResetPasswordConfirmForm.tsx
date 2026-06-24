@@ -7,18 +7,22 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { renderIcon } from "@/utils/renderIcon";
+import { updatePasswordAction } from "@/app/(full-width-pages)/(auth)/reset-password/confirm/actions";
 
 function cleanupAuthUrl() {
   window.history.replaceState(null, "", window.location.pathname);
 }
 
-async function hasActiveSession(): Promise<boolean> {
-  const { data: { session } } = await supabase.auth.getSession();
-  return !!session;
+async function hasActiveUser(): Promise<boolean> {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  return !!user && !error;
 }
 
 async function establishRecoverySession(): Promise<boolean> {
-  if (await hasActiveSession()) {
+  if (await hasActiveUser()) {
     cleanupAuthUrl();
     return true;
   }
@@ -30,12 +34,11 @@ async function establishRecoverySession(): Promise<boolean> {
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error && (await hasActiveSession())) {
+    if (!error && (await hasActiveUser())) {
       cleanupAuthUrl();
       return true;
     }
-    // Code may have been exchanged already by another listener
-    if (await hasActiveSession()) {
+    if (await hasActiveUser()) {
       cleanupAuthUrl();
       return true;
     }
@@ -73,7 +76,15 @@ async function establishRecoverySession(): Promise<boolean> {
     }
   }
 
-  return hasActiveSession();
+  // After /auth/callback redirect, session lives in HTTP cookies — refresh to sync client
+  const { data: refreshData, error: refreshError } =
+    await supabase.auth.refreshSession();
+  if (!refreshError && refreshData.session && (await hasActiveUser())) {
+    cleanupAuthUrl();
+    return true;
+  }
+
+  return hasActiveUser();
 }
 
 export default function ResetPasswordConfirmForm() {
@@ -91,14 +102,9 @@ export default function ResetPasswordConfirmForm() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (!active) return;
-        if (
-          session &&
-          (event === "PASSWORD_RECOVERY" ||
-            event === "SIGNED_IN" ||
-            event === "INITIAL_SESSION" ||
-            event === "TOKEN_REFRESHED")
-        ) {
+        if (!active || !session) return;
+
+        if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
           setIsValidToken(true);
           cleanupAuthUrl();
         }
@@ -106,8 +112,8 @@ export default function ResetPasswordConfirmForm() {
     );
 
     const init = async () => {
-      // Allow Supabase client and auth/callback cookies to settle
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Allow /auth/callback cookies and Supabase client to settle
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
       if (!active) return;
 
@@ -119,7 +125,7 @@ export default function ResetPasswordConfirmForm() {
       } else {
         setIsValidToken(false);
         setError(
-          "Link reset password tidak valid atau sudah kadaluarsa. Silakan request reset password baru."
+          "Link reset password tidak valid atau sudah kadaluarsa. Silakan request reset password baru. Jika Anda baru membuka email, tunggu beberapa detik lalu refresh halaman — beberapa aplikasi email membuka link secara otomatis dan membuat link menjadi tidak valid."
         );
       }
     };
@@ -155,34 +161,26 @@ export default function ResetPasswordConfirmForm() {
     setLoading(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Re-sync session from cookies before server action
+      await supabase.auth.refreshSession();
 
-      if (!session) {
-        setError(
-          "Sesi reset password tidak ditemukan. Silakan buka ulang link dari email Anda."
-        );
-        setLoading(false);
-        return;
-      }
+      const result = await updatePasswordAction(password, confirmPassword);
 
-      const { error: updateError } = await supabase.auth.updateUser({
-        password,
-      });
-
-      if (updateError) {
-        setError(updateError.message || "Gagal mengubah password");
+      if (result.error) {
+        setError(result.error);
         setLoading(false);
         return;
       }
 
       setSuccess(true);
-      await supabase.auth.signOut();
       setTimeout(() => {
         window.location.href = "/signin?reset=success";
       }, 2000);
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Terjadi kesalahan saat mengubah password";
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat mengubah password";
       setError(message);
       setLoading(false);
     }
@@ -263,7 +261,8 @@ export default function ResetPasswordConfirmForm() {
                   Password Berhasil Diubah!
                 </h3>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  Password Anda telah berhasil diubah. Anda akan diarahkan ke halaman masuk...
+                  Password Anda telah berhasil diubah. Anda akan diarahkan ke
+                  halaman masuk...
                 </p>
               </div>
             ) : (
@@ -295,14 +294,18 @@ export default function ResetPasswordConfirmForm() {
                         {showPassword ? (
                           renderIcon(EyeIcon, "fill-gray-500 dark:fill-gray-400")
                         ) : (
-                          renderIcon(EyeCloseIcon, "fill-gray-500 dark:fill-gray-400")
+                          renderIcon(
+                            EyeCloseIcon,
+                            "fill-gray-500 dark:fill-gray-400"
+                          )
                         )}
                       </span>
                     </div>
                   </div>
                   <div>
                     <Label>
-                      Konfirmasi Password Baru <span className="text-error-500">*</span>
+                      Konfirmasi Password Baru{" "}
+                      <span className="text-error-500">*</span>
                     </Label>
                     <div className="relative">
                       <Input
@@ -315,19 +318,29 @@ export default function ResetPasswordConfirmForm() {
                         minLength={6}
                       />
                       <span
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
                         className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
                       >
                         {showConfirmPassword ? (
                           renderIcon(EyeIcon, "fill-gray-500 dark:fill-gray-400")
                         ) : (
-                          renderIcon(EyeCloseIcon, "fill-gray-500 dark:fill-gray-400")
+                          renderIcon(
+                            EyeCloseIcon,
+                            "fill-gray-500 dark:fill-gray-400"
+                          )
                         )}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <Button className="w-full" size="sm" type="submit" disabled={loading}>
+                    <Button
+                      className="w-full"
+                      size="sm"
+                      type="submit"
+                      disabled={loading}
+                    >
                       {loading ? "Mengubah Password..." : "Ubah Password"}
                     </Button>
                   </div>

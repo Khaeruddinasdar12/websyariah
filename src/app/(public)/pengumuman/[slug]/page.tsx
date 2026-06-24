@@ -120,17 +120,17 @@ export default function PengumumanDetailPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-800 font-outfit">
+    <div className="min-h-screen flex flex-col bg-white text-ink-900 font-outfit">
       {/* Page Header */}
       <div className="py-12 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/pengumuman"
-            className="inline-flex items-center text-gray-700 hover:text-primary transition-colors font-medium mb-4 text-base"
+            className="inline-flex items-center text-ink-800 hover:text-primary transition-colors font-medium mb-4 text-base"
           >
             <i className="fas fa-arrow-left mr-2"></i> {t('announcements.backToAnnouncements')}
           </Link>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+          <h1 className="text-3xl md:text-4xl font-bold text-ink-900">
             {t('announcements.detail.title')}
           </h1>
         </div>
@@ -142,7 +142,7 @@ export default function PengumumanDetailPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center py-12">
               <i className="fas fa-spinner fa-spin text-4xl text-primary mb-4"></i>
-              <p className="text-gray-600">{t('announcements.loading')}</p>
+              <p className="text-ink-600">{t('announcements.loading')}</p>
             </div>
           </div>
         </div>
@@ -154,8 +154,8 @@ export default function PengumumanDetailPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center py-12">
               <i className="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('announcements.error')}</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
+              <h3 className="text-xl font-semibold text-ink-800 mb-2">{t('announcements.error')}</h3>
+              <p className="text-ink-600 mb-4">{error}</p>
               <Link href="/pengumuman" className="btn-soft-filled inline-flex items-center">
                 <i className="fas fa-arrow-left mr-2"></i>
                 {t('announcements.backToAnnouncements')}
@@ -171,18 +171,18 @@ export default function PengumumanDetailPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <article className="card-soft p-8">
               {/* Header */}
-              <div className="mb-6 pb-6 border-b border-gray-200">
+              <div className="mb-6 pb-6 border-b border-ink-200">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
                   <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 mb-3 sm:mb-0">
                     <i className="fas fa-info-circle mr-2"></i>
                     {t('announcements.detail.badge')}
                   </span>
-                  <span className="text-sm text-gray-500 flex items-center">
+                  <span className="text-sm text-ink-500 flex items-center">
                     <i className="fas fa-calendar-alt mr-2"></i>
                     {formatDate(pengumuman.created_at)}
                   </span>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 leading-tight">
+                <h1 className="text-3xl md:text-4xl font-bold text-ink-900 mb-4 leading-tight">
                   {getLocalizedTitle(pengumuman)}
                 </h1>
               </div>
@@ -190,15 +190,15 @@ export default function PengumumanDetailPage() {
               {/* Content */}
               <div className="mb-8">
                 <div 
-                  className="text-gray-700 leading-relaxed text-lg pengumuman-content"
+                  className="text-ink-800 leading-relaxed text-lg pengumuman-content"
                   dangerouslySetInnerHTML={{ __html: getLocalizedContent(pengumuman) }}
                 />
               </div>
 
               {/* File Download/Preview */}
               {pengumuman.file && (
-                <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                <div className="mb-8 p-4 bg-ink-50 rounded-lg border border-ink-200">
+                  <h3 className="text-lg font-semibold text-ink-900 mb-3">
                     <i className="fas fa-file mr-2"></i>
                     {language === 'en' ? 'Attachment' : language === 'ar' ? 'مرفق' : 'Lampiran'}
                   </h3>
@@ -225,7 +225,7 @@ export default function PengumumanDetailPage() {
               )}
 
               {/* Share Button */}
-              <div className="pt-6 border-t border-gray-200">
+              <div className="pt-6 border-t border-ink-200">
                 <button
                   onClick={handleShare}
                   className="btn-soft-outline inline-flex items-center"

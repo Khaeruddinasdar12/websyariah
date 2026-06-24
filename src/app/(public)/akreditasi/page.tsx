@@ -30,13 +30,13 @@ export default function AkreditasiPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-outfit">
+    <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
       {/* Page Header */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-500 mb-4">{t('accreditation.title')}</h1>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('accreditation.title')}</h1>
+            <p className="text-lg text-ink-800 max-w-2xl mx-auto">
               {t('accreditation.subtitle')}
             </p>
           </div>
@@ -53,16 +53,16 @@ export default function AkreditasiPage() {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group bg-white rounded-xl shadow-lg border border-gray-200 hover:border-primary hover:shadow-xl transition-all duration-300 p-8 card-hover"
+                className="group bg-white rounded-xl shadow-lg border border-ink-200 hover:border-primary hover:shadow-xl transition-all duration-300 p-8 card-hover"
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors duration-300 group-hover:scale-110">
                     <i className={`fas ${item.icon} text-3xl`} style={{color: 'var(--color-primary)'}}></i>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-ink-900 mb-3 group-hover:text-primary transition-colors duration-300">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed mb-4">
+                  <p className="text-ink-600 leading-relaxed mb-4">
                     {item.description}
                   </p>
                   <div className="flex items-center text-primary font-medium text-sm group-hover:gap-2 transition-all">

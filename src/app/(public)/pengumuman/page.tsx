@@ -159,13 +159,13 @@ export default function PengumumanPage() {
   }, [searchTerm, pengumuman]);
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-outfit">
+    <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
       {/* Page Header */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-500 mb-4">{t('announcements.title')}</h1>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('announcements.title')}</h1>
+            <p className="text-lg text-ink-500 max-w-2xl mx-auto">
               {t('announcements.description')}
             </p>
           </div>
@@ -178,7 +178,7 @@ export default function PengumumanPage() {
           <div className="mb-8">
             <div className="bg-white card-soft p-6 mb-6">
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-ink-800 mb-2">
                   <i className="fas fa-search mr-2 text-primary"></i>
                   {t('announcements.search')}
                 </label>
@@ -190,18 +190,18 @@ export default function PengumumanPage() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                  <i className="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-ink-400 text-lg"></i>
                   {searchTerm && (
                     <button
                       onClick={() => setSearchTerm('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-ink-400 hover:text-ink-600 transition-colors"
                     >
                       <i className="fas fa-times"></i>
                     </button>
                   )}
                 </div>
                 {searchTerm && (
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-sm text-ink-500">
                     {t('announcements.showingResults', { count: filteredPengumuman.length, term: searchTerm })}
                   </p>
                 )}
@@ -213,7 +213,7 @@ export default function PengumumanPage() {
           {loading && (
             <div className="text-center py-12">
               <i className="fas fa-spinner fa-spin text-4xl text-primary mb-4"></i>
-              <p className="text-gray-600">{t('announcements.loading')}</p>
+              <p className="text-ink-600">{t('announcements.loading')}</p>
             </div>
           )}
 
@@ -221,8 +221,8 @@ export default function PengumumanPage() {
           {error && !loading && (
             <div className="text-center py-12">
               <i className="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('announcements.error')}</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
+              <h3 className="text-xl font-semibold text-ink-800 mb-2">{t('announcements.error')}</h3>
+              <p className="text-ink-600 mb-4">{error}</p>
             </div>
           )}
           
@@ -242,13 +242,13 @@ export default function PengumumanPage() {
                           <i className="fas fa-info-circle mr-1.5"></i>
                           {t('announcements.detail.badge')}
                         </span>
-                        <span className="text-sm text-gray-500 flex items-center">
+                        <span className="text-sm text-ink-500 flex items-center">
                           <i className="fas fa-calendar-alt mr-2"></i>
                           {item.date}
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold text-gray-800 mb-3 group-hover:text-primary transition-colors">{item.title}</h3>
-                      <p className="text-gray-600 mb-4 leading-relaxed">{item.excerpt}</p>
+                      <h3 className="text-lg font-bold text-ink-900 mb-3 group-hover:text-primary transition-colors">{item.title}</h3>
+                      <p className="text-ink-600 mb-4 leading-relaxed">{item.excerpt}</p>
                       <div className="flex items-center text-primary font-medium text-sm group-hover:gap-2 transition-all">
                         <span>{t('announcements.readMore')}</span>
                         <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
@@ -260,9 +260,9 @@ export default function PengumumanPage() {
             </div>
           ) : !loading && !error ? (
             <div className="text-center py-12">
-              <i className="fas fa-search text-4xl text-gray-300 mb-4"></i>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('announcements.noResults')}</h3>
-              <p className="text-gray-600">{t('announcements.noResultsDescription')}</p>
+              <i className="fas fa-search text-4xl text-ink-300 mb-4"></i>
+              <h3 className="text-xl font-semibold text-ink-800 mb-2">{t('announcements.noResults')}</h3>
+              <p className="text-ink-600">{t('announcements.noResultsDescription')}</p>
             </div>
           ) : null}
           </div>

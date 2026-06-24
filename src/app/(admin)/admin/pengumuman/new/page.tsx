@@ -13,6 +13,8 @@ import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
+import Icon from '@/components/ui/icon/Icon';
+import { FileIcon } from '@/icons';
 
 interface Pengumuman {
   id?: string;
@@ -358,9 +360,9 @@ export default function NewPengumumanPage() {
                   href={fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
+                  className="inline-flex items-center gap-2 text-blue-600 hover:underline"
                 >
-                  <i className="fas fa-file mr-2"></i>
+                  <Icon icon={FileIcon} className="w-4 h-4" />
                   Lihat File
                 </a>
               </div>

@@ -13,6 +13,8 @@ import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
+import Icon from '@/components/ui/icon/Icon';
+import { ArrowUpIcon } from '@/icons';
 import { useDropzone } from 'react-dropzone';
 
 interface Dosen {
@@ -345,7 +347,9 @@ export default function NewDosenPage() {
                 </div>
               ) : (
                 <div>
-                  <i className="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                  <div className="flex justify-center mb-2 text-gray-400">
+                    <Icon icon={ArrowUpIcon} className="w-10 h-10" />
+                  </div>
                   <p className="text-sm text-gray-600">
                     Klik atau drag gambar ke sini untuk upload
                   </p>

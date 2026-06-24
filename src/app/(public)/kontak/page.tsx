@@ -49,13 +49,13 @@ export default function KontakPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-outfit">
+    <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
       {/* Page Header */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-500 mb-4">{t('contact.title')}</h1>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('contact.title')}</h1>
+            <p className="text-lg text-ink-800 max-w-2xl mx-auto">
               {t('contact.description')}
             </p>
           </div>
@@ -68,18 +68,18 @@ export default function KontakPage() {
           <div className="grid md:grid-cols-2 gap-12">
             {/* Contact Information */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.contactInfo')}</h2>
+              <h2 className="text-2xl font-bold text-ink-900 mb-6">{t('contact.contactInfo')}</h2>
               
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-ink-100 rounded-lg flex items-center justify-center">
                       <i className="fas fa-map-marker-alt text-xl" style={{color: 'var(--color-primary)'}}></i>
                     </div>
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-800">{t('contact.address')}</h3>
-                    <p className="text-gray-600 mt-1">
+                    <h3 className="text-lg font-medium text-ink-900">{t('contact.address')}</h3>
+                    <p className="text-ink-600 mt-1">
                       {t('contact.addressValue')}
                     </p>
                   </div>
@@ -87,37 +87,37 @@ export default function KontakPage() {
                 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-ink-100 rounded-lg flex items-center justify-center">
                       <i className="fas fa-phone text-xl" style={{color: 'var(--color-primary)'}}></i>
                     </div>
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-800">{t('contact.phone')}</h3>
-                    <p className="text-gray-600 mt-1">{t('contact.phoneValue')}</p>
+                    <h3 className="text-lg font-medium text-ink-900">{t('contact.phone')}</h3>
+                    <p className="text-ink-600 mt-1">{t('contact.phoneValue')}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-ink-100 rounded-lg flex items-center justify-center">
                       <i className="fas fa-envelope text-xl" style={{color: 'var(--color-primary)'}}></i>
                     </div>
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-800">{t('contact.email')}</h3>
-                    <p className="text-gray-600 mt-1">{t('contact.emailValue')}</p>
+                    <h3 className="text-lg font-medium text-ink-900">{t('contact.email')}</h3>
+                    <p className="text-ink-600 mt-1">{t('contact.emailValue')}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-ink-100 rounded-lg flex items-center justify-center">
                       <i className="fas fa-clock text-xl" style={{color: 'var(--color-primary)'}}></i>
                     </div>
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-800">{t('contact.hours')}</h3>
-                    <p className="text-gray-600 mt-1">
+                    <h3 className="text-lg font-medium text-ink-900">{t('contact.hours')}</h3>
+                    <p className="text-ink-600 mt-1">
                       {t('contact.hoursValue')}
                     </p>
                   </div>
@@ -126,7 +126,7 @@ export default function KontakPage() {
               
               {/* Social Media */}
               <div className="mt-8">
-                <h3 className="text-lg font-medium text-gray-800 mb-4">{t('contact.followUs')}</h3>
+                <h3 className="text-lg font-medium text-ink-900 mb-4">{t('contact.followUs')}</h3>
                 <div className="flex space-x-4">
                   <a 
                     href="https://www.instagram.com/fshiiainbone" 
@@ -152,7 +152,7 @@ export default function KontakPage() {
             
             {/* Contact Form */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.location')}</h2>
+              <h2 className="text-2xl font-bold text-ink-900 mb-6">{t('contact.location')}</h2>
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div className="relative w-full" style={{paddingBottom: '56.25%', height: '450px'}}>
                   <iframe
@@ -164,7 +164,7 @@ export default function KontakPage() {
                     referrerPolicy="no-referrer-when-downgrade">
                   </iframe>
                 </div>
-                <div className="p-4 text-center bg-gray-50 border-t border-gray-200">
+                <div className="p-4 text-center bg-ink-50 border-t border-ink-200">
                   <a 
                     href="https://maps.app.goo.gl/WZQsGvr1bnosCH1k6?g_st=ipc" 
                     target="_blank" 

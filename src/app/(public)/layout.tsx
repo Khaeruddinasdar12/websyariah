@@ -14,7 +14,7 @@ export default function PublicLayout({
 }) {
   return (
     <LanguageProvider>
-      <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-outfit">
+      <div className="min-h-screen flex flex-col bg-white text-ink-900 font-outfit">
         <Navbar />
         <main className="flex-grow">
           {children}

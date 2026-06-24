@@ -72,7 +72,7 @@ export default function Navbar() {
   const titleParts = splitTitle(t('home.title'));
   
   return (
-    <nav className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200 sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-md shadow-lg border-b border-ink-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-2">
           <div className="flex items-center min-w-0 flex-1">
@@ -88,7 +88,7 @@ export default function Navbar() {
                   />
                 </div>
                 <div className="min-w-0 flex-shrink overflow-hidden">
-                  <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 leading-tight">
+                  <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-ink-900 leading-tight">
                     {titleParts.firstLine}
                     <br />
                     <span className="text-[10px] sm:text-xs md:text-sm lg:text-base">{titleParts.secondLine}</span>
@@ -112,7 +112,7 @@ export default function Navbar() {
                     >
                       <button
                         className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 relative group flex items-center ${
-                          isInfoActive ? '' : 'text-gray-700'
+                          isInfoActive ? '' : 'text-ink-800'
                         }`}
                         style={isInfoActive ? {color: 'var(--color-primary)'} : {}}
                         onMouseEnter={(e) => {
@@ -139,7 +139,7 @@ export default function Navbar() {
                       {/* Dropdown Menu */}
                       {infoDropdownOpen && (
                         <div 
-                          className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                          className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-ink-200 py-2 z-50"
                           onMouseEnter={handleInfoMouseEnter}
                           onMouseLeave={handleInfoMouseLeave}
                         >
@@ -150,7 +150,7 @@ export default function Navbar() {
                               className={`block px-4 py-2 text-sm transition-colors duration-200 ${
                                 isActive(subItem.href)
                                   ? 'text-primary bg-primary/10'
-                                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                                  : 'text-ink-800 hover:bg-ink-50 hover:text-primary'
                               }`}
                               style={isActive(subItem.href) ? {color: 'var(--color-primary)'} : {}}
                             >
@@ -170,7 +170,7 @@ export default function Navbar() {
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 relative group ${
                       isActive(item.href)
                         ? ''
-                        : 'text-gray-700'
+                        : 'text-ink-800'
                     }`}
                     style={isActive(item.href) ? {color: 'var(--color-primary)'} : {}}
                     onMouseEnter={(e) => {
@@ -200,7 +200,7 @@ export default function Navbar() {
                 href="https://iain-bone.ac.id/tur-virtual/fakultas-syariah"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 relative group text-gray-700"
+                className="px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 relative group text-ink-800"
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = 'var(--color-primary)';
                 }}
@@ -223,7 +223,7 @@ export default function Navbar() {
             <LanguageSwitcher />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-700 transition-colors duration-300"
+              className="text-ink-800 transition-colors duration-300"
               onMouseEnter={(e) => {e.currentTarget.style.color = 'var(--color-primary)';}}
               onMouseLeave={(e) => {e.currentTarget.style.color = '';}}
               onFocus={(e) => {e.currentTarget.style.color = 'var(--color-primary)';}}
@@ -252,9 +252,9 @@ export default function Navbar() {
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 ${
                           isInfoActive
                             ? 'bg-opacity-10'
-                            : 'text-gray-700 hover:bg-gray-50'
+                            : 'text-ink-800 hover:bg-ink-50'
                         }`}
-                        style={isInfoActive ? {color: 'var(--color-primary)', backgroundColor: 'rgba(134, 176, 189, 0.1)'} : {}}
+                        style={isInfoActive ? {color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)'} : {}}
                       >
                         <span>{item.name}</span>
                         <i className={`fas fa-chevron-${mobileInfoOpen ? 'up' : 'down'} text-xs ml-2`}></i>
@@ -270,9 +270,9 @@ export default function Navbar() {
                               className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
                                 isActive(subItem.href)
                                   ? 'bg-opacity-10'
-                                  : 'text-gray-600 hover:bg-gray-50'
+                                  : 'text-ink-600 hover:bg-ink-50'
                               }`}
-                              style={isActive(subItem.href) ? {color: 'var(--color-primary)', backgroundColor: 'rgba(134, 176, 189, 0.1)'} : {}}
+                              style={isActive(subItem.href) ? {color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)'} : {}}
                               onClick={() => {
                                 setMobileMenuOpen(false);
                                 setMobileInfoOpen(false);
@@ -294,9 +294,9 @@ export default function Navbar() {
                     className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 ${
                       isActive(item.href)
                         ? 'bg-opacity-10'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        : 'text-ink-800 hover:bg-ink-50'
                     }`}
-                    style={isActive(item.href) ? {color: 'var(--color-primary)', backgroundColor: 'rgba(134, 176, 189, 0.1)'} : {}}
+                    style={isActive(item.href) ? {color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)'} : {}}
                     onMouseEnter={(e) => {
                       if (!isActive(item.href)) {
                         e.currentTarget.style.color = 'var(--color-primary)';
@@ -319,7 +319,7 @@ export default function Navbar() {
                 href="https://iain-bone.ac.id/tur-virtual/fakultas-syariah"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-300"
+                className="block px-3 py-2 rounded-md text-base font-medium text-ink-800 hover:bg-ink-50 transition-colors duration-300"
                 onClick={() => setMobileMenuOpen(false)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = 'var(--color-primary)';

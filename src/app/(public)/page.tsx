@@ -171,7 +171,7 @@ export default function HomePage() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link href="/dosen" className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl font-semibold text-base transition-all duration-300 border-2 shadow-md hover:shadow-lg" style={{borderColor: 'var(--color-primary)', color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)', borderWidth: '2px'}} onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = 'var(--color-primary)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'translateY(-2px)';}} onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = 'rgba(var(--color-primary-rgb), 0.1)'; e.currentTarget.style.color = 'var(--color-primary)'; e.currentTarget.style.transform = 'translateY(0)';}}>
+                <Link href="/tim-kami" className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl font-semibold text-base transition-all duration-300 border-2 shadow-md hover:shadow-lg" style={{borderColor: 'var(--color-primary)', color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)', borderWidth: '2px'}} onMouseEnter={(e) => {e.currentTarget.style.backgroundColor = 'var(--color-primary)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'translateY(-2px)';}} onMouseLeave={(e) => {e.currentTarget.style.backgroundColor = 'rgba(var(--color-primary-rgb), 0.1)'; e.currentTarget.style.color = 'var(--color-primary)'; e.currentTarget.style.transform = 'translateY(0)';}}>
                   <i className="fas fa-chalkboard-teacher mr-2"></i>
                   <span>{t('home.lecturers')}</span>
                 </Link>
@@ -674,7 +674,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="card-soft p-6 text-center group">
               <div className="w-18 h-18 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2" style={{width: '4.5rem', height: '4.5rem', background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)', borderColor: 'rgba(var(--color-primary-rgb), 0.4)'}}>
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'}}>
@@ -713,6 +713,22 @@ export default function HomePage() {
               </div>
               <h3 className="text-lg font-bold text-ink-900 mb-2">{t('home.facilities.wifi.title')}</h3>
               <p className="text-ink-600 text-sm">{t('home.facilities.wifi.description')}</p>
+            </div>
+
+            <div className="card-soft p-6 text-center group">
+              <div className="w-18 h-18 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2" style={{width: '4.5rem', height: '4.5rem', background: 'linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%)', borderColor: 'rgba(201, 162, 39, 0.4)'}}>
+                <i className="fas fa-moon text-2xl text-white" style={{filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'}}></i>
+              </div>
+              <h3 className="text-lg font-bold text-ink-900 mb-2">{t('home.facilities.falakLab.title')}</h3>
+              <p className="text-ink-600 text-sm">{t('home.facilities.falakLab.description')}</p>
+            </div>
+
+            <div className="card-soft p-6 text-center group">
+              <div className="w-18 h-18 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg border-2" style={{width: '4.5rem', height: '4.5rem', background: 'linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-deep-blue) 100%)', borderColor: 'rgba(var(--color-primary-rgb), 0.4)'}}>
+                <i className="fas fa-balance-scale text-2xl text-white" style={{filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'}}></i>
+              </div>
+              <h3 className="text-lg font-bold text-ink-900 mb-2">{t('home.facilities.yustisiLab.title')}</h3>
+              <p className="text-ink-600 text-sm">{t('home.facilities.yustisiLab.description')}</p>
             </div>
           </div>
         </div>

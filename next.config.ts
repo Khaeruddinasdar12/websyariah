@@ -19,6 +19,16 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      {
+        source: "/dosen",
+        destination: "/tim-kami",
+        permanent: true,
+      },
+    ];
+  },
+
   // Webpack config untuk SVG handling
   webpack(config, { isServer }) {
     // SVG handling with @svgr/webpack

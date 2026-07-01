@@ -15,7 +15,7 @@
     "information": "المعلومات",
     "news": "الأخبار",
     "announcements": "الإعلانات",
-    "lecturers": "الأساتذة",
+    "lecturers": "فريقنا",
     "about": "حول",
     "accreditation": "الاعتماد",
     "services": "الخدمات",
@@ -28,9 +28,9 @@
     "subtitle": "IAIN Bone",
     "description": "تطوير فهم عميق للقانون الإسلامي والشريعة من خلال التعليم عالي الجودة بأساليب حديثة وذات صلة في IAIN Bone.",
     "learnMore": "تعرف على المزيد",
-    "lecturers": "هيئة التدريس",
+    "lecturers": "فريقنا",
     "activeStudents": "الطلاب النشطون FSHI",
-    "expertLecturers": "الأساتذة",
+    "expertLecturers": "أعضاء الفريق",
     "graduationRate": "معدل التخرج",
     "yearsExperience": "سنوات الخبرة",
     "studyPrograms": "البرامج الدراسية",
@@ -126,6 +126,14 @@
       "wifi": {
         "title": "واي فاي مجاني",
         "description": "وصول سريع للإنترنت في جميع أنحاء منطقة الحرم الجامعي"
+      },
+      "falakLab": {
+        "title": "مختبر الفلك",
+        "description": "مساحة تطبيقية لعلم الفلك الإسلامي ودراسات الحساب الفلكي"
+      },
+      "yustisiLab": {
+        "title": "مختبر اليوستيسي",
+        "description": "مرافق تطبيقية للطب الشرعي وإعادة بناء قضايا القانون الإسلامي"
       }
     },
     "testimonialItems": {
@@ -181,7 +189,7 @@
     "aboutUs": "من نحن",
     "news": "الأخبار",
     "announcements": "الإعلانات",
-    "lecturers": "الأساتذة",
+    "lecturers": "فريقنا",
     "contact": "اتصل بنا",
     "address": "Jalan Hos Cokroaminoto, Kec. Tanete Riattang, Kab. Bone",
     "phone": "-",
@@ -363,19 +371,27 @@
     "location": "موقعنا",
     "viewOnMaps": "افتح في خرائط Google"
   },
-  "lecturers": {
-    "title": "الأساتذة",
-    "description": "تعرف على الأساتذة الخبراء في كلية الشريعة والقانون الإسلامي IAIN Bone الملتزمين بتطوير التعليم في القانون الإسلامي.",
-    "search": "البحث عن الأساتذة",
-    "searchPlaceholder": "اكتب اسم الأستاذ، المنصب، أو التخصص...",
-    "filterProgram": "تصفية حسب البرنامج الدراسي",
-    "allPrograms": "الكل",
-    "loading": "جاري تحميل بيانات الأساتذة...",
+  "team": {
+    "title": "فريقنا",
+    "description": "تعرف على القيادات والأساتذة والخبراء في كلية الشريعة والقانون الإسلامي IAIN Bone.",
+    "search": "البحث عن أعضاء الفريق",
+    "searchPlaceholder": "اكتب الاسم، المنصب، أو التخصص...",
+    "filterCategory": "تصفية حسب الفئة",
+    "filters": {
+      "all": "الكل",
+      "officials": "القيادات",
+      "htn": "القانون الدستوري",
+      "hki": "قانون الأسرة الإسلامي",
+      "hes": "القانون الاقتصادي الإسلامي",
+      "labYustisi": "مختبر يوستيسي",
+      "labFalak": "مختبر الفلك"
+    },
+    "loading": "جاري تحميل بيانات الفريق...",
     "error": "حدث خطأ",
-    "noResults": "لم يتم العثور على أساتذة",
-    "noResultsDescription": "جرب كلمات مفتاحية أخرى أو اختر برنامج دراسي مختلف",
+    "noResults": "لم يتم العثور على أعضاء الفريق",
+    "noResultsDescription": "جرب كلمات مفتاحية أخرى أو اختر فئة مختلفة",
     "showingResults": "عرض {{count}} نتيجة لـ \"{{term}}\"",
-    "showingPage": "عرض {{start}}-{{end}} من {{total}} أستاذ",
+    "showingPage": "عرض {{start}}-{{end}} من {{total}} عضو",
     "previous": "السابق",
     "next": "التالي",
     "education": "التعليم",

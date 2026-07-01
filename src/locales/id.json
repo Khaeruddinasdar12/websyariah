@@ -15,7 +15,7 @@
     "information": "Informasi",
     "news": "Berita",
     "announcements": "Pengumuman",
-    "lecturers": "Dosen",
+    "lecturers": "Tim Kami",
     "about": "Tentang",
     "accreditation": "Akreditasi",
     "services": "Layanan",
@@ -28,7 +28,7 @@
     "subtitle": "IAIN Bone",
     "description": "Mengembangkan pemahaman mendalam tentang hukum Islam dan syariah melalui pendidikan berkualitas tinggi dengan pendekatan modern dan relevan di IAIN Bone.",
     "learnMore": "Pelajari Lebih Lanjut",
-    "lecturers": "Tenaga Pengajar",
+    "lecturers": "Tim Kami",
     "activeStudents": "Mahasiswa Aktif FSHI",
     "expertLecturers": "Dosen",
     "graduationRate": "Tingkat Kelulusan",
@@ -116,7 +116,7 @@
         "description": "Koleksi lengkap buku dan jurnal hukum Islam"
       },
       "computerLab": {
-        "title": "Lab Komputer",
+        "title": "Laboratorium Komputer",
         "description": "Fasilitas komputer modern untuk pembelajaran"
       },
       "discussionRoom": {
@@ -126,6 +126,14 @@
       "wifi": {
         "title": "WiFi Gratis",
         "description": "Akses internet cepat di seluruh area kampus"
+      },
+      "falakLab": {
+        "title": "Laboratorium Falak",
+        "description": "Ruang praktikum astronomi Islam untuk kajian ilmu falak dan hisab"
+      },
+      "yustisiLab": {
+        "title": "Laboratorium Yustisi",
+        "description": "Fasilitas praktikum forensik dan rekonstruksi kasus hukum Islam"
       }
     },
     "testimonialItems": {
@@ -356,26 +364,34 @@
     "aboutUs": "Tentang Kami",
     "news": "Berita",
     "announcements": "Pengumuman",
-    "lecturers": "Dosen",
+    "lecturers": "Tim Kami",
     "contact": "Kontak",
     "address": "Jalan Hos Cokroaminoto, Kec. Tanete Riattang, Kab. Bone",
     "phone": "-",
     "email": "fshiiainbone123@gmail.com",
     "copyright": "Semua hak dilindungi."
   },
-  "lecturers": {
-    "title": "Dosen",
-    "description": "Mengenal lebih dekat dosen-dosen ahli di Fakultas Syariah dan Hukum Islam IAIN Bone yang berkomitmen dalam mengembangkan pendidikan hukum Islam.",
-    "search": "Cari Dosen",
-    "searchPlaceholder": "Ketik nama dosen, jabatan, atau keahlian...",
-    "filterProgram": "Filter Berdasarkan Program Studi",
-    "allPrograms": "Semua",
-    "loading": "Memuat data dosen...",
+  "team": {
+    "title": "Tim Kami",
+    "description": "Mengenal lebih dekat para pejabat, dosen, dan tenaga ahli di Fakultas Syariah dan Hukum Islam IAIN Bone.",
+    "search": "Cari Anggota Tim",
+    "searchPlaceholder": "Ketik nama, jabatan, atau keahlian...",
+    "filterCategory": "Filter Berdasarkan Kategori",
+    "filters": {
+      "all": "Semua",
+      "officials": "Pejabat",
+      "htn": "Hukum Tata Negara",
+      "hki": "Hukum Keluarga Islam",
+      "hes": "Hukum Ekonomi Syariah",
+      "labYustisi": "Lab Yustisi",
+      "labFalak": "Lab Falak"
+    },
+    "loading": "Memuat data tim...",
     "error": "Terjadi Kesalahan",
-    "noResults": "Tidak ada dosen ditemukan",
-    "noResultsDescription": "Coba kata kunci lain atau pilih program studi berbeda",
+    "noResults": "Tidak ada anggota tim ditemukan",
+    "noResultsDescription": "Coba kata kunci lain atau pilih kategori berbeda",
     "showingResults": "Menampilkan {{count}} hasil untuk \"{{term}}\"",
-    "showingPage": "Menampilkan {{start}}-{{end}} dari {{total}} dosen",
+    "showingPage": "Menampilkan {{start}}-{{end}} dari {{total}} anggota",
     "previous": "Sebelumnya",
     "next": "Selanjutnya",
     "education": "Pendidikan",

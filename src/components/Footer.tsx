@@ -107,7 +107,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/dosen" className="hover:text-gold-light transition-colors duration-300">
+                <Link href="/tim-kami" className="hover:text-gold-light transition-colors duration-300">
                   {t('footer.lecturers')}
                 </Link>
               </li>

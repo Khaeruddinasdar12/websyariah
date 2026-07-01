@@ -41,7 +41,7 @@ export default function Navbar() {
         { name: t('nav.announcements'), href: '/pengumuman', key: 'announcements' },
       ]
     },
-    { name: t('nav.lecturers'), href: '/dosen', key: 'lecturers' },
+    { name: t('nav.lecturers'), href: '/tim-kami', key: 'lecturers' },
     { name: t('nav.about'), href: '/tentang', key: 'about' },
     { name: t('nav.accreditation'), href: '/akreditasi', key: 'accreditation' },
     { name: t('nav.services'), href: '/layanan', key: 'services' },

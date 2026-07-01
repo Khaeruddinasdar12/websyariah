@@ -15,7 +15,7 @@
     "information": "Information",
     "news": "News",
     "announcements": "Announcements",
-    "lecturers": "Lecturers",
+    "lecturers": "Our Team",
     "about": "About",
     "accreditation": "Accreditation",
     "services": "Services",
@@ -28,9 +28,9 @@
     "subtitle": "IAIN Bone",
     "description": "Developing a deep understanding of Islamic law and sharia through high-quality education with modern and relevant approaches at IAIN Bone.",
     "learnMore": "Learn More",
-    "lecturers": "Teaching Staff",
+    "lecturers": "Our Team",
     "activeStudents": "Active Students FSHI",
-    "expertLecturers": "Lecturers",
+    "expertLecturers": "Team Members",
     "graduationRate": "Graduation Rate",
     "yearsExperience": "Years of Experience",
     "studyPrograms": "Study Programs",
@@ -126,6 +126,14 @@
       "wifi": {
         "title": "Free WiFi",
         "description": "Fast internet access throughout the campus area"
+      },
+      "falakLab": {
+        "title": "Falak Laboratory",
+        "description": "Islamic astronomy practicum space for falak and hisab studies"
+      },
+      "yustisiLab": {
+        "title": "Yustisi Laboratory",
+        "description": "Forensic practicum and Islamic law case reconstruction facility"
       }
     },
     "testimonialItems": {
@@ -181,7 +189,7 @@
     "aboutUs": "About Us",
     "news": "News",
     "announcements": "Announcements",
-    "lecturers": "Lecturers",
+    "lecturers": "Our Team",
     "contact": "Contact",
     "address": "Jalan Hos Cokroaminoto, Kec. Tanete Riattang, Kab. Bone",
     "phone": "-",
@@ -363,19 +371,27 @@
     "location": "Our Location",
     "viewOnMaps": "Open in Google Maps"
   },
-  "lecturers": {
-    "title": "Lecturers",
-    "description": "Get to know the expert lecturers at the Faculty of Sharia and Islamic Law IAIN Bone who are committed to developing Islamic law education.",
-    "search": "Search Lecturers",
-    "searchPlaceholder": "Type lecturer name, position, or expertise...",
-    "filterProgram": "Filter by Study Program",
-    "allPrograms": "All",
-    "loading": "Loading lecturer data...",
+  "team": {
+    "title": "Our Team",
+    "description": "Meet the officials, lecturers, and experts at the Faculty of Sharia and Islamic Law IAIN Bone.",
+    "search": "Search Team Members",
+    "searchPlaceholder": "Type name, position, or expertise...",
+    "filterCategory": "Filter by Category",
+    "filters": {
+      "all": "All",
+      "officials": "Officials",
+      "htn": "Constitutional Law",
+      "hki": "Islamic Family Law",
+      "hes": "Sharia Economic Law",
+      "labYustisi": "Yustisi Lab",
+      "labFalak": "Falak Lab"
+    },
+    "loading": "Loading team data...",
     "error": "An Error Occurred",
-    "noResults": "No lecturers found",
-    "noResultsDescription": "Try different keywords or select a different study program",
+    "noResults": "No team members found",
+    "noResultsDescription": "Try different keywords or select a different category",
     "showingResults": "Showing {{count}} results for \"{{term}}\"",
-    "showingPage": "Showing {{start}}-{{end}} of {{total}} lecturers",
+    "showingPage": "Showing {{start}}-{{end}} of {{total}} members",
     "previous": "Previous",
     "next": "Next",
     "education": "Education",

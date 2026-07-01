@@ -11,11 +11,14 @@ import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
 import AdminTableActions from '@/components/admin/AdminTableActions';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import type { KategoriPegawai } from '@/types/kategoriPegawai';
+import { formatKategoriNames, normalizeKategoriIds } from '@/utils/kategoriPegawai';
+import { fetchKategoriPegawai } from '@/lib/fetchKategoriPegawai';
 
 interface Dosen {
   id?: number;
   urut?: number;
-  prodi: string;
+  prodi?: string[] | string | null;
   nama: string;
   jabatan: string;
   jabatan_en?: string;
@@ -33,6 +36,7 @@ export default function DosenPage() {
   const toast = useToast();
   const { confirm, isOpen, options, isLoading, handleConfirm, handleCancel } = useConfirm();
   const [dosens, setDosens] = useState<Dosen[]>([]);
+  const [kategoriList, setKategoriList] = useState<KategoriPegawai[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,13 +51,21 @@ export default function DosenPage() {
 
   const fetchDosens = async () => {
     try {
-      const { data, error } = await supabase
-        .from('dosens')
-        .select('*')
-        .order('urut', { ascending: true });
+      const [kategoriResult, dosenResult] = await Promise.all([
+        fetchKategoriPegawai(),
+        supabase
+          .from('dosens')
+          .select('*')
+          .order('urut', { ascending: true }),
+      ]);
 
-      if (error) throw error;
-      setDosens(data || []);
+      if (kategoriResult.error) {
+        console.warn('Kategori pegawai:', kategoriResult.error);
+      }
+      if (dosenResult.error) throw dosenResult.error;
+
+      setKategoriList(kategoriResult.data);
+      setDosens(dosenResult.data || []);
     } catch (error: any) {
       console.error('Error fetching dosens:', error);
       toast.showError('Error', 'Gagal memuat data dosen');
@@ -129,7 +141,7 @@ export default function DosenPage() {
               <tr>
                 <th className="px-4 py-3">Urut</th>
                 <th className="px-4 py-3">Nama</th>
-                <th className="px-4 py-3">Prodi</th>
+                <th className="px-4 py-3">Kategori Pegawai</th>
                 <th className="px-4 py-3">Jabatan</th>
                 <th className="px-4 py-3">Pendidikan</th>
                 <th className="px-4 py-3">Gambar</th>
@@ -151,7 +163,13 @@ export default function DosenPage() {
                   >
                     <td className="px-4 py-3">{dosen.urut || '-'}</td>
                     <td className="px-4 py-3">{dosen.nama}</td>
-                    <td className="px-4 py-3">{dosen.prodi}</td>
+                    <td className="px-4 py-3">
+                      {formatKategoriNames(
+                        normalizeKategoriIds(dosen.prodi),
+                        kategoriList,
+                        '-'
+                      )}
+                    </td>
                     <td className="px-4 py-3">{dosen.jabatan}</td>
                     <td className="px-4 py-3">{dosen.pendidikan}</td>
                     <td className="px-4 py-3">

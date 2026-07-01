@@ -6,7 +6,8 @@ import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
-import Select from '@/components/form/Select';
+import KategoriPegawaiMultiSelect from '@/components/admin/KategoriPegawaiMultiSelect';
+import { normalizeKategoriIds } from '@/utils/kategoriPegawai';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
@@ -20,7 +21,7 @@ import { useDropzone } from 'react-dropzone';
 interface Dosen {
   id?: number;
   urut?: number;
-  prodi: string;
+  prodi?: string[] | string | null;
   nama: string;
   jabatan: string;
   jabatan_en?: string;
@@ -43,10 +44,11 @@ export default function EditDosenPage() {
   const [previewImage, setPreviewImage] = useState<string>('');
   const [translating, setTranslating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [kategoriPegawai, setKategoriPegawai] = useState<string[]>([]);
 
   const [formData, setFormData] = useState<Dosen>({
     urut: undefined,
-    prodi: 'semua',
+    prodi: [],
     nama: '',
     jabatan: '',
     jabatan_en: '',
@@ -57,13 +59,6 @@ export default function EditDosenPage() {
     keahlian_ar: '',
     gambar: '',
   });
-
-  const prodiOptions = [
-    { value: 'semua', label: 'Semua' },
-    { value: 'htn', label: 'HTN' },
-    { value: 'hes', label: 'HES' },
-    { value: 'hki', label: 'HKI' },
-  ];
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -85,6 +80,7 @@ export default function EditDosenPage() {
       if (error) throw error;
       if (data) {
         setFormData(data);
+        setKategoriPegawai(normalizeKategoriIds(data.prodi));
         if (data.gambar) {
           setPreviewImage(data.gambar);
         }
@@ -226,12 +222,20 @@ export default function EditDosenPage() {
       return;
     }
 
+    if (kategoriPegawai.length === 0) {
+      toast.showError('Form Tidak Lengkap', 'Pilih minimal satu kategori pegawai');
+      return;
+    }
+
     setSaving(true);
 
     try {
       const { error } = await supabase
         .from('dosens')
-        .update(formData)
+        .update({
+          ...formData,
+          prodi: kategoriPegawai,
+        })
         .eq('id', params.id);
 
       if (error) throw error;
@@ -271,15 +275,11 @@ export default function EditDosenPage() {
             />
           </div>
 
-          {/* Prodi */}
-          <div>
-            <Label>Prodi *</Label>
-            <Select
-              options={prodiOptions}
-              value={formData.prodi}
-              onChange={(value) => handleInputChange('prodi', value)}
-            />
-          </div>
+          {/* Kategori Pegawai */}
+          <KategoriPegawaiMultiSelect
+            value={kategoriPegawai}
+            onChange={setKategoriPegawai}
+          />
 
           {/* Nama */}
           <div>

@@ -168,8 +168,7 @@ export default function DosenPage() {
                     <td className="px-4 py-3">
                       {formatKategoriNames(
                         normalizeKategoriIds(dosen.prodi),
-                        kategoriList,
-                        '-'
+                        kategoriList
                       )}
                     </td>
                     <td className="px-4 py-3">{dosen.jabatan}</td>

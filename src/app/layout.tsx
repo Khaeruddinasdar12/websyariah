@@ -14,6 +14,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: 'FSHI IAIN Bone',
   description: 'Fakultas Syariah dan Hukum Islam IAIN Bone',
   icons: {

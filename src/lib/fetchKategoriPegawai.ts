@@ -34,17 +34,24 @@ function mapKategoriRow(row: Record<string, unknown>): KategoriPegawai | null {
   return {
     id: String(row.id),
     nama,
-    urut: typeof row.urut === 'number' ? row.urut : null,
+    nama_en: typeof row.nama_en === 'string' ? row.nama_en : undefined,
+    nama_ar: typeof row.nama_ar === 'string' ? row.nama_ar : undefined,
   };
 }
 
-function sortKategori(list: KategoriPegawai[]): KategoriPegawai[] {
-  return [...list].sort((a, b) => {
-    const urutA = a.urut ?? 9999;
-    const urutB = b.urut ?? 9999;
-    if (urutA !== urutB) return urutA - urutB;
-    return a.nama.localeCompare(b.nama, 'id');
-  });
+export function sortKategoriPegawai(list: KategoriPegawai[]): KategoriPegawai[] {
+  return [...list].sort((a, b) => compareKategoriId(a.id, b.id));
+}
+
+function compareKategoriId(a: string, b: string): number {
+  const numA = Number(a);
+  const numB = Number(b);
+
+  if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+    return numA - numB;
+  }
+
+  return a.localeCompare(b);
 }
 
 export async function fetchKategoriPegawai(): Promise<{
@@ -55,7 +62,10 @@ export async function fetchKategoriPegawai(): Promise<{
   let lastError: unknown = null;
 
   for (const table of TABLE_CANDIDATES) {
-    const { data, error } = await supabase.from(table).select('*');
+    const { data, error } = await supabase
+      .from(table)
+      .select('*')
+      .order('id', { ascending: true });
 
     if (!error && data) {
       const mapped = data
@@ -63,7 +73,7 @@ export async function fetchKategoriPegawai(): Promise<{
         .filter((row): row is KategoriPegawai => row !== null);
 
       return {
-        data: sortKategori(mapped),
+        data: sortKategoriPegawai(mapped),
         error: null,
         table,
       };
@@ -76,7 +86,6 @@ export async function fetchKategoriPegawai(): Promise<{
         ? String((error as SupabaseLikeError).code)
         : '';
 
-    // Coba tabel lain jika nama tabel tidak ditemukan
     if (code !== '42P01' && code !== 'PGRST205') {
       break;
     }

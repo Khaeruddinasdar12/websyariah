@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sortKategoriPegawai } from '@/lib/fetchKategoriPegawai';
 import type { KategoriPegawai } from '@/types/kategoriPegawai';
 
 const TABLE_CANDIDATES = ['kategoripegawai', 'kategori_pegawai'] as const;
@@ -18,7 +19,8 @@ function mapKategoriRow(row: Record<string, unknown>): KategoriPegawai | null {
   return {
     id: String(row.id),
     nama,
-    urut: typeof row.urut === 'number' ? row.urut : null,
+    nama_en: typeof row.nama_en === 'string' ? row.nama_en : undefined,
+    nama_ar: typeof row.nama_ar === 'string' ? row.nama_ar : undefined,
   };
 }
 
@@ -28,18 +30,17 @@ export async function GET() {
     null;
 
   for (const table of TABLE_CANDIDATES) {
-    const { data, error } = await supabase.from(table).select('*');
+    const { data, error } = await supabase
+      .from(table)
+      .select('*')
+      .order('id', { ascending: true });
 
     if (!error && data) {
-      const mapped = data
-        .map((row) => mapKategoriRow(row as Record<string, unknown>))
-        .filter((row): row is KategoriPegawai => row !== null)
-        .sort((a, b) => {
-          const urutA = a.urut ?? 9999;
-          const urutB = b.urut ?? 9999;
-          if (urutA !== urutB) return urutA - urutB;
-          return a.nama.localeCompare(b.nama, 'id');
-        });
+      const mapped = sortKategoriPegawai(
+        data
+          .map((row) => mapKategoriRow(row as Record<string, unknown>))
+          .filter((row): row is KategoriPegawai => row !== null)
+      );
 
       return NextResponse.json({ data: mapped, table });
     }

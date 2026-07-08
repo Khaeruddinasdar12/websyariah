@@ -1,20 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { formatKategoriNames, normalizeKategoriIds } from '@/utils/kategoriPegawai';
+import { formatKategoriNames, getLocalizedKategoriName, normalizeKategoriIds } from '@/utils/kategoriPegawai';
+import { resolveDosenImageUrl } from '@/utils/dosenImage';
 import { fetchKategoriPegawai } from '@/lib/fetchKategoriPegawai';
+import { getLangValue, type Language } from '@/lib/supabase-i18n';
 import type { KategoriPegawai } from '@/types/kategoriPegawai';
 
 interface DosenSupabase {
   id: number;
   nama: string;
   jabatan?: string;
+  jabatan_en?: string;
+  jabatan_ar?: string;
   prodi?: string[] | string | null;
   keahlian?: string;
+  keahlian_en?: string;
+  keahlian_ar?: string;
   pendidikan?: string;
   email?: string;
   foto?: string;
@@ -31,7 +36,7 @@ interface DosenDisplay {
   kategoriIds: string[];
   expertise: string[];
   pendidikan: string;
-  imageUrl: string;
+  imageUrl?: string;
   urut: number;
 }
 
@@ -39,18 +44,66 @@ function parseKeahlian(keahlian?: string): string[] {
   if (!keahlian) return [];
   try {
     const parsed = JSON.parse(keahlian);
-    if (Array.isArray(parsed)) return parsed;
+    if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
   } catch {
     return keahlian.split(',').map(s => s.trim()).filter(s => s.length > 0);
   }
   return [];
 }
 
+function transformDosenItem(
+  item: DosenSupabase,
+  categories: KategoriPegawai[],
+  language: Language
+): DosenDisplay {
+  const kategoriIds = normalizeKategoriIds(item.prodi);
+  const keahlianText = getLangValue(item, 'keahlian', language);
+
+  return {
+    id: item.id,
+    name: item.nama || 'Tanpa Nama',
+    position: getLangValue(item, 'jabatan', language) || '-',
+    studyProgram: formatKategoriNames(kategoriIds, categories, language),
+    kategoriIds,
+    expertise: parseKeahlian(keahlianText),
+    pendidikan: item.pendidikan || '',
+    imageUrl: resolveDosenImageUrl(item),
+    urut: item.urut || 999,
+  };
+}
+
+function DosenPhoto({ src, name }: { src?: string; name: string }) {
+  const [hasError, setHasError] = useState(false);
+  const showImage = Boolean(src) && !hasError;
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
+
+  return (
+    <div
+      className="w-28 h-28 rounded-2xl overflow-hidden mb-4 mx-auto shadow-lg border-2 bg-ink-100"
+      style={{ borderColor: 'rgba(var(--color-primary-rgb), 0.3)' }}
+    >
+      {showImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt={name}
+          className="w-full h-full object-cover"
+          loading="lazy"
+          onError={() => setHasError(true)}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 export default function TimKamiPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   usePageTitle(t('nav.lecturers'));
   const [kategoriList, setKategoriList] = useState<KategoriPegawai[]>([]);
-  const [dosen, setDosen] = useState<DosenDisplay[]>([]);
+  const [rawDosen, setRawDosen] = useState<DosenSupabase[]>([]);
   const [filteredDosen, setFilteredDosen] = useState<DosenDisplay[]>([]);
   const [selectedFilter, setSelectedFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,35 +140,19 @@ export default function TimKamiPage() {
         setKategoriList(categories);
 
         if (dosenResult.data && Array.isArray(dosenResult.data)) {
-          const transformedData: DosenDisplay[] = dosenResult.data
+          const sortedDosen = [...dosenResult.data]
             .filter((item: DosenSupabase) => item && item.nama)
-            .map((item: DosenSupabase) => {
-              const kategoriIds = normalizeKategoriIds(item.prodi);
-              return {
-                id: item.id,
-                name: item.nama || 'Tanpa Nama',
-                position: item.jabatan || '-',
-                studyProgram: formatKategoriNames(kategoriIds, categories),
-                kategoriIds,
-                expertise: parseKeahlian(item.keahlian),
-                pendidikan: item.pendidikan || '',
-                imageUrl: item.foto || item.gambar || '/dosen-default.jpg',
-                urut: item.urut || 999,
-              };
-            })
-            .sort((a, b) => a.urut - b.urut);
+            .sort((a, b) => (a.urut || 999) - (b.urut || 999));
 
-          setDosen(transformedData);
-          setFilteredDosen(transformedData);
+          setRawDosen(sortedDosen);
         } else {
-          setDosen([]);
-          setFilteredDosen([]);
+          setRawDosen([]);
         }
       } catch (err: unknown) {
         const message =
           err instanceof Error ? err.message : 'Gagal memuat data tim. Silakan coba lagi nanti.';
         setError(message);
-        setDosen([]);
+        setRawDosen([]);
         setFilteredDosen([]);
       } finally {
         setLoading(false);
@@ -124,6 +161,11 @@ export default function TimKamiPage() {
 
     fetchData();
   }, []);
+
+  const dosen = useMemo(
+    () => rawDosen.map((item) => transformDosenItem(item, kategoriList, language)),
+    [rawDosen, kategoriList, language]
+  );
 
   useEffect(() => {
     if (dosen.length === 0) {
@@ -156,6 +198,9 @@ export default function TimKamiPage() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentDosen = filteredDosen.slice(startIndex, endIndex);
+
+  // "Semua" selalu pertama; kategori lain mengikuti urutan id dari database
+  const filterCategories = useMemo(() => kategoriList, [kategoriList]);
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
@@ -228,7 +273,7 @@ export default function TimKamiPage() {
                   >
                     {t('team.filters.all')}
                   </button>
-                  {kategoriList.map((category) => (
+                  {filterCategories.map((category) => (
                     <button
                       key={category.id}
                       type="button"
@@ -248,7 +293,7 @@ export default function TimKamiPage() {
                       }
                       onClick={() => setSelectedFilter(category.id)}
                     >
-                      {category.nama}
+                      {getLocalizedKategoriName(category, language)}
                     </button>
                   ))}
                 </div>
@@ -281,21 +326,7 @@ export default function TimKamiPage() {
                   >
                     <div className="p-6">
                       <div className="flex flex-col items-center text-center">
-                        <div
-                          className="w-28 h-28 rounded-2xl overflow-hidden mb-4 mx-auto shadow-lg border-2"
-                          style={{ borderColor: 'rgba(var(--color-primary-rgb), 0.3)' }}
-                        >
-                          <Image
-                            src={item.imageUrl}
-                            alt={item.name}
-                            width={112}
-                            height={112}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = '/dosen-default.jpg';
-                            }}
-                          />
-                        </div>
+                        <DosenPhoto src={item.imageUrl} name={item.name} />
                         <h3 className="text-lg font-bold text-ink-900 mb-1">{item.name}</h3>
                         <p className="text-sm text-primary font-medium mb-1">{item.position}</p>
                         <p className="text-xs text-ink-500 mb-4">{item.studyProgram}</p>

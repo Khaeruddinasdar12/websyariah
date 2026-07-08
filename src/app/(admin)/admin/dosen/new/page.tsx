@@ -17,6 +17,7 @@ import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
 import Icon from '@/components/ui/icon/Icon';
 import { ArrowUpIcon } from '@/icons';
 import { useDropzone } from 'react-dropzone';
+import { buildDosenSavePayload } from '@/utils/dosenPayload';
 
 interface Dosen {
   id?: number;
@@ -31,6 +32,7 @@ interface Dosen {
   keahlian_en?: string;
   keahlian_ar?: string;
   gambar?: string;
+  foto?: string;
 }
 
 export default function NewDosenPage() {
@@ -43,6 +45,7 @@ export default function NewDosenPage() {
   const [translating, setTranslating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [kategoriPegawai, setKategoriPegawai] = useState<string[]>([]);
+  const [imageUrl, setImageUrl] = useState('');
 
   const [formData, setFormData] = useState<Dosen>({
     urut: undefined,
@@ -64,8 +67,13 @@ export default function NewDosenPage() {
     }
   }, [user, authLoading, router]);
 
+  const isFieldEmpty = (value: string | undefined | null) => !value?.trim();
+
+  const shouldSkipTranslation = (text: string) => text.trim() === '-';
+
   const translateText = async (text: string, targetLang: 'en' | 'ar'): Promise<string> => {
     if (!text || !text.trim()) return '';
+    if (shouldSkipTranslation(text)) return text.trim();
 
     try {
       const response = await fetch('/api/translate', {
@@ -141,12 +149,6 @@ export default function NewDosenPage() {
     setUploading(true);
 
     try {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-
       const fileExt = file.name.split('.').pop()?.toLowerCase();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `dosens/${fileName}`;
@@ -164,8 +166,10 @@ export default function NewDosenPage() {
         .from('images')
         .getPublicUrl(filePath);
 
-      setFormData(prev => ({ ...prev, gambar: publicUrl }));
-      toast.showSuccess('Upload Berhasil', 'Gambar berhasil diupload!');
+      setFormData(prev => ({ ...prev, gambar: publicUrl, foto: publicUrl }));
+      setImageUrl(publicUrl);
+      setPreviewImage(publicUrl);
+      toast.showSuccess('Upload Berhasil', 'Gambar berhasil diupload! Klik Simpan untuk menyimpan link ke database.');
     } catch (error: any) {
       console.error('Image upload error:', error);
       toast.showError('Upload Gagal', error.message || 'Gagal mengupload gambar');
@@ -185,51 +189,78 @@ export default function NewDosenPage() {
     multiple: false,
   });
 
+  const getEmptyRequiredFields = () => {
+    const emptyFields: string[] = [];
+
+    if (isFieldEmpty(formData.nama)) emptyFields.push('Nama');
+    if (isFieldEmpty(formData.jabatan)) emptyFields.push('Jabatan');
+    if (isFieldEmpty(formData.pendidikan)) emptyFields.push('Pendidikan');
+    if (isFieldEmpty(formData.keahlian)) emptyFields.push('Keahlian');
+    if (kategoriPegawai.length === 0) emptyFields.push('Kategori Pegawai');
+
+    return emptyFields;
+  };
+
+  const fillTranslationField = async (
+    sourceText: string,
+    enValue: string | undefined,
+    arValue: string | undefined
+  ) => {
+    if (shouldSkipTranslation(sourceText)) {
+      return { en: sourceText.trim(), ar: sourceText.trim() };
+    }
+
+    const [en, ar] = await Promise.all([
+      enValue?.trim() ? enValue : translateText(sourceText, 'en'),
+      arValue?.trim() ? arValue : translateText(sourceText, 'ar'),
+    ]);
+
+    return {
+      en: en || enValue || '',
+      ar: ar || arValue || '',
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.nama || !formData.jabatan || !formData.pendidikan || !formData.keahlian) {
-      toast.showError('Form Tidak Lengkap', 'Nama, jabatan, pendidikan, dan keahlian wajib diisi');
-      return;
-    }
-
-    if (kategoriPegawai.length === 0) {
-      toast.showError('Form Tidak Lengkap', 'Pilih minimal satu kategori pegawai');
+    const emptyFields = getEmptyRequiredFields();
+    if (emptyFields.length > 0) {
+      toast.showError(
+        'Form Tidak Lengkap',
+        `Kolom berikut belum diisi: ${emptyFields.join(', ')}`
+      );
       return;
     }
 
     setSaving(true);
 
     try {
-      // Auto translate if not filled
-      if (!formData.jabatan_en || !formData.jabatan_ar) {
-        if (formData.jabatan) {
-          const [jabatanEn, jabatanAr] = await Promise.all([
-            translateText(formData.jabatan, 'en'),
-            translateText(formData.jabatan, 'ar'),
-          ]);
-          formData.jabatan_en = jabatanEn || formData.jabatan_en || '';
-          formData.jabatan_ar = jabatanAr || formData.jabatan_ar || '';
-        }
+      const updatedFormData = { ...formData };
+
+      if (!updatedFormData.jabatan_en?.trim() || !updatedFormData.jabatan_ar?.trim()) {
+        const jabatanTranslation = await fillTranslationField(
+          updatedFormData.jabatan,
+          updatedFormData.jabatan_en,
+          updatedFormData.jabatan_ar
+        );
+        updatedFormData.jabatan_en = jabatanTranslation.en;
+        updatedFormData.jabatan_ar = jabatanTranslation.ar;
       }
 
-      if (!formData.keahlian_en || !formData.keahlian_ar) {
-        if (formData.keahlian) {
-          const [keahlianEn, keahlianAr] = await Promise.all([
-            translateText(formData.keahlian, 'en'),
-            translateText(formData.keahlian, 'ar'),
-          ]);
-          formData.keahlian_en = keahlianEn || formData.keahlian_en || '';
-          formData.keahlian_ar = keahlianAr || formData.keahlian_ar || '';
-        }
+      if (!updatedFormData.keahlian_en?.trim() || !updatedFormData.keahlian_ar?.trim()) {
+        const keahlianTranslation = await fillTranslationField(
+          updatedFormData.keahlian,
+          updatedFormData.keahlian_en,
+          updatedFormData.keahlian_ar
+        );
+        updatedFormData.keahlian_en = keahlianTranslation.en;
+        updatedFormData.keahlian_ar = keahlianTranslation.ar;
       }
 
       const { error } = await supabase
         .from('dosens')
-        .insert([{
-          ...formData,
-          prodi: kategoriPegawai,
-        }]);
+        .insert([buildDosenSavePayload(updatedFormData, kategoriPegawai, imageUrl)]);
 
       if (error) throw error;
 

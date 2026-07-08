@@ -14,6 +14,7 @@ import Image from 'next/image';
 import type { KategoriPegawai } from '@/types/kategoriPegawai';
 import { formatKategoriNames, normalizeKategoriIds } from '@/utils/kategoriPegawai';
 import { fetchKategoriPegawai } from '@/lib/fetchKategoriPegawai';
+import { resolveDosenImageUrl } from '@/utils/dosenImage';
 
 interface Dosen {
   id?: number;
@@ -28,6 +29,7 @@ interface Dosen {
   keahlian_en?: string;
   keahlian_ar?: string;
   gambar?: string;
+  foto?: string;
 }
 
 export default function DosenPage() {
@@ -173,9 +175,9 @@ export default function DosenPage() {
                     <td className="px-4 py-3">{dosen.jabatan}</td>
                     <td className="px-4 py-3">{dosen.pendidikan}</td>
                     <td className="px-4 py-3">
-                      {dosen.gambar ? (
+                      {resolveDosenImageUrl(dosen) ? (
                         <img
-                          src={dosen.gambar}
+                          src={resolveDosenImageUrl(dosen)}
                           alt={dosen.nama}
                           className="w-16 h-16 object-cover rounded"
                         />

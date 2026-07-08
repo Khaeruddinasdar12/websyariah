@@ -1,5 +1,6 @@
 export interface KategoriPegawai {
   id: string;
   nama: string;
-  urut?: number | null;
+  nama_en?: string;
+  nama_ar?: string;
 }

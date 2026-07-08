@@ -17,6 +17,7 @@ import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
 import Icon from '@/components/ui/icon/Icon';
 import { ArrowUpIcon } from '@/icons';
 import { useDropzone } from 'react-dropzone';
+import { applyFetchedDosenImage, buildDosenSavePayload } from '@/utils/dosenPayload';
 
 interface Dosen {
   id?: number;
@@ -31,6 +32,7 @@ interface Dosen {
   keahlian_en?: string;
   keahlian_ar?: string;
   gambar?: string;
+  foto?: string;
 }
 
 export default function EditDosenPage() {
@@ -45,6 +47,7 @@ export default function EditDosenPage() {
   const [translating, setTranslating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [kategoriPegawai, setKategoriPegawai] = useState<string[]>([]);
+  const [imageUrl, setImageUrl] = useState('');
 
   const [formData, setFormData] = useState<Dosen>({
     urut: undefined,
@@ -79,10 +82,12 @@ export default function EditDosenPage() {
 
       if (error) throw error;
       if (data) {
-        setFormData(data);
+        const { formData: fetchedFormData, imageUrl: fetchedImageUrl } = applyFetchedDosenImage(data);
+        setFormData(fetchedFormData);
+        setImageUrl(fetchedImageUrl);
         setKategoriPegawai(normalizeKategoriIds(data.prodi));
-        if (data.gambar) {
-          setPreviewImage(data.gambar);
+        if (fetchedImageUrl) {
+          setPreviewImage(fetchedImageUrl);
         }
       }
     } catch (error: any) {
@@ -170,12 +175,6 @@ export default function EditDosenPage() {
     setUploading(true);
 
     try {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-
       const fileExt = file.name.split('.').pop()?.toLowerCase();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `dosens/${fileName}`;
@@ -193,8 +192,10 @@ export default function EditDosenPage() {
         .from('images')
         .getPublicUrl(filePath);
 
-      setFormData(prev => ({ ...prev, gambar: publicUrl }));
-      toast.showSuccess('Upload Berhasil', 'Gambar berhasil diupload!');
+      setFormData(prev => ({ ...prev, gambar: publicUrl, foto: publicUrl }));
+      setImageUrl(publicUrl);
+      setPreviewImage(publicUrl);
+      toast.showSuccess('Upload Berhasil', 'Gambar berhasil diupload! Klik Simpan Perubahan untuk menyimpan link ke database.');
     } catch (error: any) {
       console.error('Image upload error:', error);
       toast.showError('Upload Gagal', error.message || 'Gagal mengupload gambar');
@@ -232,10 +233,7 @@ export default function EditDosenPage() {
     try {
       const { error } = await supabase
         .from('dosens')
-        .update({
-          ...formData,
-          prodi: kategoriPegawai,
-        })
+        .update(buildDosenSavePayload(formData, kategoriPegawai, imageUrl))
         .eq('id', params.id);
 
       if (error) throw error;

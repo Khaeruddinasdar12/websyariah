@@ -17,6 +17,11 @@ import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
 import { useLanguage } from '@/context/LanguageContext';
+import {
+  fillBeritaTranslationField,
+  getEmptyBeritaRequiredFields,
+  translateBeritaText,
+} from '@/utils/beritaTranslation';
 
 interface Berita {
   id?: string;
@@ -237,65 +242,7 @@ export default function EditBeritaPage() {
     validateSlug(value);
   };
 
-  const translateText = async (text: string, targetLang: 'en' | 'ar'): Promise<string> => {
-    if (!text || !text.trim()) return '';
-    
-    // Strip HTML tags for translation (RichTextEditor uses HTML)
-    // Remove HTML tags, decode HTML entities, and clean up whitespace
-    let textOnly = text
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
-      .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
-      .replace(/&amp;/g, '&') // Decode &amp;
-      .replace(/&lt;/g, '<') // Decode &lt;
-      .replace(/&gt;/g, '>') // Decode &gt;
-      .replace(/&quot;/g, '"') // Decode &quot;
-      .replace(/&#39;/g, "'") // Decode &#39;
-      .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-      .trim();
-    
-    if (!textOnly) return text; // If no text after stripping HTML, return original
-    
-    try {
-      console.log(`Translating "${textOnly.substring(0, 50)}..." to ${targetLang}`);
-      
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text: textOnly, targetLang }),
-      });
-
-      if (!response.ok) {
-        console.error('Translation API error:', response.status, response.statusText);
-        throw new Error(`Translation API returned ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Check for error response
-      if (data.error || !data.translatedText) {
-        // Use the user-friendly error message from API
-        const errorMsg = data.error || data.note || 'Layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.';
-        throw new Error(errorMsg);
-      }
-      
-      const translated = data.translatedText;
-      
-      // Check if translation actually happened (not just returned original)
-      if (translated === textOnly || translated.trim() === '') {
-        console.warn(`Translation returned same text or empty for ${targetLang}`);
-        throw new Error('Translation service returned unchanged text');
-      }
-      
-      console.log(`Translation result (${targetLang}):`, translated.substring(0, 50) + '...');
-      
-      return translated;
-    } catch (error: any) {
-      console.error('Translation error:', error);
-      throw new Error(`Failed to translate to ${targetLang}: ${error.message}`);
-    }
-  };
+  const translateText = translateBeritaText;
 
   const handleAutoTranslate = async () => {
     if (!formData.judul && !formData.konten && !formData.kategori) {
@@ -545,6 +492,20 @@ export default function EditBeritaPage() {
       return;
     }
 
+    const emptyFields = getEmptyBeritaRequiredFields(formData);
+    if (emptyFields.length > 0) {
+      toast.showError(
+        'Form Tidak Lengkap',
+        `Kolom berikut belum diisi: ${emptyFields.join(', ')}`
+      );
+      return;
+    }
+
+    if (!validateSlug(formData.slug)) {
+      toast.showError('Slug Tidak Valid', 'Perbaiki slug sebelum menyimpan');
+      return;
+    }
+
     setSaving(true);
     setTranslating(true);
     
@@ -553,19 +514,15 @@ export default function EditBeritaPage() {
       let updatedFormData = { ...formData };
       const translationErrors: string[] = [];
 
-      // Translate judul SELALU jika ada
-      if (formData.judul && formData.judul.trim()) {
-        console.log('Translating judul to EN and AR...');
-        
+      if (formData.judul?.trim()) {
         try {
-          const [judulEn, judulAr] = await Promise.all([
-            translateText(formData.judul, 'en'),
-            translateText(formData.judul, 'ar'),
-          ]);
-          
-          updatedFormData.judul_en = judulEn;
-          updatedFormData.judul_ar = judulAr;
-          console.log('Judul translated:', { en: updatedFormData.judul_en, ar: updatedFormData.judul_ar });
+          const judulTranslation = await fillBeritaTranslationField(
+            formData.judul,
+            updatedFormData.judul_en,
+            updatedFormData.judul_ar
+          );
+          updatedFormData.judul_en = judulTranslation.en;
+          updatedFormData.judul_ar = judulTranslation.ar;
         } catch (error: any) {
           console.error('Error translating judul:', error);
           translationErrors.push(`Judul: ${error.message}`);
@@ -574,19 +531,15 @@ export default function EditBeritaPage() {
         }
       }
 
-      // Translate konten SELALU jika ada
-      if (formData.konten && formData.konten.trim()) {
-        console.log('Translating konten to EN and AR...');
-        
+      if (formData.konten?.trim()) {
         try {
-          const [kontenEn, kontenAr] = await Promise.all([
-            translateText(formData.konten, 'en'),
-            translateText(formData.konten, 'ar'),
-          ]);
-          
-          updatedFormData.konten_en = kontenEn;
-          updatedFormData.konten_ar = kontenAr;
-          console.log('Konten translated:', { en: updatedFormData.konten_en.substring(0, 50), ar: updatedFormData.konten_ar.substring(0, 50) });
+          const kontenTranslation = await fillBeritaTranslationField(
+            formData.konten,
+            updatedFormData.konten_en,
+            updatedFormData.konten_ar
+          );
+          updatedFormData.konten_en = kontenTranslation.en;
+          updatedFormData.konten_ar = kontenTranslation.ar;
         } catch (error: any) {
           console.error('Error translating konten:', error);
           translationErrors.push(`Konten: ${error.message}`);
@@ -616,17 +569,15 @@ export default function EditBeritaPage() {
           });
         } else {
           // If not found in kategoris, use translate as fallback
-          if (formData.kategori) {
-            console.log('Kategori not found in kategoris table, translating...');
+          if (formData.kategori?.trim()) {
             try {
-              const [kategoriEn, kategoriAr] = await Promise.all([
-                translateText(formData.kategori, 'en'),
-                translateText(formData.kategori, 'ar'),
-              ]);
-              
-              updatedFormData.kategori_en = kategoriEn;
-              updatedFormData.kategori_ar = kategoriAr;
-              console.log('Kategori translated:', { en: updatedFormData.kategori_en, ar: updatedFormData.kategori_ar });
+              const kategoriTranslation = await fillBeritaTranslationField(
+                formData.kategori,
+                updatedFormData.kategori_en,
+                updatedFormData.kategori_ar
+              );
+              updatedFormData.kategori_en = kategoriTranslation.en;
+              updatedFormData.kategori_ar = kategoriTranslation.ar;
             } catch (error: any) {
               console.error('Error translating kategori:', error);
               translationErrors.push(`Kategori: ${error.message}`);

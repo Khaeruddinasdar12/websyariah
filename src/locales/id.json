@@ -20,6 +20,7 @@
     "accreditation": "Akreditasi",
     "services": "Layanan",
     "contact": "Kontak",
+    "ppid": "PPID",
     "virtualTour": "Tur Virtual"
   },
   "home": {
@@ -415,6 +416,22 @@
         "description": "Informasi akreditasi Program Studi Hukum Tata Negara"
       }
     }
+  },
+  "ppid": {
+    "title": "PPID",
+    "subtitle": "Pejabat Pengelola Informasi dan Dokumentasi",
+    "publicInfoList": "Daftar Informasi Publik",
+    "view": "Lihat",
+    "download": "Unduh",
+    "ctaTitle": "Terhubung Lebih Dekat dengan FSHI!",
+    "ctaDescription": "Punya pertanyaan seputar akademik, kegiatan, atau admisi? Kami siap membantu Anda dengan senang hati.",
+    "contactUs": "Hubungi Kami",
+    "table": {
+      "no": "No",
+      "title": "Judul Informasi",
+      "summary": "Ringkasan Isi",
+      "unit": "Pejabat/Unit yang Menguasai Informasi",
+      "format": "Bentuk"
+    }
   }
 }
-

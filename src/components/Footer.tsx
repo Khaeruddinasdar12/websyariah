@@ -111,6 +111,11 @@ export default function Footer() {
                   {t('footer.lecturers')}
                 </Link>
               </li>
+              <li>
+                <Link href="/ppid" className="hover:text-gold-light transition-colors duration-300">
+                  {t('nav.ppid')}
+                </Link>
+              </li>
             </ul>
           </div>
           

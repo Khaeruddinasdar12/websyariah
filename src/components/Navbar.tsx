@@ -44,6 +44,7 @@ export default function Navbar() {
     { name: t('nav.lecturers'), href: '/tim-kami', key: 'lecturers' },
     { name: t('nav.about'), href: '/tentang', key: 'about' },
     { name: t('nav.accreditation'), href: '/akreditasi', key: 'accreditation' },
+    { name: t('nav.ppid'), href: '/ppid', key: 'ppid' },
     { name: t('nav.services'), href: '/layanan', key: 'services' },
     { name: t('nav.contact'), href: '/kontak', key: 'contact' },
   ];
@@ -74,33 +75,29 @@ export default function Navbar() {
   return (
     <nav className="bg-white/95 backdrop-blur-md shadow-lg border-b border-ink-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-2">
-          <div className="flex items-center min-w-0 flex-1">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="flex items-center min-w-0">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 overflow-hidden bg-white">
-                  <Image
-                    src="/assets/iain.png"
-                    alt="IAIN Bone"
-                    width={40}
-                    height={40}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="min-w-0 flex-shrink overflow-hidden">
-                  <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-ink-900 leading-tight">
-                    {titleParts.firstLine}
-                    <br />
-                    <span className="text-[10px] sm:text-xs md:text-sm lg:text-base">{titleParts.secondLine}</span>
-                  </h1>
-                </div>
-              </Link>
+        <div className="flex items-center h-16 gap-2 xl:gap-3">
+          <Link href="/" className="flex items-center min-w-0 shrink-0 max-w-[52%] sm:max-w-[42%] xl:max-w-[220px] 2xl:max-w-[260px]">
+            <div className="w-9 h-9 xl:w-10 xl:h-10 rounded-lg flex items-center justify-center mr-2 flex-shrink-0 overflow-hidden bg-white">
+              <Image
+                src="/assets/iain.png"
+                alt="IAIN Bone"
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
+              />
             </div>
-          </div>
+            <div className="min-w-0 overflow-hidden">
+              <h1 className="text-[11px] sm:text-xs md:text-sm xl:text-base font-bold text-ink-900 leading-tight truncate xl:whitespace-normal">
+                {titleParts.firstLine}
+                <br className="hidden xl:block" />
+                <span className="text-[10px] sm:text-[11px] md:text-xs xl:text-sm block xl:inline">{titleParts.secondLine}</span>
+              </h1>
+            </div>
+          </Link>
           
           {/* Desktop Menu */}
-          <div className="hidden lg:block flex-shrink-0">
-            <div className="flex items-baseline space-x-4 xl:space-x-6">
+          <div className="hidden xl:flex items-center ml-auto shrink-0">
+            <div className="flex items-center gap-0.5">
               {navigation.map((item) => {
                 if (item.submenu) {
                   return (
@@ -111,7 +108,7 @@ export default function Navbar() {
                       onMouseLeave={handleInfoMouseLeave}
                     >
                       <button
-                        className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 relative group flex items-center ${
+                        className={`px-1.5 py-2 rounded-md text-xs font-medium transition-all duration-300 relative group flex items-center whitespace-nowrap ${
                           isInfoActive ? '' : 'text-ink-800'
                         }`}
                         style={isInfoActive ? {color: 'var(--color-primary)'} : {}}
@@ -167,7 +164,7 @@ export default function Navbar() {
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 relative group ${
+                    className={`px-1.5 py-2 rounded-md text-xs font-medium transition-all duration-300 relative group whitespace-nowrap ${
                       isActive(item.href)
                         ? ''
                         : 'text-ink-800'
@@ -200,7 +197,7 @@ export default function Navbar() {
                 href="https://iain-bone.ac.id/tur-virtual/fakultas-syariah"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 relative group text-ink-800"
+                className="px-1.5 py-2 rounded-md text-xs font-medium transition-all duration-300 relative group text-ink-800 whitespace-nowrap"
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = 'var(--color-primary)';
                 }}
@@ -216,10 +213,13 @@ export default function Navbar() {
               </a>
 
             </div>
+            <div className="ml-2 pl-2 border-l border-ink-200">
+              <LanguageSwitcher />
+            </div>
           </div>
 
           {/* Mobile/Tablet menu button and language switcher */}
-          <div className="flex items-center gap-3 lg:hidden">
+          <div className="flex items-center gap-2 ml-auto xl:hidden">
             <LanguageSwitcher />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -232,16 +232,11 @@ export default function Navbar() {
               <i className="fas fa-bars text-xl"></i>
             </button>
           </div>
-          
-          {/* Desktop Language Switcher */}
-          <div className="hidden lg:block flex-shrink-0">
-            <LanguageSwitcher />
-          </div>
         </div>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden">
+          <div className="xl:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 backdrop-blur-md rounded-lg mt-2 shadow-lg">
               {navigation.map((item) => {
                 if (item.submenu) {

@@ -20,6 +20,7 @@
     "accreditation": "Accreditation",
     "services": "Services",
     "contact": "Contact",
+    "ppid": "PPID",
     "virtualTour": "Virtual Tour"
   },
   "home": {
@@ -415,6 +416,22 @@
         "description": "Accreditation information for Constitutional Law Study Program"
       }
     }
+  },
+  "ppid": {
+    "title": "PPID",
+    "subtitle": "Information and Documentation Management Officer",
+    "publicInfoList": "Public Information List",
+    "view": "View",
+    "download": "Download",
+    "ctaTitle": "Stay Connected with FSHI!",
+    "ctaDescription": "Have questions about academics, activities, or admissions? We are happy to help you.",
+    "contactUs": "Contact Us",
+    "table": {
+      "no": "No",
+      "title": "Information Title",
+      "summary": "Content Summary",
+      "unit": "Information Holder Official/Unit",
+      "format": "Format"
+    }
   }
 }
-

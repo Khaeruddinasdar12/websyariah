@@ -9,6 +9,176 @@ const categoryTranslations: Record<string, { en: string; ar: string }> = {
   'Ekonomi': { en: 'Economy', ar: 'اقتصاد' },
 };
 
+/** Max chars per free-API request (MyMemory/LibreTranslate). */
+const CHUNK_SIZE = 450;
+
+type TextChunk = { text: string; joiner: ' ' | '\n\n' };
+
+/**
+ * Split text into chunks near CHUNK_SIZE, preferring paragraph then sentence boundaries
+ * so translations are not cut mid-sentence.
+ */
+function splitTextIntoChunks(text: string, maxLen = CHUNK_SIZE): TextChunk[] {
+  const normalized = text.replace(/\r\n/g, '\n').trim();
+  if (!normalized) return [];
+  if (normalized.length <= maxLen) return [{ text: normalized, joiner: ' ' }];
+
+  const chunks: TextChunk[] = [];
+  let remaining = normalized;
+
+  while (remaining.length > maxLen) {
+    let splitAt = -1;
+    let joiner: ' ' | '\n\n' = ' ';
+    const window = remaining.slice(0, maxLen);
+
+    // Prefer paragraph break
+    const doubleBreak = window.lastIndexOf('\n\n');
+    const singleBreak = window.lastIndexOf('\n');
+    const paraBreak = Math.max(doubleBreak, singleBreak);
+    if (paraBreak > maxLen * 0.3) {
+      splitAt = paraBreak;
+      joiner = '\n\n';
+    }
+
+    // Prefer sentence end (. ! ? …) followed by space or end
+    if (splitAt === -1) {
+      const sentenceMatch = [...window.matchAll(/[.!?…](?=\s|$)/g)];
+      if (sentenceMatch.length > 0) {
+        const last = sentenceMatch[sentenceMatch.length - 1];
+        const idx = (last.index ?? 0) + last[0].length;
+        if (idx > maxLen * 0.3) splitAt = idx;
+      }
+    }
+
+    // Prefer soft punctuation / space
+    if (splitAt === -1) {
+      const softBreak = Math.max(
+        window.lastIndexOf('; '),
+        window.lastIndexOf(', '),
+        window.lastIndexOf(' ')
+      );
+      if (softBreak > maxLen * 0.3) {
+        splitAt = softBreak;
+      }
+    }
+
+    if (splitAt <= 0) splitAt = maxLen;
+
+    const piece = remaining.slice(0, splitAt).trim();
+    remaining = remaining.slice(splitAt).trim();
+    if (piece) chunks.push({ text: piece, joiner });
+  }
+
+  if (remaining) chunks.push({ text: remaining, joiner: ' ' });
+  return chunks;
+}
+
+async function translateWithMyMemory(
+  text: string,
+  sourceLang: string,
+  targetLangCode: string
+): Promise<string | null> {
+  const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLangCode}`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(myMemoryUrl, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (
+      data.responseStatus === 200 &&
+      data.responseData?.translatedText
+    ) {
+      const translated = String(data.responseData.translatedText).trim();
+      if (translated && translated.length > 0 && translated !== text) {
+        return translated;
+      }
+    }
+    return null;
+  } catch {
+    clearTimeout(timeoutId);
+    return null;
+  }
+}
+
+async function translateWithLibreTranslate(
+  text: string,
+  sourceLang: string,
+  targetLangCode: string
+): Promise<string | null> {
+  const libreTranslateUrl =
+    process.env.TRANSLATE_API_URL || 'https://libretranslate.de/translate';
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(libreTranslateUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: text,
+        source: sourceLang,
+        target: targetLangCode,
+        format: 'text',
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const translated = data.translatedText?.trim();
+    if (translated && translated !== text) {
+      return translated;
+    }
+    return null;
+  } catch {
+    clearTimeout(timeoutId);
+    return null;
+  }
+}
+
+async function translateChunk(
+  text: string,
+  sourceLang: string,
+  targetLangCode: string
+): Promise<{ translated: string; service: string }> {
+  const myMemory = await translateWithMyMemory(text, sourceLang, targetLangCode);
+  if (myMemory) {
+    return { translated: myMemory, service: 'mymemory' };
+  }
+
+  const libre = await translateWithLibreTranslate(
+    text,
+    sourceLang,
+    targetLangCode
+  );
+  if (libre) {
+    return { translated: libre, service: 'libretranslate' };
+  }
+
+  throw new Error(
+    'Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.'
+  );
+}
+
+/** Small delay between chunk requests to reduce free-API rate limiting. */
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { text, targetLang } = await request.json();
@@ -22,110 +192,71 @@ export async function POST(request: NextRequest) {
 
     // Check if it's a category (simple word)
     if (categoryTranslations[text]) {
-      return NextResponse.json({ 
-        translatedText: categoryTranslations[text][targetLang as 'en' | 'ar'] || text 
+      return NextResponse.json({
+        translatedText:
+          categoryTranslations[text][targetLang as 'en' | 'ar'] || text,
       });
     }
 
-    // Try multiple translation services with fallback
     const sourceLang = 'id';
-    const targetLangCode = targetLang === 'en' ? 'en' : targetLang === 'ar' ? 'ar' : 'id';
-    
-    // Limit text length for API (max 500 characters per request for free APIs)
-    const textToTranslate = text.length > 500 ? text.substring(0, 500) : text;
-    
-    console.log(`Translating "${textToTranslate.substring(0, 50)}..." from ${sourceLang} to ${targetLangCode}`);
-    
-    // Try MyMemory Translation API first (free, stable, 10000 chars/day)
-    try {
-      const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=${sourceLang}|${targetLangCode}`;
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
-      
-      const response = await fetch(myMemoryUrl, {
-        method: 'GET',
-        signal: controller.signal,
-      });
+    const targetLangCode =
+      targetLang === 'en' ? 'en' : targetLang === 'ar' ? 'ar' : 'id';
 
-      clearTimeout(timeoutId);
-      
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
-          const translated = data.responseData.translatedText.trim();
-          
-          if (translated && translated !== textToTranslate && translated.length > 0) {
-            console.log('MyMemory translation successful:', translated.substring(0, 50) + '...');
-            return NextResponse.json({ 
-              translatedText: translated,
-              success: true,
-              service: 'mymemory'
-            });
-          }
-        }
-      }
-      
-      // If MyMemory fails, try fallback
-      console.log('MyMemory failed, trying fallback...');
-    } catch (myMemoryError: any) {
-      console.log('MyMemory error:', myMemoryError.message);
-      // Continue to fallback
+    const chunks = splitTextIntoChunks(String(text));
+    console.log(
+      `Translating ${chunks.length} chunk(s) (${String(text).length} chars) from ${sourceLang} to ${targetLangCode}`
+    );
+
+    const translatedParts: string[] = [];
+    let usedService = 'mymemory';
+
+    for (let i = 0; i < chunks.length; i++) {
+      if (i > 0) await delay(300);
+
+      const { translated, service } = await translateChunk(
+        chunks[i].text,
+        sourceLang,
+        targetLangCode
+      );
+      translatedParts.push(translated);
+      usedService = service;
     }
 
-    // Fallback: Try LibreTranslate (if available)
-    try {
-      const libreTranslateUrl = process.env.TRANSLATE_API_URL || 'https://libretranslate.de/translate';
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-      
-      const response = await fetch(libreTranslateUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          q: textToTranslate,
-          source: sourceLang,
-          target: targetLangCode,
-          format: 'text',
-        }),
-        signal: controller.signal,
-      });
+    let fullTranslation = translatedParts[0] || '';
+    for (let i = 1; i < translatedParts.length; i++) {
+      const joiner = chunks[i - 1].joiner;
+      fullTranslation += joiner + translatedParts[i];
+    }
+    fullTranslation = fullTranslation.replace(/[ \t]+/g, ' ').trim();
 
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (data.translatedText && data.translatedText.trim() && data.translatedText !== textToTranslate) {
-          console.log('LibreTranslate successful:', data.translatedText.substring(0, 50) + '...');
-          return NextResponse.json({ 
-            translatedText: data.translatedText,
-            success: true,
-            service: 'libretranslate'
-          });
-        }
-      }
-    } catch (libreError: any) {
-      console.log('LibreTranslate error:', libreError.message);
-      // Continue to final fallback
+    if (!fullTranslation) {
+      throw new Error(
+        'Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.'
+      );
     }
 
-    // Final fallback: Simple word-by-word translation for common words
-    // This is a very basic fallback and won't work well for sentences
-    throw new Error('Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.');
+    console.log(
+      `Translation successful (${usedService}): ${fullTranslation.substring(0, 50)}...`
+    );
+
+    return NextResponse.json({
+      translatedText: fullTranslation,
+      success: true,
+      service: usedService,
+      chunks: chunks.length,
+    });
   } catch (error: any) {
     console.error('Translation error:', error);
-    // Return error with user-friendly message
-    const errorMessage = error.message || 'Layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.';
-    return NextResponse.json({ 
-      error: errorMessage,
-      translatedText: null,
-      note: 'Layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual atau coba lagi nanti.'
-    }, { status: 500 });
+    const errorMessage =
+      error.message ||
+      'Layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.';
+    return NextResponse.json(
+      {
+        error: errorMessage,
+        translatedText: null,
+        note: 'Layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual atau coba lagi nanti.',
+      },
+      { status: 500 }
+    );
   }
 }
-

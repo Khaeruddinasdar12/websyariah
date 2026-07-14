@@ -33,6 +33,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        // TipTap v3 StarterKit already includes Link — disable to avoid duplicate
+        link: false,
         heading: {
           levels: [1, 2, 3, 4, 5, 6],
         },

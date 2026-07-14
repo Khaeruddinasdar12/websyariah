@@ -1,3 +1,5 @@
+const SOFT_BREAK = '\uE000'; // placeholder for <br> inside a paragraph
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
@@ -7,81 +9,102 @@ function escapeHtml(text: string): string {
     .replace(/'/g, '&#39;');
 }
 
-/**
- * Strip HTML for translation while preserving Enter/paragraph structure as newlines.
- * TipTap uses </p> for Enter and <br> for soft breaks.
- */
-export function stripHtmlForTranslation(text: string): string {
+function decodeEntities(text: string): string {
   return text
-    .replace(/\r\n/g, '\n')
-    // Block ends → paragraph break (matches Enter in the editor)
-    .replace(/<\/(p|div|h[1-6]|li|tr|blockquote)>/gi, '\n')
-    // Soft line break
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/?(ul|ol|table|thead|tbody|tfoot)>/gi, '\n')
-    .replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    // Collapse spaces/tabs only (keep newlines/Enter)
-    .replace(/[ \t]+/g, ' ')
-    // Trim spaces around newlines without removing blank lines entirely
-    .replace(/[ \t]*\n[ \t]*/g, '\n')
-    // Cap runaway blank lines, but keep double Enter as paragraph gap
-    .replace(/\n{4,}/g, '\n\n\n')
-    .trim();
+    .replace(/&#39;/g, "'");
 }
 
-/**
- * Convert plain text (with newlines) back to TipTap-friendly HTML paragraphs
- * so Enter spacing from Indonesian source is visible in EN/AR editors.
- */
-export function plainTextToRichHtml(text: string): string {
-  if (!text?.trim()) return '';
-
-  // Split on one-or-more newlines; empty slots = intentional blank paragraph
-  const lines = text.replace(/\r\n/g, '\n').split('\n');
-
-  // Group consecutive non-empty lines into paragraphs; empty lines create gaps
-  const paragraphs: string[] = [];
-  let buffer: string[] = [];
-
-  const flush = () => {
-    if (buffer.length > 0) {
-      paragraphs.push(buffer.join('<br>'));
-      buffer = [];
-    }
-  };
-
-  for (const line of lines) {
-    if (line.trim() === '') {
-      flush();
-      // Preserve blank Enter as empty paragraph (visible gap in TipTap)
-      paragraphs.push('');
-    } else {
-      buffer.push(escapeHtml(line.trim()));
-    }
-  }
-  flush();
-
-  // Drop leading/trailing empty paragraphs only
-  while (paragraphs.length && paragraphs[0] === '') paragraphs.shift();
-  while (paragraphs.length && paragraphs[paragraphs.length - 1] === '') {
-    paragraphs.pop();
-  }
-
-  if (paragraphs.length === 0) return '';
-
-  return paragraphs
-    .map((p) => (p === '' ? '<p><br></p>' : `<p>${p}</p>`))
-    .join('');
+function cleanInlineHtml(inner: string): string {
+  return decodeEntities(
+    inner
+      .replace(/<br\s*\/?>/gi, SOFT_BREAK)
+      .replace(/<[^>]*>/g, '')
+      .replace(/[ \t]+/g, ' ')
+      .trim()
+  );
 }
 
 function looksLikeHtml(text: string): boolean {
   return /<\/?[a-z][\s\S]*>/i.test(text);
+}
+
+/**
+ * Strip HTML for translation while preserving Enter/paragraph structure as newlines.
+ * TipTap Enter = new <p>; each </p> becomes exactly one newline (no extra blank).
+ * Empty <p><br></p> becomes a blank line so intentional gaps survive.
+ */
+export function stripHtmlForTranslation(text: string): string {
+  if (!text?.trim()) return '';
+
+  const normalized = text.replace(/\r\n/g, '\n');
+
+  if (looksLikeHtml(normalized)) {
+    const paragraphs: string[] = [];
+    const paragraphRegex = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+    let match: RegExpExecArray | null;
+    let found = false;
+
+    while ((match = paragraphRegex.exec(normalized)) !== null) {
+      found = true;
+      paragraphs.push(cleanInlineHtml(match[1]));
+    }
+
+    if (found) {
+      // Join with single \n so paragraph count matches Indonesian TipTap Enter count
+      return paragraphs.join('\n');
+    }
+
+    // Fallback for non-<p> HTML
+    return decodeEntities(
+      normalized
+        .replace(/<\/(div|h[1-6]|li|tr|blockquote)>/gi, '\n')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/?(ul|ol|table|thead|tbody|tfoot)>/gi, '\n')
+        .replace(/<[^>]*>/g, '')
+        .replace(/[ \t]+/g, ' ')
+        .replace(/[ \t]*\n[ \t]*/g, '\n')
+        .replace(/\n{2,}/g, '\n')
+        .trim()
+    );
+  }
+
+  return normalized.replace(/[ \t]+/g, ' ').trim();
+}
+
+/**
+ * Convert plain text (with newlines) back to TipTap-friendly HTML paragraphs.
+ * One newline = one Enter = one <p> (same count as Indonesian source).
+ */
+export function plainTextToRichHtml(text: string): string {
+  if (text == null || text === '') return '';
+
+  const lines = String(text).replace(/\r\n/g, '\n').split('\n');
+
+  // Soft-trim only true empty edges (keep intentional blank middle lines)
+  while (lines.length && lines[0] === '') lines.shift();
+  while (lines.length && lines[lines.length - 1] === '') lines.pop();
+
+  if (lines.length === 0) return '';
+
+  return lines
+    .map((line) => {
+      // Soft breaks inside a paragraph (rare after translate)
+      const withSoftBreaks = line.replace(new RegExp(SOFT_BREAK, 'g'), '<br>');
+      const trimmed = withSoftBreaks.trim();
+      if (!trimmed || trimmed === '<br>') return '<p><br></p>';
+
+      const html = trimmed
+        .split(/<br>/i)
+        .map((part) => escapeHtml(part))
+        .join('<br>');
+      return `<p>${html}</p>`;
+    })
+    .join('');
 }
 
 export function shouldSkipTranslation(text: string): boolean {
@@ -123,7 +146,11 @@ export async function translateBeritaText(
   if (shouldSkipTranslation(text)) return text;
 
   const sourceIsHtml = looksLikeHtml(text);
-  const textOnly = stripHtmlForTranslation(text);
+  // Soft-break marker is only for structure; send a normal space to the API
+  const textOnly = stripHtmlForTranslation(text).replace(
+    new RegExp(SOFT_BREAK, 'g'),
+    ' '
+  );
   if (!textOnly) return text;
 
   const response = await fetch('/api/translate', {
@@ -134,11 +161,15 @@ export async function translateBeritaText(
     body: JSON.stringify({ text: textOnly, targetLang }),
   });
 
-  if (!response.ok) {
-    throw new Error(`Translation API returned ${response.status}`);
-  }
+  const data = await response.json().catch(() => ({}));
 
-  const data = await response.json();
+  if (!response.ok) {
+    const errorMsg =
+      data.error ||
+      data.note ||
+      `Translation API returned ${response.status}`;
+    throw new Error(errorMsg);
+  }
 
   if (data.error || !data.translatedText) {
     const errorMsg =
@@ -150,11 +181,11 @@ export async function translateBeritaText(
 
   const translated = String(data.translatedText);
 
-  if (stripHtmlForTranslation(translated) === textOnly || translated.trim() === '') {
-    throw new Error('Translation service returned unchanged text');
+  if (translated.trim() === '') {
+    throw new Error('Translation service returned empty text');
   }
 
-  // Konten uses RichTextEditor — restore Enter as HTML paragraphs
+  // Konten uses RichTextEditor — restore Enter as HTML paragraphs (1:1)
   if (sourceIsHtml) {
     return plainTextToRichHtml(translated);
   }
@@ -171,10 +202,13 @@ export async function fillBeritaTranslationField(
     return { en: sourceText, ar: sourceText };
   }
 
-  const [en, ar] = await Promise.all([
-    enValue?.trim() ? enValue : translateBeritaText(sourceText, 'en'),
-    arValue?.trim() ? arValue : translateBeritaText(sourceText, 'ar'),
-  ]);
+  // Sequential EN → AR to avoid free-API rate limits / 500 errors
+  const en = enValue?.trim()
+    ? enValue
+    : await translateBeritaText(sourceText, 'en');
+  const ar = arValue?.trim()
+    ? arValue
+    : await translateBeritaText(sourceText, 'ar');
 
   return {
     en: en || enValue || '',

@@ -173,10 +173,11 @@ export default function NewBeritaPage() {
 
       console.log('English translations:', { judulEn, kontenEn, kategoriEn });
 
-      const [judulAr, kontenAr] = await Promise.all([
-        formData.judul ? translateText(formData.judul, 'ar') : '',
-        formData.konten ? translateText(formData.konten, 'ar') : '',
-      ]);
+      // Delay before Arabic to reduce free-API rate limiting
+      await new Promise((r) => setTimeout(r, 500));
+
+      const judulAr = formData.judul ? await translateText(formData.judul, 'ar') : '';
+      const kontenAr = formData.konten ? await translateText(formData.konten, 'ar') : '';
 
       console.log('Arabic translations:', { judulAr, kontenAr, kategoriAr });
 

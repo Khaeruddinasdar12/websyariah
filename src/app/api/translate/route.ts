@@ -17,38 +17,26 @@ type TextChunk = { text: string; trailingBreak: string };
 /**
  * Split into paragraph/line blocks first (preserving exact Enter spacing),
  * then split oversized blocks by sentence. trailingBreak mirrors the original
- * newline sequence that followed each block (e.g. "\n" or "\n\n").
+ * newline sequence that followed each block (e.g. "\n").
  */
 function splitTextIntoChunks(text: string, maxLen = CHUNK_SIZE): TextChunk[] {
   const normalized = text.replace(/\r\n/g, '\n');
-  if (!normalized.trim()) return [];
+  if (!normalized.trim() && normalized.indexOf('\n') === -1) return [];
 
-  const blocks = normalized.split(/(\n+)/);
+  // Keep empty paragraphs (intentional blank Enter) as empty text chunks
+  const lines = normalized.split('\n');
   const chunks: TextChunk[] = [];
 
-  for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[i];
-    if (!block) continue;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trailingBreak = i < lines.length - 1 ? '\n' : '';
 
-    // Newline-only segments are attached as trailingBreak of previous text
-    if (/^\n+$/.test(block)) {
-      if (chunks.length > 0) {
-        chunks[chunks.length - 1].trailingBreak += block;
-      }
+    if (line.length <= maxLen) {
+      chunks.push({ text: line, trailingBreak });
       continue;
     }
 
-    const trailingBreak =
-      i + 1 < blocks.length && /^\n+$/.test(blocks[i + 1]) ? blocks[i + 1] : '';
-    if (trailingBreak) i++; // consume the break segment now
-
-    if (block.length <= maxLen) {
-      chunks.push({ text: block, trailingBreak });
-      continue;
-    }
-
-    // Oversized paragraph: split by sentence, keep breaks only after last piece
-    let remaining = block;
+    let remaining = line;
     const pieceChunks: string[] = [];
 
     while (remaining.length > maxLen) {
@@ -83,13 +71,16 @@ function splitTextIntoChunks(text: string, maxLen = CHUNK_SIZE): TextChunk[] {
       const isLast = idx === pieceChunks.length - 1;
       chunks.push({
         text: piece,
-        // Mid-paragraph sentence splits join with a space (no Enter)
         trailingBreak: isLast ? trailingBreak : ' ',
       });
     });
   }
 
-  return chunks.filter((c) => c.text.trim().length > 0 || c.trailingBreak);
+  return chunks;
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function translateWithMyMemory(
@@ -100,7 +91,7 @@ async function translateWithMyMemory(
   const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLangCode}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const timeoutId = setTimeout(() => controller.abort(), 20000);
 
   try {
     const response = await fetch(myMemoryUrl, {
@@ -112,15 +103,28 @@ async function translateWithMyMemory(
     if (!response.ok) return null;
 
     const data = await response.json();
-    if (data.responseStatus === 200 && data.responseData?.translatedText) {
+
+    // MyMemory returns 200 with INVALID QUERY / QUOTA in body sometimes
+    if (data.responseStatus && Number(data.responseStatus) !== 200) {
+      console.log('MyMemory status:', data.responseStatus, data.responseDetails);
+      return null;
+    }
+
+    if (data.responseData?.translatedText) {
       const translated = String(data.responseData.translatedText).trim();
-      if (translated && translated.length > 0 && translated !== text) {
-        return translated;
+      // Ignore known error payloads returned as "translation"
+      if (
+        !translated ||
+        /MYMEMORY WARNING|INVALID|QUERY LENGTH|NO QUERY/i.test(translated)
+      ) {
+        return null;
       }
+      return translated;
     }
     return null;
-  } catch {
+  } catch (err: any) {
     clearTimeout(timeoutId);
+    console.log('MyMemory error:', err?.message || err);
     return null;
   }
 }
@@ -134,7 +138,7 @@ async function translateWithLibreTranslate(
     process.env.TRANSLATE_API_URL || 'https://libretranslate.de/translate';
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const timeoutId = setTimeout(() => controller.abort(), 20000);
 
   try {
     const response = await fetch(libreTranslateUrl, {
@@ -156,22 +160,20 @@ async function translateWithLibreTranslate(
 
     const data = await response.json();
     const translated = data.translatedText?.trim();
-    if (translated && translated !== text) {
-      return translated;
-    }
+    if (translated) return translated;
     return null;
-  } catch {
+  } catch (err: any) {
     clearTimeout(timeoutId);
+    console.log('LibreTranslate error:', err?.message || err);
     return null;
   }
 }
 
-async function translateChunk(
+async function translateChunkOnce(
   text: string,
   sourceLang: string,
   targetLangCode: string
-): Promise<{ translated: string; service: string }> {
-  // Preserve intentional blank lines without calling the API
+): Promise<{ translated: string; service: string } | null> {
   if (!text.trim()) {
     return { translated: text, service: 'passthrough' };
   }
@@ -190,14 +192,26 @@ async function translateChunk(
     return { translated: libre, service: 'libretranslate' };
   }
 
-  throw new Error(
-    'Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.'
-  );
+  return null;
 }
 
-/** Small delay between chunk requests to reduce free-API rate limiting. */
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+async function translateChunkWithRetry(
+  text: string,
+  sourceLang: string,
+  targetLangCode: string,
+  retries = 2
+): Promise<{ translated: string; service: string }> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (attempt > 0) await delay(500 * attempt);
+
+    const result = await translateChunkOnce(text, sourceLang, targetLangCode);
+    if (result) return result;
+  }
+
+  // Soft fallback: keep original text for this chunk so the whole article
+  // still returns instead of a hard 500 (common when Arabic quota/rate-limits).
+  console.log('Chunk translate failed after retries, keeping source text');
+  return { translated: text, service: 'fallback-source' };
 }
 
 export async function POST(request: NextRequest) {
@@ -211,7 +225,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if it's a category (simple word)
     if (categoryTranslations[text]) {
       return NextResponse.json({
         translatedText:
@@ -230,37 +243,57 @@ export async function POST(request: NextRequest) {
 
     let fullTranslation = '';
     let usedService = 'mymemory';
-    let translatedAny = false;
+    let translatedCount = 0;
+    let fallbackCount = 0;
 
     for (let i = 0; i < chunks.length; i++) {
-      if (i > 0 && chunks[i].text.trim()) await delay(250);
+      // Slow down a bit for Arabic / multi-chunk to reduce free-API 429/500
+      if (i > 0 && chunks[i].text.trim()) {
+        await delay(targetLangCode === 'ar' ? 400 : 250);
+      }
 
-      const { translated, service } = await translateChunk(
+      const { translated, service } = await translateChunkWithRetry(
         chunks[i].text,
         sourceLang,
         targetLangCode
       );
 
       fullTranslation += translated + chunks[i].trailingBreak;
-      if (service !== 'passthrough') {
+
+      if (service === 'fallback-source') {
+        fallbackCount++;
+      } else if (service !== 'passthrough') {
         usedService = service;
-        translatedAny = true;
+        translatedCount++;
       }
     }
 
-    fullTranslation = fullTranslation.replace(/[ \t]+\n/g, '\n').replace(/\n[ \t]+/g, '\n');
+    if (!fullTranslation.trim()) {
+      return NextResponse.json(
+        {
+          error:
+            'Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.',
+          translatedText: null,
+        },
+        { status: 500 }
+      );
+    }
 
-    // Keep leading/trailing newlines from source if any meaningful body remains
-    fullTranslation = fullTranslation.replace(/[ \t]+$/g, '').replace(/^[ \t]+/g, '');
-
-    if (!fullTranslation.trim() || !translatedAny) {
-      throw new Error(
-        'Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.'
+    // If nothing was actually translated, surface as error
+    if (translatedCount === 0 && fallbackCount > 0) {
+      return NextResponse.json(
+        {
+          error:
+            'Layanan terjemahan sedang sibuk atau tidak tersedia. Silakan coba lagi sebentar.',
+          translatedText: null,
+          note: 'Coba lagi dalam beberapa detik, atau isi terjemahan secara manual.',
+        },
+        { status: 503 }
       );
     }
 
     console.log(
-      `Translation successful (${usedService}): ${fullTranslation.substring(0, 50)}...`
+      `Translation done (${usedService}, ok=${translatedCount}, fallback=${fallbackCount}): ${fullTranslation.substring(0, 50)}...`
     );
 
     return NextResponse.json({
@@ -268,6 +301,8 @@ export async function POST(request: NextRequest) {
       success: true,
       service: usedService,
       chunks: chunks.length,
+      translatedCount,
+      fallbackCount,
     });
   } catch (error: any) {
     console.error('Translation error:', error);

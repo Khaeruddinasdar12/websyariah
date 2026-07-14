@@ -33,6 +33,26 @@ function looksLikeHtml(text: string): boolean {
   return /<\/?[a-z][\s\S]*>/i.test(text);
 }
 
+function hasArabicScript(text: string): boolean {
+  return /[\u0600-\u06FF]/.test(text);
+}
+
+function isMostlyLatin(text: string): boolean {
+  const letters = text.replace(/[^A-Za-z\u0600-\u06FF]/g, '');
+  if (!letters) return false;
+  const latin = (letters.match(/[A-Za-z]/g) || []).length;
+  return latin / letters.length > 0.6;
+}
+
+/** Existing AR value is usable only if it actually contains Arabic (not leftover Indonesian). */
+export function isUsableArabicTranslation(value?: string | null): boolean {
+  if (!value?.trim()) return false;
+  const plain = stripHtmlForTranslation(value);
+  if (!hasArabicScript(plain)) return false;
+  if (isMostlyLatin(plain)) return false;
+  return true;
+}
+
 /**
  * Strip HTML for translation while preserving Enter/paragraph structure as newlines.
  * TipTap Enter = new <p>; each </p> becomes exactly one newline (no extra blank).
@@ -185,6 +205,16 @@ export async function translateBeritaText(
     throw new Error('Translation service returned empty text');
   }
 
+  // Guard: never accept Indonesian leftover as Arabic
+  if (targetLang === 'ar') {
+    const plain = stripHtmlForTranslation(translated);
+    if (!hasArabicScript(plain) || isMostlyLatin(plain)) {
+      throw new Error(
+        'Hasil terjemahan Arab tidak valid. Silakan coba lagi atau isi manual.'
+      );
+    }
+  }
+
   // Konten uses RichTextEditor — restore Enter as HTML paragraphs (1:1)
   if (sourceIsHtml) {
     return plainTextToRichHtml(translated);
@@ -202,16 +232,16 @@ export async function fillBeritaTranslationField(
     return { en: sourceText, ar: sourceText };
   }
 
-  // Sequential EN → AR to avoid free-API rate limits / 500 errors
+  // Sequential EN → AR. Re-translate AR if existing value is still Indonesian.
   const en = enValue?.trim()
     ? enValue
     : await translateBeritaText(sourceText, 'en');
-  const ar = arValue?.trim()
-    ? arValue
+  const ar = isUsableArabicTranslation(arValue)
+    ? arValue!
     : await translateBeritaText(sourceText, 'ar');
 
   return {
     en: en || enValue || '',
-    ar: ar || arValue || '',
+    ar: ar || '',
   };
 }

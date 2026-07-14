@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const maxDuration = 60;
+
 // Simple translation mapping for common words (fallback)
 const categoryTranslations: Record<string, { en: string; ar: string }> = {
   'Umum': { en: 'General', ar: 'عام' },
@@ -9,21 +11,19 @@ const categoryTranslations: Record<string, { en: string; ar: string }> = {
   'Ekonomi': { en: 'Economy', ar: 'اقتصاد' },
 };
 
-/** Max chars per free-API request (MyMemory/LibreTranslate). */
+/** Max chars per request chunk (keep under typical free-API limits). */
 const CHUNK_SIZE = 450;
+
+/** Optional email raises MyMemory daily quota (anonymous → 50k chars). */
+const MYMEMORY_EMAIL =
+  process.env.MYMEMORY_EMAIL || 'admin@syariah.iain-bone.ac.id';
 
 type TextChunk = { text: string; trailingBreak: string };
 
-/**
- * Split into paragraph/line blocks first (preserving exact Enter spacing),
- * then split oversized blocks by sentence. trailingBreak mirrors the original
- * newline sequence that followed each block (e.g. "\n").
- */
 function splitTextIntoChunks(text: string, maxLen = CHUNK_SIZE): TextChunk[] {
   const normalized = text.replace(/\r\n/g, '\n');
   if (!normalized.trim() && normalized.indexOf('\n') === -1) return [];
 
-  // Keep empty paragraphs (intentional blank Enter) as empty text chunks
   const lines = normalized.split('\n');
   const chunks: TextChunk[] = [];
 
@@ -83,12 +83,82 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/** True if text contains Arabic letters. */
+function hasArabicScript(text: string): boolean {
+  return /[\u0600-\u06FF]/.test(text);
+}
+
+/** True if text is mostly Latin letters (Indonesian/English). */
+function isMostlyLatin(text: string): boolean {
+  const letters = text.replace(/[^A-Za-z\u0600-\u06FF]/g, '');
+  if (!letters) return false;
+  const latin = (letters.match(/[A-Za-z]/g) || []).length;
+  return latin / letters.length > 0.6;
+}
+
+/**
+ * Google Translate free endpoint (client=gtx). Works well for id→ar.
+ * Response: [[["translated","source",...],...],...]
+ */
+async function translateWithGoogle(
+  text: string,
+  sourceLang: string,
+  targetLangCode: string
+): Promise<string | null> {
+  const url =
+    `https://translate.googleapis.com/translate_a/single` +
+    `?client=gtx&sl=${encodeURIComponent(sourceLang)}` +
+    `&tl=${encodeURIComponent(targetLangCode)}` +
+    `&dt=t&q=${encodeURIComponent(text)}`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (compatible; WebSyariahTranslate/1.0; +https://syariah.iain-bone.ac.id)',
+      },
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (!Array.isArray(data?.[0])) return null;
+
+    const translated = data[0]
+      .map((part: unknown) =>
+        Array.isArray(part) && typeof part[0] === 'string' ? part[0] : ''
+      )
+      .join('')
+      .trim();
+
+    return translated || null;
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    console.log('Google Translate error:', err?.message || err);
+    return null;
+  }
+}
+
 async function translateWithMyMemory(
   text: string,
   sourceLang: string,
   targetLangCode: string
 ): Promise<string | null> {
-  const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLangCode}`;
+  // Max ~500 bytes for MyMemory — skip oversized pieces
+  if (new TextEncoder().encode(text).length > 480) return null;
+
+  const params = new URLSearchParams({
+    q: text,
+    langpair: `${sourceLang}|${targetLangCode}`,
+    de: MYMEMORY_EMAIL,
+  });
+  const myMemoryUrl = `https://api.mymemory.translated.net/get?${params.toString()}`;
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 20000);
@@ -104,7 +174,11 @@ async function translateWithMyMemory(
 
     const data = await response.json();
 
-    // MyMemory returns 200 with INVALID QUERY / QUOTA in body sometimes
+    if (data.quotaFinished) {
+      console.log('MyMemory quota finished');
+      return null;
+    }
+
     if (data.responseStatus && Number(data.responseStatus) !== 200) {
       console.log('MyMemory status:', data.responseStatus, data.responseDetails);
       return null;
@@ -112,10 +186,9 @@ async function translateWithMyMemory(
 
     if (data.responseData?.translatedText) {
       const translated = String(data.responseData.translatedText).trim();
-      // Ignore known error payloads returned as "translation"
       if (
         !translated ||
-        /MYMEMORY WARNING|INVALID|QUERY LENGTH|NO QUERY/i.test(translated)
+        /MYMEMORY WARNING|INVALID|QUERY LENGTH|NO QUERY|QUOTA/i.test(translated)
       ) {
         return null;
       }
@@ -135,7 +208,7 @@ async function translateWithLibreTranslate(
   targetLangCode: string
 ): Promise<string | null> {
   const libreTranslateUrl =
-    process.env.TRANSLATE_API_URL || 'https://libretranslate.de/translate';
+    process.env.TRANSLATE_API_URL || 'https://libretranslate.com/translate';
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 20000);
@@ -169,6 +242,32 @@ async function translateWithLibreTranslate(
   }
 }
 
+/**
+ * Validate that the result looks like a real translation for the target language.
+ * For Arabic: must contain Arabic script and not be mostly Latin source leftover.
+ */
+function isValidTranslation(
+  source: string,
+  translated: string,
+  targetLangCode: string
+): boolean {
+  if (!translated?.trim()) return false;
+
+  if (targetLangCode === 'ar') {
+    if (!hasArabicScript(translated)) return false;
+    // Reject if still mostly Latin (Indonesian left in AR field)
+    if (isMostlyLatin(translated) && !hasArabicScript(source)) return false;
+    return true;
+  }
+
+  // English: reject if identical to source for longer phrases
+  if (targetLangCode === 'en') {
+    if (translated === source && source.split(/\s+/).length > 3) return false;
+  }
+
+  return true;
+}
+
 async function translateChunkOnce(
   text: string,
   sourceLang: string,
@@ -178,18 +277,41 @@ async function translateChunkOnce(
     return { translated: text, service: 'passthrough' };
   }
 
+  // 1) Google (most reliable for id→ar)
+  const google = await translateWithGoogle(text, sourceLang, targetLangCode);
+  if (google && isValidTranslation(text, google, targetLangCode)) {
+    return { translated: google, service: 'google' };
+  }
+
+  // 2) MyMemory
   const myMemory = await translateWithMyMemory(text, sourceLang, targetLangCode);
-  if (myMemory) {
+  if (myMemory && isValidTranslation(text, myMemory, targetLangCode)) {
     return { translated: myMemory, service: 'mymemory' };
   }
 
+  // 3) LibreTranslate (optional / self-hosted)
   const libre = await translateWithLibreTranslate(
     text,
     sourceLang,
     targetLangCode
   );
-  if (libre) {
+  if (libre && isValidTranslation(text, libre, targetLangCode)) {
     return { translated: libre, service: 'libretranslate' };
+  }
+
+  // 4) Arabic pivot: id → en → ar (when direct id→ar providers fail)
+  if (targetLangCode === 'ar' && sourceLang === 'id') {
+    const en =
+      (await translateWithGoogle(text, 'id', 'en')) ||
+      (await translateWithMyMemory(text, 'id', 'en'));
+    if (en) {
+      const ar =
+        (await translateWithGoogle(en, 'en', 'ar')) ||
+        (await translateWithMyMemory(en, 'en', 'ar'));
+      if (ar && isValidTranslation(text, ar, 'ar')) {
+        return { translated: ar, service: 'pivot-id-en-ar' };
+      }
+    }
   }
 
   return null;
@@ -200,18 +322,15 @@ async function translateChunkWithRetry(
   sourceLang: string,
   targetLangCode: string,
   retries = 2
-): Promise<{ translated: string; service: string }> {
+): Promise<{ translated: string; service: string } | null> {
   for (let attempt = 0; attempt <= retries; attempt++) {
-    if (attempt > 0) await delay(500 * attempt);
+    if (attempt > 0) await delay(600 * attempt);
 
     const result = await translateChunkOnce(text, sourceLang, targetLangCode);
     if (result) return result;
   }
 
-  // Soft fallback: keep original text for this chunk so the whole article
-  // still returns instead of a hard 500 (common when Arabic quota/rate-limits).
-  console.log('Chunk translate failed after retries, keeping source text');
-  return { translated: text, service: 'fallback-source' };
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -242,58 +361,80 @@ export async function POST(request: NextRequest) {
     );
 
     let fullTranslation = '';
-    let usedService = 'mymemory';
+    let usedService = 'google';
     let translatedCount = 0;
-    let fallbackCount = 0;
+    let failedCount = 0;
 
     for (let i = 0; i < chunks.length; i++) {
-      // Slow down a bit for Arabic / multi-chunk to reduce free-API 429/500
-      if (i > 0 && chunks[i].text.trim()) {
-        await delay(targetLangCode === 'ar' ? 400 : 250);
+      const chunkText = chunks[i].text;
+
+      if (!chunkText.trim()) {
+        fullTranslation += chunkText + chunks[i].trailingBreak;
+        continue;
       }
 
-      const { translated, service } = await translateChunkWithRetry(
-        chunks[i].text,
+      if (i > 0) {
+        await delay(targetLangCode === 'ar' ? 200 : 120);
+      }
+
+      const result = await translateChunkWithRetry(
+        chunkText,
         sourceLang,
         targetLangCode
       );
 
-      fullTranslation += translated + chunks[i].trailingBreak;
+      if (!result) {
+        failedCount++;
+        console.log(
+          `Chunk ${i + 1}/${chunks.length} failed for ${targetLangCode}`
+        );
+        // Do NOT put Indonesian into Arabic field — skip failed chunk with marker
+        if (targetLangCode === 'ar') {
+          fullTranslation += chunks[i].trailingBreak;
+        } else {
+          // For EN, keep source so partial news is still usable
+          fullTranslation += chunkText + chunks[i].trailingBreak;
+        }
+        continue;
+      }
 
-      if (service === 'fallback-source') {
-        fallbackCount++;
-      } else if (service !== 'passthrough') {
-        usedService = service;
+      fullTranslation += result.translated + chunks[i].trailingBreak;
+      if (result.service !== 'passthrough') {
+        usedService = result.service;
         translatedCount++;
       }
     }
 
-    if (!fullTranslation.trim()) {
+    fullTranslation = fullTranslation.replace(/\n{3,}/g, '\n\n').trim();
+
+    if (!fullTranslation.trim() || translatedCount === 0) {
       return NextResponse.json(
         {
           error:
-            'Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.',
+            targetLangCode === 'ar'
+              ? 'Gagal menerjemahkan ke Bahasa Arab. Silakan coba lagi atau isi manual.'
+              : 'Layanan terjemahan sedang sibuk. Silakan coba lagi sebentar.',
           translatedText: null,
+          failedCount,
         },
-        { status: 500 }
+        { status: 503 }
       );
     }
 
-    // If nothing was actually translated, surface as error
-    if (translatedCount === 0 && fallbackCount > 0) {
+    // Arabic must actually look Arabic — never accept mostly-Latin body
+    if (targetLangCode === 'ar' && isMostlyLatin(fullTranslation)) {
       return NextResponse.json(
         {
           error:
-            'Layanan terjemahan sedang sibuk atau tidak tersedia. Silakan coba lagi sebentar.',
+            'Hasil terjemahan Arab tidak valid (masih Bahasa Indonesia). Silakan coba lagi.',
           translatedText: null,
-          note: 'Coba lagi dalam beberapa detik, atau isi terjemahan secara manual.',
         },
         { status: 503 }
       );
     }
 
     console.log(
-      `Translation done (${usedService}, ok=${translatedCount}, fallback=${fallbackCount}): ${fullTranslation.substring(0, 50)}...`
+      `Translation done (${usedService}, ok=${translatedCount}, failed=${failedCount}): ${fullTranslation.substring(0, 50)}...`
     );
 
     return NextResponse.json({
@@ -302,7 +443,7 @@ export async function POST(request: NextRequest) {
       service: usedService,
       chunks: chunks.length,
       translatedCount,
-      fallbackCount,
+      failedCount,
     });
   } catch (error: any) {
     console.error('Translation error:', error);

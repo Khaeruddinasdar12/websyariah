@@ -9,6 +9,7 @@ import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
 import AdminTableActions from '@/components/admin/AdminTableActions';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface Berita {
@@ -108,6 +109,17 @@ export default function BeritasPage() {
     router.push(`/admin/beritas/${berita.id}/edit`);
   };
 
+  const getBeritaViewHref = (berita: Berita): string => {
+    const baseSlug = (berita.slug || berita.judul || 'berita')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    const id = berita.id;
+    if (!id) return `/berita/${baseSlug}`;
+    if (baseSlug.endsWith(`-${id}`)) return `/berita/${baseSlug}`;
+    return `/berita/${baseSlug}-${id}`;
+  };
+
   const handleDelete = async (id: string) => {
     const confirmed = await confirm({
       title: 'Hapus Berita',
@@ -182,7 +194,17 @@ export default function BeritasPage() {
                   key={berita.id}
                   className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
-                  <td className="px-4 py-3">{berita.judul}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={getBeritaViewHref(berita)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-600 hover:text-brand-700 hover:underline dark:text-brand-400 dark:hover:text-brand-300"
+                      title="Buka halaman berita"
+                    >
+                      {berita.judul}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">{getCategoryName(berita)}</td>
                   <td className="px-4 py-3">
                     {berita.gambar && (

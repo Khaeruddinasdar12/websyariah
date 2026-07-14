@@ -12,65 +12,84 @@ const categoryTranslations: Record<string, { en: string; ar: string }> = {
 /** Max chars per free-API request (MyMemory/LibreTranslate). */
 const CHUNK_SIZE = 450;
 
-type TextChunk = { text: string; joiner: ' ' | '\n\n' };
+type TextChunk = { text: string; trailingBreak: string };
 
 /**
- * Split text into chunks near CHUNK_SIZE, preferring paragraph then sentence boundaries
- * so translations are not cut mid-sentence.
+ * Split into paragraph/line blocks first (preserving exact Enter spacing),
+ * then split oversized blocks by sentence. trailingBreak mirrors the original
+ * newline sequence that followed each block (e.g. "\n" or "\n\n").
  */
 function splitTextIntoChunks(text: string, maxLen = CHUNK_SIZE): TextChunk[] {
-  const normalized = text.replace(/\r\n/g, '\n').trim();
-  if (!normalized) return [];
-  if (normalized.length <= maxLen) return [{ text: normalized, joiner: ' ' }];
+  const normalized = text.replace(/\r\n/g, '\n');
+  if (!normalized.trim()) return [];
 
+  const blocks = normalized.split(/(\n+)/);
   const chunks: TextChunk[] = [];
-  let remaining = normalized;
 
-  while (remaining.length > maxLen) {
-    let splitAt = -1;
-    let joiner: ' ' | '\n\n' = ' ';
-    const window = remaining.slice(0, maxLen);
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    if (!block) continue;
 
-    // Prefer paragraph break
-    const doubleBreak = window.lastIndexOf('\n\n');
-    const singleBreak = window.lastIndexOf('\n');
-    const paraBreak = Math.max(doubleBreak, singleBreak);
-    if (paraBreak > maxLen * 0.3) {
-      splitAt = paraBreak;
-      joiner = '\n\n';
+    // Newline-only segments are attached as trailingBreak of previous text
+    if (/^\n+$/.test(block)) {
+      if (chunks.length > 0) {
+        chunks[chunks.length - 1].trailingBreak += block;
+      }
+      continue;
     }
 
-    // Prefer sentence end (. ! ? …) followed by space or end
-    if (splitAt === -1) {
+    const trailingBreak =
+      i + 1 < blocks.length && /^\n+$/.test(blocks[i + 1]) ? blocks[i + 1] : '';
+    if (trailingBreak) i++; // consume the break segment now
+
+    if (block.length <= maxLen) {
+      chunks.push({ text: block, trailingBreak });
+      continue;
+    }
+
+    // Oversized paragraph: split by sentence, keep breaks only after last piece
+    let remaining = block;
+    const pieceChunks: string[] = [];
+
+    while (remaining.length > maxLen) {
+      let splitAt = -1;
+      const window = remaining.slice(0, maxLen);
+
       const sentenceMatch = [...window.matchAll(/[.!?…](?=\s|$)/g)];
       if (sentenceMatch.length > 0) {
         const last = sentenceMatch[sentenceMatch.length - 1];
         const idx = (last.index ?? 0) + last[0].length;
         if (idx > maxLen * 0.3) splitAt = idx;
       }
-    }
 
-    // Prefer soft punctuation / space
-    if (splitAt === -1) {
-      const softBreak = Math.max(
-        window.lastIndexOf('; '),
-        window.lastIndexOf(', '),
-        window.lastIndexOf(' ')
-      );
-      if (softBreak > maxLen * 0.3) {
-        splitAt = softBreak;
+      if (splitAt === -1) {
+        const softBreak = Math.max(
+          window.lastIndexOf('; '),
+          window.lastIndexOf(', '),
+          window.lastIndexOf(' ')
+        );
+        if (softBreak > maxLen * 0.3) splitAt = softBreak;
       }
+
+      if (splitAt <= 0) splitAt = maxLen;
+
+      pieceChunks.push(remaining.slice(0, splitAt).trimEnd());
+      remaining = remaining.slice(splitAt).trimStart();
     }
 
-    if (splitAt <= 0) splitAt = maxLen;
+    if (remaining) pieceChunks.push(remaining);
 
-    const piece = remaining.slice(0, splitAt).trim();
-    remaining = remaining.slice(splitAt).trim();
-    if (piece) chunks.push({ text: piece, joiner });
+    pieceChunks.forEach((piece, idx) => {
+      const isLast = idx === pieceChunks.length - 1;
+      chunks.push({
+        text: piece,
+        // Mid-paragraph sentence splits join with a space (no Enter)
+        trailingBreak: isLast ? trailingBreak : ' ',
+      });
+    });
   }
 
-  if (remaining) chunks.push({ text: remaining, joiner: ' ' });
-  return chunks;
+  return chunks.filter((c) => c.text.trim().length > 0 || c.trailingBreak);
 }
 
 async function translateWithMyMemory(
@@ -93,10 +112,7 @@ async function translateWithMyMemory(
     if (!response.ok) return null;
 
     const data = await response.json();
-    if (
-      data.responseStatus === 200 &&
-      data.responseData?.translatedText
-    ) {
+    if (data.responseStatus === 200 && data.responseData?.translatedText) {
       const translated = String(data.responseData.translatedText).trim();
       if (translated && translated.length > 0 && translated !== text) {
         return translated;
@@ -155,6 +171,11 @@ async function translateChunk(
   sourceLang: string,
   targetLangCode: string
 ): Promise<{ translated: string; service: string }> {
+  // Preserve intentional blank lines without calling the API
+  if (!text.trim()) {
+    return { translated: text, service: 'passthrough' };
+  }
+
   const myMemory = await translateWithMyMemory(text, sourceLang, targetLangCode);
   if (myMemory) {
     return { translated: myMemory, service: 'mymemory' };
@@ -207,29 +228,32 @@ export async function POST(request: NextRequest) {
       `Translating ${chunks.length} chunk(s) (${String(text).length} chars) from ${sourceLang} to ${targetLangCode}`
     );
 
-    const translatedParts: string[] = [];
+    let fullTranslation = '';
     let usedService = 'mymemory';
+    let translatedAny = false;
 
     for (let i = 0; i < chunks.length; i++) {
-      if (i > 0) await delay(300);
+      if (i > 0 && chunks[i].text.trim()) await delay(250);
 
       const { translated, service } = await translateChunk(
         chunks[i].text,
         sourceLang,
         targetLangCode
       );
-      translatedParts.push(translated);
-      usedService = service;
+
+      fullTranslation += translated + chunks[i].trailingBreak;
+      if (service !== 'passthrough') {
+        usedService = service;
+        translatedAny = true;
+      }
     }
 
-    let fullTranslation = translatedParts[0] || '';
-    for (let i = 1; i < translatedParts.length; i++) {
-      const joiner = chunks[i - 1].joiner;
-      fullTranslation += joiner + translatedParts[i];
-    }
-    fullTranslation = fullTranslation.replace(/[ \t]+/g, ' ').trim();
+    fullTranslation = fullTranslation.replace(/[ \t]+\n/g, '\n').replace(/\n[ \t]+/g, '\n');
 
-    if (!fullTranslation) {
+    // Keep leading/trailing newlines from source if any meaningful body remains
+    fullTranslation = fullTranslation.replace(/[ \t]+$/g, '').replace(/^[ \t]+/g, '');
+
+    if (!fullTranslation.trim() || !translatedAny) {
       throw new Error(
         'Semua layanan terjemahan tidak tersedia. Silakan isi terjemahan secara manual.'
       );

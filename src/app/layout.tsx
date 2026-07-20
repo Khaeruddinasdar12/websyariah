@@ -8,6 +8,9 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import AuthErrorWrapper from '@/components/auth/AuthErrorWrapper';
 import AuthRecoveryRedirect from '@/components/auth/AuthRecoveryRedirect';
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
+import GoogleAnalyticsPageView from '@/components/analytics/GoogleAnalyticsPageView';
+import { Suspense } from 'react';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -34,6 +37,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} dark:bg-gray-900`}>
+        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalyticsPageView />
+        </Suspense>
         <ThemeProvider>
           <AuthProvider>
             <ToastProvider>

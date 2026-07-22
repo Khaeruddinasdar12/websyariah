@@ -63,7 +63,12 @@ function formatGaDate(yyyymmdd: string): string {
 }
 
 function metricValue(
-  row: { metricValues?: Array<{ value?: string | null }> } | undefined,
+  row:
+    | {
+        metricValues?: Array<{ value?: string | null }> | null;
+      }
+    | null
+    | undefined,
   index: number
 ): number {
   const raw = row?.metricValues?.[index]?.value;

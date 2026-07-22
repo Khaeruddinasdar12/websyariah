@@ -10,6 +10,9 @@ Di Google Analytics:
 
 Bukan Measurement ID `G-Z34XPQ6BKW`.
 
+**Penting:** pastikan Property ID adalah properti **FSHI** (yang punya stream `G-Z34XPQ6BKW`), bukan properti lain di akun yang sama (misalnya `anggota-mib`). Angka di Beranda GA hanya cocok jika properti yang dibuka sama dengan `GA_PROPERTY_ID`.
+
+
 ## 2. Service Account
 
 1. Buka [Google Cloud Console](https://console.cloud.google.com/)

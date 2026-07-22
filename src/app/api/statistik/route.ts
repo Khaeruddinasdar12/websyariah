@@ -15,13 +15,14 @@ export async function GET(request: NextRequest) {
     const rangeDays = parseRange(request.nextUrl.searchParams.get('range'));
     const data = await fetchGaDashboard(rangeDays);
 
-    // Cache briefly on CDN/browser to avoid burning GA API quota
     const status = data.error && !data.configured ? 503 : 200;
 
     return NextResponse.json(data, {
       status,
       headers: {
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        // Always fresh — Refresh button must get new GA data
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        Pragma: 'no-cache',
       },
     });
   } catch (error: any) {
@@ -31,18 +32,34 @@ export async function GET(request: NextRequest) {
         configured: false,
         propertyId: null,
         rangeDays: 28,
+        dateRange: { startDate: '', endDate: '' },
         overview: {
           activeUsers: 0,
+          newUsers: 0,
+          returningUsers: 0,
           sessions: 0,
+          engagedSessions: 0,
           screenPageViews: 0,
+          eventCount: 0,
           bounceRate: 0,
+          engagementRate: 0,
           averageSessionDuration: 0,
+          sessionsPerUser: 0,
+          viewsPerSession: 0,
         },
         timeseries: [],
         topPages: [],
+        topLandingPages: [],
         topSources: [],
+        topChannels: [],
         topCountries: [],
+        topCities: [],
         devices: [],
+        browsers: [],
+        operatingSystems: [],
+        topEvents: [],
+        byDayOfWeek: [],
+        byHour: [],
         fetchedAt: new Date().toISOString(),
         error: error?.message || 'Gagal memuat statistik.',
       },

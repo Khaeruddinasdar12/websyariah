@@ -13,6 +13,9 @@ export interface BeritaRecord {
   konten_en?: string;
   judul_ar?: string;
   konten_ar?: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
   created_at?: string;
 }
 

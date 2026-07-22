@@ -25,9 +25,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Berita tidak ditemukan' };
   }
 
-  const title = berita.judul;
-  const description = stripHtml(berita.konten).slice(0, 160) || title;
+  const title = berita.meta_title?.trim() || berita.judul;
+  const description =
+    berita.meta_description?.trim() ||
+    stripHtml(berita.konten).slice(0, 160) ||
+    title;
   const pageUrl = `${getSiteUrl()}/berita/${slug}`;
+  const keywords = berita.meta_keywords?.trim() || undefined;
 
   const openGraphImages = berita.gambar
     ? [
@@ -43,6 +47,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title,
     description,
+    keywords,
+    alternates: {
+      canonical: pageUrl,
+    },
     openGraph: {
       title,
       description,
@@ -51,6 +59,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: 'FSHI IAIN Bone',
       locale: 'id_ID',
       images: openGraphImages,
+      publishedTime: berita.created_at || undefined,
     },
     twitter: {
       card: 'summary_large_image',

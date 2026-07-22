@@ -21,6 +21,8 @@ import {
   getEmptyBeritaRequiredFields,
   translateBeritaText,
 } from '@/utils/beritaTranslation';
+import { buildBeritaSeo } from '@/utils/beritaSeo';
+import BeritaSeoFields from '@/components/admin/BeritaSeoFields';
 
 interface Berita {
   id?: string;
@@ -37,6 +39,9 @@ interface Berita {
   judul_ar: string;
   konten_ar: string;
   kategori_ar: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -50,6 +55,7 @@ export default function NewBeritaPage() {
   const [previewImage, setPreviewImage] = useState<string>('');
   const [translating, setTranslating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [seoAutoSync, setSeoAutoSync] = useState(true);
 
   // Form state
   const [formData, setFormData] = useState<Berita>({
@@ -66,6 +72,9 @@ export default function NewBeritaPage() {
     judul_ar: '',
     konten_ar: '',
     kategori_ar: '',
+    meta_title: '',
+    meta_description: '',
+    meta_keywords: '',
   });
 
   const [kategoriOptions, setKategoriOptions] = useState<{ value: string; label: string }[]>([]);
@@ -429,6 +438,20 @@ export default function NewBeritaPage() {
         }
       }
 
+      const seo =
+        updatedFormData.meta_title?.trim() ||
+        updatedFormData.meta_description?.trim()
+          ? {
+              meta_title: updatedFormData.meta_title || '',
+              meta_description: updatedFormData.meta_description || '',
+              meta_keywords: updatedFormData.meta_keywords || '',
+            }
+          : buildBeritaSeo({
+              judul: updatedFormData.judul,
+              konten: updatedFormData.konten,
+              kategori: updatedFormData.kategori,
+            });
+
       const beritaData: any = {
         judul: updatedFormData.judul,
         slug: updatedFormData.slug || generateSlug(updatedFormData.judul),
@@ -439,6 +462,9 @@ export default function NewBeritaPage() {
         konten_en: updatedFormData.konten_en || '',
         judul_ar: updatedFormData.judul_ar || '',
         konten_ar: updatedFormData.konten_ar || '',
+        meta_title: seo.meta_title,
+        meta_description: seo.meta_description,
+        meta_keywords: seo.meta_keywords,
         created_at: updatedFormData.created_at || undefined,
       };
 
@@ -464,6 +490,17 @@ export default function NewBeritaPage() {
         console.error('Supabase error:', error);
         if (error.message.includes('row-level security policy')) {
           toast.showError('RLS Policy Belum Dikonfigurasi', 'Row Level Security (RLS) policy belum dikonfigurasi.\n\nSilakan buat policy di Supabase:\n1. Buka Supabase Dashboard\n2. Pilih SQL Editor\n3. Jalankan SQL dari file SUPABASE_RLS_POLICIES.md\n\nAtau hubungi administrator untuk mengatur RLS policy.', 10000);
+        } else if (
+          error.message.includes('meta_title') ||
+          error.message.includes('meta_description') ||
+          error.message.includes('meta_keywords') ||
+          error.message.includes('schema cache')
+        ) {
+          toast.showError(
+            'Kolom SEO Belum Ada',
+            'Jalankan SQL file "supabase_beritas_seo_columns.sql" di Supabase SQL Editor, lalu coba simpan lagi.',
+            10000
+          );
         } else {
           toast.showError('Error Menyimpan Berita', error.message, 8000);
         }
@@ -714,6 +751,28 @@ export default function NewBeritaPage() {
               </div>
             </div>
           </details>
+
+          <BeritaSeoFields
+            judul={formData.judul}
+            konten={formData.konten}
+            kategori={formData.kategori}
+            slug={formData.slug}
+            autoSync={seoAutoSync}
+            onAutoSyncChange={setSeoAutoSync}
+            values={{
+              meta_title: formData.meta_title || '',
+              meta_description: formData.meta_description || '',
+              meta_keywords: formData.meta_keywords || '',
+            }}
+            onChange={(seo) =>
+              setFormData((prev) => ({
+                ...prev,
+                meta_title: seo.meta_title,
+                meta_description: seo.meta_description,
+                meta_keywords: seo.meta_keywords,
+              }))
+            }
+          />
 
           {/* Image Upload */}
           <div className="bg-gradient-to-br from-gray-50/80 via-slate-50/60 to-gray-50/80 dark:from-gray-800/80 dark:via-gray-750/60 dark:to-gray-800/80 rounded-2xl p-5 border border-gray-200/50 dark:border-gray-700/50 shadow-sm backdrop-blur-sm">

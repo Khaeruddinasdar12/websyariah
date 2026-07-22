@@ -56,6 +56,58 @@ const RANGES: { value: GaRangeDays; label: string }[] = [
   { value: 90, label: '90 hari' },
 ];
 
+/** Penjelasan singkat untuk pengguna awam */
+const METRIC_DESCRIPTIONS = {
+  activeUsers:
+    'Jumlah orang unik yang mengunjungi situs dalam periode ini. Satu orang hanya dihitung sekali meski datang berkali-kali.',
+  newUsers:
+    'Pengunjung yang pertama kali datang ke situs. Bagus untuk melihat pertumbuhan audiens baru.',
+  returningUsers:
+    'Pengunjung yang pernah datang sebelumnya lalu kembali lagi. Menandakan audiens yang sudah mengenal situs.',
+  sessions:
+    'Satu kali kunjungan ke situs. Buka situs pagi dan sore = 2 sesi. Satu sesi bisa melihat banyak halaman.',
+  engagedSessions:
+    'Kunjungan yang cukup lama atau interaktif (bukan langsung keluar). Semakin tinggi, semakin baik.',
+  pageview:
+    'Berapa kali halaman situs dibuka. Baca 3 berita = 3 pageview. Bisa lebih banyak dari jumlah pengunjung.',
+  eventCount:
+    'Total aksi yang tercatat di situs, misalnya klik, scroll, atau unduh. Setiap interaksi kecil bisa dihitung.',
+  engagementRate:
+    'Persentase kunjungan yang benar-benar “terlibat” dengan situs. Semakin tinggi, konten semakin menarik.',
+  bounceRate:
+    'Persentase pengunjung yang langsung pergi tanpa melihat halaman lain. Semakin rendah, semakin baik.',
+  avgSessionDuration:
+    'Rata-rata lama pengunjung tinggal di situs dalam satu kunjungan.',
+  sessionsPerUser:
+    'Rata-rata berapa kali satu orang mengunjungi situs. Angka di atas 1 berarti ada yang kembali lagi.',
+  viewsPerSession:
+    'Rata-rata berapa halaman dibuka dalam satu kunjungan. Tinggi = pengunjung eksplorasi banyak konten.',
+  trend:
+    'Grafik per hari: biru = pengunjung, hijau = sesi, ungu = pageview, kuning = pengunjung baru.',
+  newVsReturning:
+    'Perbandingan pengunjung pertama kali vs yang sudah pernah datang. Menunjukkan loyalitas audiens.',
+  devices:
+    'Perangkat yang dipakai: HP (mobile), komputer (desktop), atau tablet.',
+  channels:
+    'Dari mana pengunjung datang: langsung ketik URL, Google, media sosial, link dari situs lain, dll.',
+  topPages:
+    'Halaman yang paling sering dibuka. Berguna untuk tahu konten/berita mana yang paling diminati.',
+  landingPages:
+    'Halaman pertama yang dibuka saat pengunjung masuk. Ini “pintu masuk” utama ke situs Anda.',
+  sources:
+    'Sumber asal kunjungan, misalnya Google, Facebook, atau ketik alamat langsung (direct).',
+  topEvents:
+    'Aksi yang paling sering dilakukan pengunjung, misalnya klik menu, scroll, atau buka link.',
+  countries: 'Negara asal pengunjung berdasarkan lokasi perangkat/internet.',
+  cities: 'Kota asal pengunjung yang paling aktif mengakses situs.',
+  browsers: 'Program penjelajah web yang dipakai, misalnya Chrome, Safari, atau Edge.',
+  os: 'Sistem operasi perangkat: Android, iOS, Windows, macOS, dll.',
+  dayOfWeek:
+    'Hari dalam seminggu dengan pengunjung terbanyak. Cocok untuk menentukan hari terbaik publish berita.',
+  hourOfDay:
+    'Jam dalam sehari dengan pengunjung terbanyak. Cocok untuk waktu promosi atau posting.',
+} as const;
+
 function barChartOptions(
   categories: string[],
   horizontal = false
@@ -304,62 +356,62 @@ export default function StatistikDashboard() {
     {
       label: 'Pengunjung aktif',
       value: formatNumber(data?.overview.activeUsers || 0),
-      hint: 'Active users',
+      description: METRIC_DESCRIPTIONS.activeUsers,
     },
     {
       label: 'Pengunjung baru',
       value: formatNumber(data?.overview.newUsers || 0),
-      hint: 'New users',
+      description: METRIC_DESCRIPTIONS.newUsers,
     },
     {
       label: 'Pengunjung kembali',
       value: formatNumber(data?.overview.returningUsers || 0),
-      hint: 'Returning users',
+      description: METRIC_DESCRIPTIONS.returningUsers,
     },
     {
       label: 'Sesi',
       value: formatNumber(data?.overview.sessions || 0),
-      hint: 'Sessions',
+      description: METRIC_DESCRIPTIONS.sessions,
     },
     {
       label: 'Sesi engaged',
       value: formatNumber(data?.overview.engagedSessions || 0),
-      hint: 'Engaged sessions',
+      description: METRIC_DESCRIPTIONS.engagedSessions,
     },
     {
       label: 'Pageview',
       value: formatNumber(data?.overview.screenPageViews || 0),
-      hint: 'Views',
+      description: METRIC_DESCRIPTIONS.pageview,
     },
     {
       label: 'Jumlah peristiwa',
       value: formatNumber(data?.overview.eventCount || 0),
-      hint: 'Event count',
+      description: METRIC_DESCRIPTIONS.eventCount,
     },
     {
       label: 'Engagement rate',
       value: formatPercent(data?.overview.engagementRate || 0),
-      hint: 'Tingkat engagement',
+      description: METRIC_DESCRIPTIONS.engagementRate,
     },
     {
       label: 'Bounce rate',
       value: formatPercent(data?.overview.bounceRate || 0),
-      hint: 'Tingkat pentalan',
+      description: METRIC_DESCRIPTIONS.bounceRate,
     },
     {
       label: 'Durasi sesi rata-rata',
       value: formatDuration(data?.overview.averageSessionDuration || 0),
-      hint: 'Avg. session',
+      description: METRIC_DESCRIPTIONS.avgSessionDuration,
     },
     {
       label: 'Sesi / pengunjung',
       value: formatDecimal(data?.overview.sessionsPerUser || 0),
-      hint: 'Sessions per user',
+      description: METRIC_DESCRIPTIONS.sessionsPerUser,
     },
     {
       label: 'Pageview / sesi',
       value: formatDecimal(data?.overview.viewsPerSession || 0),
-      hint: 'Views per session',
+      description: METRIC_DESCRIPTIONS.viewsPerSession,
     },
   ];
 
@@ -431,19 +483,19 @@ export default function StatistikDashboard() {
       )}
 
       {/* KPI cards */}
-      <section className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.03] p-4 shadow-xl shadow-black/20"
-          >
-            <p className="text-xs uppercase tracking-wide text-slate-400">
-              {card.label}
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-white">{card.value}</p>
-            <p className="mt-1 text-xs text-slate-500">{card.hint}</p>
-          </div>
-        ))}
+      <section className="mb-6">
+        <div className="mb-3">
+          <h2 className="text-lg font-medium text-white">Ringkasan utama</h2>
+          <p className="text-xs text-slate-500">
+            Angka-angka penting dalam periode yang dipilih, beserta penjelasan
+            singkat di setiap kartu.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {cards.map((card) => (
+            <MetricCard key={card.label} {...card} />
+          ))}
+        </div>
       </section>
 
       {/* Trend */}
@@ -451,9 +503,7 @@ export default function StatistikDashboard() {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-medium text-white">Tren kunjungan</h2>
-            <p className="text-xs text-slate-500">
-              Pantau pertumbuhan harian pengunjung, sesi, dan pageview
-            </p>
+            <p className="text-xs text-slate-500">{METRIC_DESCRIPTIONS.trend}</p>
           </div>
           {data?.fetchedAt && (
             <p className="text-xs text-slate-500">
@@ -483,7 +533,11 @@ export default function StatistikDashboard() {
 
       {/* Audience composition + devices + channels */}
       <section className="mb-6 grid gap-6 lg:grid-cols-3">
-        <Panel title="Baru vs kembali" subtitle="Komposisi audiens">
+        <Panel
+          title="Baru vs kembali"
+          subtitle="Komposisi audiens"
+          description={METRIC_DESCRIPTIONS.newVsReturning}
+        >
           {(data?.overview.newUsers || 0) + (data?.overview.returningUsers || 0) >
           0 ? (
             <ReactApexChart
@@ -501,7 +555,11 @@ export default function StatistikDashboard() {
           )}
         </Panel>
 
-        <Panel title="Perangkat" subtitle="Mobile / desktop / tablet">
+        <Panel
+          title="Perangkat"
+          subtitle="Mobile / desktop / tablet"
+          description={METRIC_DESCRIPTIONS.devices}
+        >
           {(data?.devices?.length || 0) > 0 ? (
             <ReactApexChart
               key={`device-${data?.fetchedAt}`}
@@ -515,7 +573,11 @@ export default function StatistikDashboard() {
           )}
         </Panel>
 
-        <Panel title="Channel traffic" subtitle="Default channel group">
+        <Panel
+          title="Channel traffic"
+          subtitle="Asal kunjungan"
+          description={METRIC_DESCRIPTIONS.channels}
+        >
           {(data?.topChannels?.length || 0) > 0 ? (
             <ReactApexChart
               key={`ch-${data?.fetchedAt}`}
@@ -539,31 +601,35 @@ export default function StatistikDashboard() {
       <section className="mb-6 grid gap-6 lg:grid-cols-2">
         <RankedList
           title="Halaman teratas"
-          subtitle="Pageview tertinggi"
+          subtitle="Konten paling banyak dibaca"
+          description={METRIC_DESCRIPTIONS.topPages}
           items={data?.topPages || []}
           empty="Belum ada data halaman."
-          valueLabel="views"
+          valueLabel="tampilan"
         />
         <RankedList
           title="Landing page"
-          subtitle="Halaman masuk pertama"
+          subtitle="Halaman pertama saat masuk"
+          description={METRIC_DESCRIPTIONS.landingPages}
           items={data?.topLandingPages || []}
           empty="Belum ada data landing page."
           valueLabel="sesi"
         />
         <RankedList
           title="Sumber traffic"
-          subtitle="Session source"
+          subtitle="Dari mana pengunjung datang"
+          description={METRIC_DESCRIPTIONS.sources}
           items={data?.topSources || []}
           empty="Belum ada data sumber."
           valueLabel="sesi"
         />
         <RankedList
           title="Event teratas"
-          subtitle="Peristiwa yang paling sering terjadi"
+          subtitle="Aksi yang paling sering dilakukan"
+          description={METRIC_DESCRIPTIONS.topEvents}
           items={data?.topEvents || []}
           empty="Belum ada data event."
-          valueLabel="event"
+          valueLabel="kali"
         />
       </section>
 
@@ -571,25 +637,29 @@ export default function StatistikDashboard() {
       <section className="mb-6 grid gap-6 lg:grid-cols-2">
         <RankedList
           title="Negara"
-          subtitle="Berdasarkan pengunjung aktif"
+          subtitle="Lokasi pengunjung"
+          description={METRIC_DESCRIPTIONS.countries}
           items={data?.topCountries || []}
           empty="Belum ada data negara."
         />
         <RankedList
           title="Kota"
-          subtitle="Lokasi pengunjung paling aktif"
+          subtitle="Kota dengan pengunjung terbanyak"
+          description={METRIC_DESCRIPTIONS.cities}
           items={data?.topCities || []}
           empty="Belum ada data kota."
         />
         <RankedList
           title="Browser"
-          subtitle="Chrome, Safari, dll."
+          subtitle="Aplikasi penjelajah web"
+          description={METRIC_DESCRIPTIONS.browsers}
           items={data?.browsers || []}
           empty="Belum ada data browser."
         />
         <RankedList
           title="Sistem operasi"
-          subtitle="Android, iOS, Windows, dll."
+          subtitle="OS perangkat pengunjung"
+          description={METRIC_DESCRIPTIONS.os}
           items={data?.operatingSystems || []}
           empty="Belum ada data OS."
         />
@@ -599,7 +669,8 @@ export default function StatistikDashboard() {
       <section className="mb-6 grid gap-6 lg:grid-cols-2">
         <Panel
           title="Hari tersibuk"
-          subtitle="Kapan audiens paling aktif dalam seminggu"
+          subtitle="Aktivitas per hari dalam seminggu"
+          description={METRIC_DESCRIPTIONS.dayOfWeek}
         >
           {(data?.byDayOfWeek?.length || 0) > 0 ? (
             <ReactApexChart
@@ -621,7 +692,8 @@ export default function StatistikDashboard() {
 
         <Panel
           title="Jam tersibuk"
-          subtitle="Jam terbaik untuk publish / promosi"
+          subtitle="Aktivitas per jam dalam sehari"
+          description={METRIC_DESCRIPTIONS.hourOfDay}
         >
           {(data?.byHour?.length || 0) > 0 ? (
             <ReactApexChart
@@ -643,6 +715,20 @@ export default function StatistikDashboard() {
       </section>
 
       <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
+        <h2 className="mb-3 text-lg font-medium text-white">
+          Kamus istilah singkat
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm text-slate-400">
+          <GlossaryItem term="Sesi" text={METRIC_DESCRIPTIONS.sessions} />
+          <GlossaryItem term="Pageview" text={METRIC_DESCRIPTIONS.pageview} />
+          <GlossaryItem term="Event / peristiwa" text={METRIC_DESCRIPTIONS.eventCount} />
+          <GlossaryItem term="Bounce rate" text={METRIC_DESCRIPTIONS.bounceRate} />
+          <GlossaryItem term="Engagement rate" text={METRIC_DESCRIPTIONS.engagementRate} />
+          <GlossaryItem term="Landing page" text={METRIC_DESCRIPTIONS.landingPages} />
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
         <h2 className="mb-3 text-lg font-medium text-white">Catatan analisa</h2>
         <ul className="space-y-2 text-sm text-slate-400">
           <li>
@@ -675,20 +761,57 @@ export default function StatistikDashboard() {
   );
 }
 
+function MetricCard({
+  label,
+  value,
+  description,
+}: {
+  label: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div
+      className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.03] p-4 shadow-xl shadow-black/20"
+      title={description}
+    >
+      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
+      <p className="mt-2 text-xs leading-relaxed text-slate-500 line-clamp-3 group-hover:text-slate-400">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function GlossaryItem({ term, text }: { term: string; text: string }) {
+  return (
+    <div>
+      <p className="font-medium text-slate-300">{term}</p>
+      <p className="mt-1 text-xs leading-relaxed">{text}</p>
+    </div>
+  );
+}
+
 function Panel({
   title,
   subtitle,
+  description,
   children,
 }: {
   title: string;
   subtitle?: string;
+  description?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
       <h2 className="text-lg font-medium text-white">{title}</h2>
-      {subtitle && <p className="mb-4 text-xs text-slate-500">{subtitle}</p>}
-      {!subtitle && <div className="mb-4" />}
+      {subtitle && <p className="mt-0.5 text-xs font-medium text-slate-400">{subtitle}</p>}
+      {description && (
+        <p className="mb-4 mt-2 text-xs leading-relaxed text-slate-500">{description}</p>
+      )}
+      {!description && <div className="mb-4" />}
       {children}
     </div>
   );
@@ -701,12 +824,14 @@ function Empty({ text }: { text: string }) {
 function RankedList({
   title,
   subtitle,
+  description,
   items,
   empty,
   valueLabel,
 }: {
   title: string;
   subtitle?: string;
+  description?: string;
   items: GaRankedItem[];
   empty: string;
   valueLabel?: string;
@@ -716,8 +841,11 @@ function RankedList({
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
       <h2 className="text-lg font-medium text-white">{title}</h2>
-      {subtitle && <p className="mb-4 text-xs text-slate-500">{subtitle}</p>}
-      {!subtitle && <div className="mb-4" />}
+      {subtitle && <p className="mt-0.5 text-xs font-medium text-slate-400">{subtitle}</p>}
+      {description && (
+        <p className="mb-4 mt-2 text-xs leading-relaxed text-slate-500">{description}</p>
+      )}
+      {!description && <div className="mb-4" />}
       {items.length === 0 ? (
         <p className="text-sm text-slate-500">{empty}</p>
       ) : (

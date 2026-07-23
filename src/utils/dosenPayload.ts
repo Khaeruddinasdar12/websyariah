@@ -38,6 +38,8 @@ export function buildDosenSavePayload(
 ) {
   const savedImageUrl = getDosenImageUrlForSave(imageUrl, formData);
 
+  // Hanya kirim kolom `gambar` — kolom `foto` opsional/legacy dan
+  // sering belum ada di schema Supabase (error: schema cache).
   return {
     urut: formData.urut ?? null,
     nama: formData.nama,
@@ -49,7 +51,6 @@ export function buildDosenSavePayload(
     keahlian_en: formData.keahlian_en?.trim() || null,
     keahlian_ar: formData.keahlian_ar?.trim() || null,
     gambar: savedImageUrl || null,
-    foto: savedImageUrl || null,
     prodi: kategoriPegawai,
   };
 }

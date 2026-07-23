@@ -242,7 +242,16 @@ export default function EditDosenPage() {
       router.push('/admin/dosen');
     } catch (error: any) {
       console.error('Error updating dosen:', error);
-      toast.showError('Error', error.message || 'Gagal memperbarui dosen');
+      const msg = error.message || 'Gagal memperbarui dosen';
+      if (msg.includes('schema cache') || msg.includes("Could not find the 'gambar'")) {
+        toast.showError(
+          'Kolom Gambar Belum Ada',
+          'Jalankan SQL file "supabase_dosens_add_image_columns.sql" di Supabase SQL Editor, lalu coba lagi.',
+          10000
+        );
+      } else {
+        toast.showError('Error', msg);
+      }
     } finally {
       setSaving(false);
     }

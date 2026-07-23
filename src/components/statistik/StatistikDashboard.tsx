@@ -421,7 +421,7 @@ export default function StatistikDashboard() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-7xl overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-sky-400/80">
@@ -598,7 +598,7 @@ export default function StatistikDashboard() {
       </section>
 
       {/* Content & acquisition */}
-      <section className="mb-6 grid gap-6 lg:grid-cols-2">
+      <section className="mb-6 grid min-w-0 gap-6 lg:grid-cols-2">
         <RankedList
           title="Halaman teratas"
           subtitle="Konten paling banyak dibaca"
@@ -634,7 +634,7 @@ export default function StatistikDashboard() {
       </section>
 
       {/* Geography & tech */}
-      <section className="mb-6 grid gap-6 lg:grid-cols-2">
+      <section className="mb-6 grid min-w-0 gap-6 lg:grid-cols-2">
         <RankedList
           title="Negara"
           subtitle="Lokasi pengunjung"
@@ -805,14 +805,14 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
+    <div className="min-w-0 max-w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
       <h2 className="text-lg font-medium text-white">{title}</h2>
       {subtitle && <p className="mt-0.5 text-xs font-medium text-slate-400">{subtitle}</p>}
       {description && (
         <p className="mb-4 mt-2 text-xs leading-relaxed text-slate-500">{description}</p>
       )}
       {!description && <div className="mb-4" />}
-      {children}
+      <div className="min-w-0 max-w-full overflow-hidden">{children}</div>
     </div>
   );
 }
@@ -839,7 +839,7 @@ function RankedList({
   const max = Math.max(...items.map((i) => i.value), 1);
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
+    <div className="min-w-0 max-w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
       <h2 className="text-lg font-medium text-white">{title}</h2>
       {subtitle && <p className="mt-0.5 text-xs font-medium text-slate-400">{subtitle}</p>}
       {description && (
@@ -849,14 +849,17 @@ function RankedList({
       {items.length === 0 ? (
         <p className="text-sm text-slate-500">{empty}</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="min-w-0 space-y-3">
           {items.map((item, index) => (
-            <li key={`${title}-${index}-${item.name}`}>
-              <div className="mb-1 flex items-center justify-between gap-3 text-sm">
-                <span className="truncate text-slate-200" title={item.name}>
+            <li key={`${title}-${index}-${item.name}`} className="min-w-0">
+              <div className="mb-1 flex min-w-0 items-start justify-between gap-2 text-sm">
+                <span
+                  className="min-w-0 flex-1 break-all text-slate-200 sm:truncate sm:break-normal"
+                  title={item.name}
+                >
                   {item.name === '(not set)' ? 'Tidak diketahui' : item.name}
                 </span>
-                <span className="shrink-0 text-slate-400">
+                <span className="shrink-0 whitespace-nowrap pt-0.5 text-slate-400">
                   {formatNumber(item.value)}
                   {valueLabel ? (
                     <span className="ml-1 text-[10px] uppercase text-slate-500">
@@ -865,10 +868,10 @@ function RankedList({
                   ) : null}
                 </span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+              <div className="h-1.5 max-w-full overflow-hidden rounded-full bg-white/10">
                 <div
-                  className="h-full rounded-full bg-sky-400/80"
-                  style={{ width: `${(item.value / max) * 100}%` }}
+                  className="h-full max-w-full rounded-full bg-sky-400/80"
+                  style={{ width: `${Math.min((item.value / max) * 100, 100)}%` }}
                 />
               </div>
             </li>

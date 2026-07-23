@@ -15,7 +15,7 @@ export default function StatistikLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#0b1220] text-slate-100 antialiased">
+    <div className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#0b1220] text-slate-100 antialiased">
       {children}
     </div>
   );

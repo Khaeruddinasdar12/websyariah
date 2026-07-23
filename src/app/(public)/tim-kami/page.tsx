@@ -81,20 +81,38 @@ function DosenPhoto({ src, name }: { src?: string; name: string }) {
   }, [src]);
 
   return (
-    <div
-      className="w-28 h-28 rounded-2xl overflow-hidden mb-4 mx-auto shadow-lg border-2 bg-ink-100"
-      style={{ borderColor: 'rgba(var(--color-primary-rgb), 0.3)' }}
-    >
-      {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={name}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          onError={() => setHasError(true)}
+    <div className="mb-5 mx-auto w-[9.5rem] sm:w-44">
+      {/* Outer frame — slightly larger than photo for a polished portrait look */}
+      <div
+        className="relative aspect-[3/4] rounded-2xl p-1.5 sm:p-2 shadow-lg bg-gradient-to-b from-white to-ink-50"
+        style={{
+          boxShadow:
+            '0 10px 28px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(var(--color-primary-rgb), 0.18)',
+        }}
+      >
+        <div
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{
+            boxShadow: 'inset 0 0 0 1px rgba(var(--color-primary-rgb), 0.22)',
+          }}
         />
-      ) : null}
+        <div className="relative h-full w-full overflow-hidden rounded-xl bg-ink-100">
+          {showImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src}
+              alt={name}
+              className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+              loading="lazy"
+              onError={() => setHasError(true)}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-ink-400">
+              <i className="fas fa-user text-4xl opacity-40" aria-hidden />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

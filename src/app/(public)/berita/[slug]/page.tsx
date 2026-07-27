@@ -35,9 +35,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pageUrl = `${siteUrl}/berita/${slug}`;
   const keywords = berita.meta_keywords?.trim() || undefined;
 
-  // Clean path (no query string) + compressed JPEG — reliable for WhatsApp.
+  // Prefer original .jpg/.jpeg URL (WhatsApp-friendly). Fallback: /og/berita/{id}.jpg
   const ogOptimizedImage = berita.gambar
-    ? toBeritaOgImageUrl(berita.id, siteUrl)
+    ? toBeritaOgImageUrl(berita.id, berita.gambar, siteUrl)
     : null;
   const openGraphImages = ogOptimizedImage
     ? [

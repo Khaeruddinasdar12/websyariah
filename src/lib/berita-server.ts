@@ -68,18 +68,27 @@ export function toAbsoluteImageUrl(
 }
 
 /**
- * Clean same-origin OG URL (no query string) — more reliable for WhatsApp.
- * Falls back to /api/og-image?url= when id is unavailable.
+ * Prefer the original public image URL when it already has a file extension
+ * (.jpg/.jpeg/.png) — WhatsApp accepts those reliably, even when large.
+ * Otherwise use same-origin /og/berita/{id}.jpg (extension required by WA).
  */
 export function toBeritaOgImageUrl(
   beritaId: number,
+  gambar?: string | null,
   siteUrl = getSiteUrl()
 ): string {
   const origin =
     siteUrl.includes('vercel.app') || !siteUrl.includes('iain-bone.ac.id')
       ? PRODUCTION_SITE_URL
       : siteUrl;
-  return `${origin}/api/og/berita/${beritaId}`;
+
+  const absolute = toAbsoluteImageUrl(gambar, siteUrl);
+  if (absolute && /\.(jpe?g|png)(\?|#|$)/i.test(absolute)) {
+    return absolute;
+  }
+
+  // Bump ?v= when OG pipeline changes so WhatsApp re-fetches the image.
+  return `${origin}/og/berita/${beritaId}.jpg?v=5`;
 }
 
 /**

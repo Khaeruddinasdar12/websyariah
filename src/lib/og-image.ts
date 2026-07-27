@@ -25,7 +25,8 @@ export async function optimizeOgJpeg(input: Buffer): Promise<Buffer | null> {
           .jpeg({
             quality,
             mozjpeg: true,
-            progressive: true,
+            // Baseline JPEG — progressive often fails on WhatsApp previews.
+            progressive: false,
             chromaSubsampling: '4:2:0',
           })
           .toBuffer();
@@ -43,7 +44,7 @@ export async function optimizeOgJpeg(input: Buffer): Promise<Buffer | null> {
     const tiny = await sharp(input)
       .rotate()
       .resize(480, 252, { fit: 'cover', position: 'centre' })
-      .jpeg({ quality: 24, mozjpeg: true, progressive: true })
+      .jpeg({ quality: 24, mozjpeg: true, progressive: false })
       .toBuffer();
 
     return tiny.length <= (best?.length ?? Infinity) ? tiny : best;
@@ -59,6 +60,7 @@ export function jpegResponse(body: Buffer | Uint8Array, maxAge = 86400) {
     headers: {
       'Content-Type': 'image/jpeg',
       'Content-Length': String(bytes.byteLength),
+      'Content-Disposition': 'inline; filename="og.jpg"',
       'Cache-Control': `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=604800`,
     },
   });

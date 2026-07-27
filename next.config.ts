@@ -33,6 +33,16 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  async rewrites() {
+    return [
+      // WhatsApp requires a real image extension on og:image URLs.
+      {
+        source: "/og/berita/:id.jpg",
+        destination: "/api/og/berita/:id",
+      },
+    ];
+  },
+
   // Webpack config untuk SVG handling
   webpack(config, { isServer }) {
     // SVG handling with @svgr/webpack

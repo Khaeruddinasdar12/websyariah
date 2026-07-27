@@ -11,18 +11,14 @@ import AuthRecoveryRedirect from '@/components/auth/AuthRecoveryRedirect';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import GoogleAnalyticsPageView from '@/components/analytics/GoogleAnalyticsPageView';
 import { Suspense } from 'react';
+import { getSiteUrl } from '@/lib/site-url';
 
 const outfit = Outfit({
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    (process.env.NEXT_PUBLIC_SITE_URL || 'https://syariah.iain-bone.ac.id').replace(
-      /\/$/,
-      ''
-    )
-  ),
+  metadataBase: new URL(getSiteUrl()),
   title: 'FSHI IAIN Bone',
   description: 'Fakultas Syariah dan Hukum Islam IAIN Bone',
   icons: {

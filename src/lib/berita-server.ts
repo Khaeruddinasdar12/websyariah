@@ -1,5 +1,8 @@
 import { cache } from 'react';
 import { createClient } from '@/lib/supabase/server';
+import { getSiteUrl } from '@/lib/site-url';
+
+export { getSiteUrl, PRODUCTION_SITE_URL } from '@/lib/site-url';
 
 export interface BeritaRecord {
   id: number;
@@ -44,16 +47,6 @@ export const getBeritaById = cache(async (id: number): Promise<BeritaRecord | nu
   return data as BeritaRecord;
 });
 
-export function getSiteUrl(): string {
-  const raw =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.VERCEL_URL ||
-    'http://localhost:3000';
-
-  const withProtocol = raw.startsWith('http') ? raw : `https://${raw}`;
-  return withProtocol.replace(/\/$/, '');
-}
-
 /** Make image URL absolute HTTPS for Open Graph / WhatsApp crawlers. */
 export function toAbsoluteImageUrl(
   imageUrl: string | null | undefined,
@@ -86,4 +79,5 @@ export function toWhatsAppOgImageUrl(
   if (!absolute) return null;
   return `${siteUrl}/api/og-image?url=${encodeURIComponent(absolute)}`;
 }
+
 

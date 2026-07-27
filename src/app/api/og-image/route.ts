@@ -101,9 +101,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return new NextResponse(new Uint8Array(optimized), {
+    const body = new Uint8Array(optimized);
+    return new NextResponse(body, {
       headers: {
         'Content-Type': 'image/jpeg',
+        'Content-Length': String(body.byteLength),
         'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
       },
     });

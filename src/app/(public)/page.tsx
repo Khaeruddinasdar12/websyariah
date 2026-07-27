@@ -78,16 +78,6 @@ function createSlug(text: string): string {
     .trim();
 }
 
-function getDeanInitials(name: string): string {
-  const base = name.split(/[,،]/)[0];
-  const words = base
-    .split(/\s+/)
-    .filter((w) => w.replace(/\./g, '').length > 1 && !/^(dr|د)$/i.test(w.replace(/\./g, '')));
-  if (words.length === 0) return 'D';
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-}
-
 export default function HomePage() {
   const { language, t } = useLanguage();
   usePageTitle(t('nav.home'));
@@ -281,30 +271,54 @@ export default function HomePage() {
       {/* Sambutan Dekan Section */}
    <section className="py-20 bg-white relative">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div className="relative">
-          <div className="w-64 h-64 mx-auto relative">
-                {/* Decorative background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-sage-green/10 to-soft-green/10 rounded-full blur-lg"></div>
-                {/* Photo frame with gradient border - FIXED */}
-            <div className="relative w-full h-full p-3 rounded-full shadow-xl" style={{background: 'linear-gradient(to bottom right, rgba(var(--color-primary-rgb), 0.8), rgba(var(--color-primary-light-rgb), 0.8))'}}>
-              <div className="w-full h-full bg-white rounded-full p-2">
-                <div className="w-full h-full rounded-full overflow-hidden border-4 shadow-inner" style={{borderColor: 'rgba(var(--color-primary-rgb), 0.4)'}}>
-                  <div
-                    className="w-full h-full flex items-center justify-center bg-gradient-to-br from-sage-green/25 to-soft-green/40"
-                    role="img"
-                    aria-label={t('home.dean.name')}
-                  >
-                    <span className="text-5xl font-bold tracking-wide select-none" style={{color: 'rgba(var(--color-primary-rgb), 0.9)'}}>
-                      {getDeanInitials(t('home.dean.name'))}
-                    </span>
-                  </div>
+      <div className="grid md:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <div className="relative flex justify-center">
+          <div className="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[360px] mx-auto">
+            {/* Soft ambient glow */}
+            <div
+              className="absolute -inset-4 rounded-[2rem] opacity-60 blur-2xl"
+              style={{
+                background:
+                  'linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.18), rgba(var(--color-primary-light-rgb), 0.08))',
+              }}
+              aria-hidden
+            />
+
+            {/* Modern portrait frame */}
+            <div
+              className="relative aspect-[3/4] rounded-[1.75rem] p-[3px] shadow-xl"
+              style={{
+                background:
+                  'linear-gradient(160deg, rgba(var(--color-primary-rgb), 0.85) 0%, rgba(var(--color-primary-light-rgb), 0.55) 45%, rgba(var(--color-primary-rgb), 0.35) 100%)',
+                boxShadow:
+                  '0 20px 45px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(var(--color-primary-rgb), 0.08)',
+              }}
+            >
+              <div className="relative h-full w-full overflow-hidden rounded-[1.55rem] bg-white p-1.5">
+                <div className="relative h-full w-full overflow-hidden rounded-[1.35rem] bg-ink-100">
+                  <Image
+                    src="/assets/dekan-fshi.jpeg"
+                    alt={t('home.dean.name')}
+                    fill
+                    sizes="(max-width: 640px) 280px, (max-width: 1024px) 320px, 360px"
+                    className="object-cover object-top"
+                    priority
+                  />
                 </div>
               </div>
             </div>
-                {/* Floating elements */}
-            <div className="absolute -top-3 -right-3 w-6 h-6 bg-gradient-to-br from-gold/60 to-yellow-500/60 rounded-full animate-float shadow-lg"></div>
-            <div className="absolute -bottom-3 -left-3 w-5 h-5 bg-gradient-to-br from-deep-blue/60 to-blue-600/60 rounded-full animate-float shadow-lg" style={{animationDelay: '1s'}}></div>
+
+            {/* Subtle accent marks */}
+            <div
+              className="absolute -top-2 -right-2 h-3 w-3 rounded-full shadow-md"
+              style={{ background: 'var(--color-primary)' }}
+              aria-hidden
+            />
+            <div
+              className="absolute -bottom-2 -left-2 h-2.5 w-2.5 rounded-full opacity-80 shadow-md"
+              style={{ background: 'rgba(var(--color-primary-rgb), 0.55)' }}
+              aria-hidden
+            />
           </div>
         </div>
 

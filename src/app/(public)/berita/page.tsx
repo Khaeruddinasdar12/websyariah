@@ -108,7 +108,6 @@ function BeritaCard({ item, capitalizeFirst, t }: { item: BeritaDisplay; capital
             className="object-cover"
             unoptimized={item.imageUrl.startsWith('http') || item.imageUrl.includes('assets')}
             onError={() => {
-              // Show icon if image fails to load
               setImageError(true);
             }}
           />

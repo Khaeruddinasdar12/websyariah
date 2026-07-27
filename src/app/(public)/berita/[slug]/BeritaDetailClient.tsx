@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useToast } from '@/context/ToastContext';
+import ImageLightbox from '@/components/ui/ImageLightbox';
 
 interface Berita {
   id: number;
@@ -27,9 +28,12 @@ export default function BeritaDetailClient() {
   const params = useParams();
   const slug = params?.slug as string;
   const { t, language } = useLanguage();
+  const toast = useToast();
   const [berita, setBerita] = useState<Berita | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   const getLocalizedCategory = (item: Berita | null): string => {
     if (!item) return '';
@@ -53,6 +57,44 @@ export default function BeritaDetailClient() {
   };
 
   usePageTitle(getLocalizedTitle(berita) || t('nav.news'));
+
+  const handleShareInstagram = useCallback(async () => {
+    if (typeof window === 'undefined' || !berita) return;
+
+    const url = window.location.href;
+    const title = getLocalizedTitle(berita);
+    const text = `${title}\n${url}`;
+
+    try {
+      // Di HP, Web Share sering menampilkan Instagram di daftar aplikasi
+      if (navigator.share) {
+        await navigator.share({ title, text, url });
+        return;
+      }
+    } catch (err: any) {
+      // User membatalkan share — tidak perlu error
+      if (err?.name === 'AbortError') return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.showSuccess(
+        'Link disalin',
+        'Tempel link ini di Instagram Stories atau postingan Anda.',
+        5000
+      );
+    } catch {
+      toast.showError(
+        'Gagal menyalin',
+        'Salin manual alamat halaman ini, lalu bagikan di Instagram.'
+      );
+    }
+  }, [berita, language, toast]);
+
+  useEffect(() => {
+    setImageError(false);
+    setLightboxOpen(false);
+  }, [berita?.id, berita?.gambar]);
 
   useEffect(() => {
     async function fetchBeritaDetail() {
@@ -167,25 +209,39 @@ export default function BeritaDetailClient() {
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl md:text-4xl font-bold text-ink-900 mb-6">{getLocalizedTitle(berita)}</h1>
 
-        {berita.gambar && (
-          <div className="relative w-full h-64 md:h-96 mb-8 rounded-xl overflow-hidden shadow-lg">
-            <Image
+        {berita.gambar && !imageError ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              className="group relative mb-8 w-full cursor-zoom-in overflow-hidden rounded-xl bg-ink-100 shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              aria-label={`Perbesar gambar: ${getLocalizedTitle(berita)}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={berita.gambar}
+                alt={getLocalizedTitle(berita)}
+                className="mx-auto h-auto max-h-[32rem] w-full object-contain transition duration-300 group-hover:opacity-95"
+                onError={() => setImageError(true)}
+              />
+              <span className="pointer-events-none absolute bottom-4 right-4 rounded-full bg-black/55 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">
+                <i className="fas fa-search-plus mr-1.5" aria-hidden />
+                Perbesar
+              </span>
+            </button>
+
+            <ImageLightbox
               src={berita.gambar}
               alt={getLocalizedTitle(berita)}
-              fill
-              className="object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const nextSibling = target.nextElementSibling as HTMLElement;
-                if (nextSibling) nextSibling.style.display = 'flex';
-              }}
+              isOpen={lightboxOpen}
+              onClose={() => setLightboxOpen(false)}
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-ink-100" style={{ display: 'none' }}>
-              <i className="fas fa-image text-4xl text-sage-green/50"></i>
-            </div>
+          </>
+        ) : berita.gambar && imageError ? (
+          <div className="mb-8 flex h-64 items-center justify-center rounded-xl bg-ink-100">
+            <i className="fas fa-image text-4xl text-sage-green/50"></i>
           </div>
-        )}
+        ) : null}
 
         <div className="prose prose-lg max-w-none">
           <div 
@@ -320,6 +376,19 @@ export default function BeritaDetailClient() {
                 >
                   <i className="fab fa-whatsapp"></i>
                 </a>
+                <button
+                  type="button"
+                  onClick={handleShareInstagram}
+                  className="w-10 h-10 text-white rounded-full flex items-center justify-center transition-colors hover:opacity-90"
+                  style={{
+                    background:
+                      'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                  }}
+                  aria-label="Bagikan ke Instagram"
+                  title="Bagikan ke Instagram"
+                >
+                  <i className="fab fa-instagram"></i>
+                </button>
               </div>
             </div>
             <Link

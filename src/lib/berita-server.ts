@@ -68,6 +68,21 @@ export function toAbsoluteImageUrl(
 }
 
 /**
+ * Clean same-origin OG URL (no query string) — more reliable for WhatsApp.
+ * Falls back to /api/og-image?url= when id is unavailable.
+ */
+export function toBeritaOgImageUrl(
+  beritaId: number,
+  siteUrl = getSiteUrl()
+): string {
+  const origin =
+    siteUrl.includes('vercel.app') || !siteUrl.includes('iain-bone.ac.id')
+      ? PRODUCTION_SITE_URL
+      : siteUrl;
+  return `${origin}/api/og/berita/${beritaId}`;
+}
+
+/**
  * WhatsApp often skips large OG images (>~300KB).
  * Always serve via same-origin /api/og-image on the public domain.
  */
@@ -77,7 +92,6 @@ export function toWhatsAppOgImageUrl(
 ): string | null {
   const absolute = toAbsoluteImageUrl(imageUrl, siteUrl);
   if (!absolute) return null;
-  // Force public domain so OG never points at *.vercel.app
   const origin =
     siteUrl.includes('vercel.app') || !siteUrl.includes('iain-bone.ac.id')
       ? PRODUCTION_SITE_URL

@@ -5,7 +5,7 @@ import {
   getBeritaById,
   getSiteUrl,
   stripHtml,
-  toWhatsAppOgImageUrl,
+  toBeritaOgImageUrl,
 } from '@/lib/berita-server';
 
 type PageProps = {
@@ -35,9 +35,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pageUrl = `${siteUrl}/berita/${slug}`;
   const keywords = berita.meta_keywords?.trim() || undefined;
 
-  // Only expose the compressed proxy URL. Listing the original (often >1MB)
-  // as a second og:image makes WhatsApp skip the preview on some posts.
-  const ogOptimizedImage = toWhatsAppOgImageUrl(berita.gambar, siteUrl);
+  // Clean path (no query string) + compressed JPEG — reliable for WhatsApp.
+  const ogOptimizedImage = berita.gambar
+    ? toBeritaOgImageUrl(berita.id, siteUrl)
+    : null;
   const openGraphImages = ogOptimizedImage
     ? [
         {

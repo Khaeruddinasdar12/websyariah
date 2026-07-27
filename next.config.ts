@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Force OG/meta into <head> for all UAs. Streaming metadata puts tags in
+  // <body>, which WhatsApp and many social crawlers ignore.
+  htmlLimitedBots: /.*/,
+
   turbopack: {
     rules: {
       "*.svg": {

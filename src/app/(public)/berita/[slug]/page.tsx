@@ -5,7 +5,6 @@ import {
   getBeritaById,
   getSiteUrl,
   stripHtml,
-  toAbsoluteImageUrl,
   toWhatsAppOgImageUrl,
 } from '@/lib/berita-server';
 
@@ -36,11 +35,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pageUrl = `${siteUrl}/berita/${slug}`;
   const keywords = berita.meta_keywords?.trim() || undefined;
 
-  const originalImage = toAbsoluteImageUrl(berita.gambar, siteUrl);
+  // Only expose the compressed proxy URL. Listing the original (often >1MB)
+  // as a second og:image makes WhatsApp skip the preview on some posts.
   const ogOptimizedImage = toWhatsAppOgImageUrl(berita.gambar, siteUrl);
-
-  // Put optimized (smaller) image first so WhatsApp picks a preview-friendly file.
-  // Keep original as fallback for platforms that prefer higher quality.
   const openGraphImages = ogOptimizedImage
     ? [
         {
@@ -51,17 +48,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
           type: 'image/jpeg',
           alt: title,
         },
-        ...(originalImage && originalImage !== ogOptimizedImage
-          ? [
-              {
-                url: originalImage,
-                secureUrl: originalImage,
-                width: 1200,
-                height: 630,
-                alt: title,
-              },
-            ]
-          : []),
       ]
     : undefined;
 
@@ -87,11 +73,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary_large_image',
       title,
       description,
-      images: ogOptimizedImage
-        ? [ogOptimizedImage]
-        : originalImage
-          ? [originalImage]
-          : undefined,
+      images: ogOptimizedImage ? [ogOptimizedImage] : undefined,
     },
   };
 }

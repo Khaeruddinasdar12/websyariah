@@ -3,20 +3,20 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const MAX_BYTES = 280_000; // WhatsApp reliably shows previews under ~300KB
-const TARGET_WIDTH = 1200;
-const TARGET_HEIGHT = 630;
+/** WhatsApp often drops previews above ~300KB; stay well under. */
+const MAX_BYTES = 200_000;
+const SIZE_STEPS: Array<[number, number]> = [
+  [1200, 630],
+  [1000, 525],
+  [800, 420],
+  [640, 336],
+];
 
 function isAllowedImageUrl(raw: string): boolean {
   try {
     const url = new URL(raw);
     if (url.protocol !== 'https:' && url.protocol !== 'http:') return false;
-    // Allow site assets + common Supabase storage hosts
-    const host = url.hostname.toLowerCase();
-    if (host.includes('supabase.co')) return true;
-    if (host.includes('iain-bone.ac.id')) return true;
-    if (host === 'localhost' || host === '127.0.0.1') return true;
-    return true; // public berita images may use various CDNs
+    return true;
   } catch {
     return false;
   }
@@ -25,30 +25,43 @@ function isAllowedImageUrl(raw: string): boolean {
 async function optimizeWithSharp(input: Buffer): Promise<Buffer | null> {
   try {
     const sharp = (await import('sharp')).default;
-    let quality = 72;
-    let output = await sharp(input)
-      .rotate()
-      .resize(TARGET_WIDTH, TARGET_HEIGHT, {
-        fit: 'cover',
-        position: 'centre',
-        withoutEnlargement: false,
-      })
-      .jpeg({ quality, mozjpeg: true })
-      .toBuffer();
+    let best: Buffer | null = null;
 
-    while (output.length > MAX_BYTES && quality > 40) {
-      quality -= 8;
-      output = await sharp(input)
-        .rotate()
-        .resize(TARGET_WIDTH, TARGET_HEIGHT, {
-          fit: 'cover',
-          position: 'centre',
-        })
-        .jpeg({ quality, mozjpeg: true })
-        .toBuffer();
+    for (const [width, height] of SIZE_STEPS) {
+      for (let quality = 68; quality >= 28; quality -= 8) {
+        const output = await sharp(input)
+          .rotate()
+          .resize(width, height, {
+            fit: 'cover',
+            position: 'centre',
+            withoutEnlargement: false,
+          })
+          .jpeg({
+            quality,
+            mozjpeg: true,
+            progressive: true,
+            chromaSubsampling: '4:2:0',
+          })
+          .toBuffer();
+
+        if (!best || output.length < best.length) {
+          best = output;
+        }
+
+        if (output.length <= MAX_BYTES) {
+          return output;
+        }
+      }
     }
 
-    return output;
+    // Last resort: tiny thumbnail
+    const tiny = await sharp(input)
+      .rotate()
+      .resize(480, 252, { fit: 'cover', position: 'centre' })
+      .jpeg({ quality: 24, mozjpeg: true, progressive: true })
+      .toBuffer();
+
+    return tiny.length <= (best?.length ?? Infinity) ? tiny : best;
   } catch (err) {
     console.error('OG image sharp error:', err);
     return null;
@@ -68,8 +81,7 @@ export async function GET(request: NextRequest) {
         'User-Agent': 'WebSyariah-OG/1.0',
         Accept: 'image/*,*/*',
       },
-      // Avoid hanging WhatsApp crawlers
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(20000),
       cache: 'force-cache',
     });
 
@@ -83,7 +95,6 @@ export async function GET(request: NextRequest) {
     const input = Buffer.from(await upstream.arrayBuffer());
     const optimized = await optimizeWithSharp(input);
 
-    // Fallback: serve original if already small enough and JPEG/PNG
     if (!optimized) {
       if (input.length <= MAX_BYTES) {
         const contentType =
@@ -91,6 +102,7 @@ export async function GET(request: NextRequest) {
         return new NextResponse(input, {
           headers: {
             'Content-Type': contentType,
+            'Content-Length': String(input.length),
             'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
           },
         });

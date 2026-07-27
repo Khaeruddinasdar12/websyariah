@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { createClient } from '@/lib/supabase/server';
-import { getSiteUrl } from '@/lib/site-url';
+import { getSiteUrl, PRODUCTION_SITE_URL } from '@/lib/site-url';
 
 export { getSiteUrl, PRODUCTION_SITE_URL } from '@/lib/site-url';
 
@@ -69,7 +69,7 @@ export function toAbsoluteImageUrl(
 
 /**
  * WhatsApp often skips large OG images (>~300KB).
- * Serve a compressed 1200x630 JPEG via our proxy.
+ * Always serve via same-origin /api/og-image on the public domain.
  */
 export function toWhatsAppOgImageUrl(
   imageUrl: string | null | undefined,
@@ -77,7 +77,12 @@ export function toWhatsAppOgImageUrl(
 ): string | null {
   const absolute = toAbsoluteImageUrl(imageUrl, siteUrl);
   if (!absolute) return null;
-  return `${siteUrl}/api/og-image?url=${encodeURIComponent(absolute)}`;
+  // Force public domain so OG never points at *.vercel.app
+  const origin =
+    siteUrl.includes('vercel.app') || !siteUrl.includes('iain-bone.ac.id')
+      ? PRODUCTION_SITE_URL
+      : siteUrl;
+  return `${origin}/api/og-image?url=${encodeURIComponent(absolute)}`;
 }
 
 

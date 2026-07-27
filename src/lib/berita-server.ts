@@ -45,5 +45,45 @@ export const getBeritaById = cache(async (id: number): Promise<BeritaRecord | nu
 });
 
 export function getSiteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const raw =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.VERCEL_URL ||
+    'http://localhost:3000';
+
+  const withProtocol = raw.startsWith('http') ? raw : `https://${raw}`;
+  return withProtocol.replace(/\/$/, '');
 }
+
+/** Make image URL absolute HTTPS for Open Graph / WhatsApp crawlers. */
+export function toAbsoluteImageUrl(
+  imageUrl: string | null | undefined,
+  siteUrl = getSiteUrl()
+): string | null {
+  if (!imageUrl?.trim()) return null;
+  const trimmed = imageUrl.trim();
+
+  if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
+    return trimmed;
+  }
+
+  if (trimmed.startsWith('//')) {
+    return `https:${trimmed}`;
+  }
+
+  const path = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return `${siteUrl}${path}`;
+}
+
+/**
+ * WhatsApp often skips large OG images (>~300KB).
+ * Serve a compressed 1200x630 JPEG via our proxy.
+ */
+export function toWhatsAppOgImageUrl(
+  imageUrl: string | null | undefined,
+  siteUrl = getSiteUrl()
+): string | null {
+  const absolute = toAbsoluteImageUrl(imageUrl, siteUrl);
+  if (!absolute) return null;
+  return `${siteUrl}/api/og-image?url=${encodeURIComponent(absolute)}`;
+}
+

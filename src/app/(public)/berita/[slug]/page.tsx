@@ -5,6 +5,8 @@ import {
   getBeritaById,
   getSiteUrl,
   stripHtml,
+  toAbsoluteImageUrl,
+  toWhatsAppOgImageUrl,
 } from '@/lib/berita-server';
 
 type PageProps = {
@@ -25,22 +27,41 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Berita tidak ditemukan' };
   }
 
+  const siteUrl = getSiteUrl();
   const title = berita.meta_title?.trim() || berita.judul;
   const description =
     berita.meta_description?.trim() ||
     stripHtml(berita.konten).slice(0, 160) ||
     title;
-  const pageUrl = `${getSiteUrl()}/berita/${slug}`;
+  const pageUrl = `${siteUrl}/berita/${slug}`;
   const keywords = berita.meta_keywords?.trim() || undefined;
 
-  const openGraphImages = berita.gambar
+  const originalImage = toAbsoluteImageUrl(berita.gambar, siteUrl);
+  const ogOptimizedImage = toWhatsAppOgImageUrl(berita.gambar, siteUrl);
+
+  // Put optimized (smaller) image first so WhatsApp picks a preview-friendly file.
+  // Keep original as fallback for platforms that prefer higher quality.
+  const openGraphImages = ogOptimizedImage
     ? [
         {
-          url: berita.gambar,
+          url: ogOptimizedImage,
+          secureUrl: ogOptimizedImage,
           width: 1200,
           height: 630,
+          type: 'image/jpeg',
           alt: title,
         },
+        ...(originalImage && originalImage !== ogOptimizedImage
+          ? [
+              {
+                url: originalImage,
+                secureUrl: originalImage,
+                width: 1200,
+                height: 630,
+                alt: title,
+              },
+            ]
+          : []),
       ]
     : undefined;
 
@@ -48,6 +69,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     keywords,
+    metadataBase: new URL(siteUrl),
     alternates: {
       canonical: pageUrl,
     },
@@ -65,7 +87,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary_large_image',
       title,
       description,
-      images: berita.gambar ? [berita.gambar] : undefined,
+      images: ogOptimizedImage
+        ? [ogOptimizedImage]
+        : originalImage
+          ? [originalImage]
+          : undefined,
     },
   };
 }

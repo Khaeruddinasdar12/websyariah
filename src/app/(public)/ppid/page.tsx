@@ -108,8 +108,8 @@ export default function PpidPage() {
             })}
           </div>
 
-          <div className="mt-10 text-center">
-            <a
+          <div className="mt-10 flex flex-col items-center gap-4">
+            {/* <a
               href={content.downloadUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -118,6 +118,16 @@ export default function PpidPage() {
             >
               <i className="fas fa-download" aria-hidden="true"></i>
               {t('ppid.download')}
+            </a> */}
+            <a
+              href="https://ppid.iain-bone.ac.id/informasi-publik/permohonan/form"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+              style={{ background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))' }}
+            >
+              <i className="fas fa-file-signature" aria-hidden="true"></i>
+              {t('ppid.requestInfo')}
             </a>
           </div>
         </div>

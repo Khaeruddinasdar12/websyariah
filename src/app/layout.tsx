@@ -1,4 +1,4 @@
-import { Outfit } from 'next/font/google';
+import { Outfit, Source_Sans_3 } from 'next/font/google';
 import './globals.css';
 import type { Metadata } from 'next';
 
@@ -15,6 +15,12 @@ import { getSiteUrl } from '@/lib/site-url';
 
 const outfit = Outfit({
   subsets: ["latin"],
+});
+
+const publicSans = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-public-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -37,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.className} dark:bg-gray-900`}>
+      <body className={`${outfit.className} ${publicSans.variable} dark:bg-gray-900`}>
         <GoogleAnalytics />
         <Suspense fallback={null}>
           <GoogleAnalyticsPageView />

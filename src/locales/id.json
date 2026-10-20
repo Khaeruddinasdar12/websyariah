@@ -27,7 +27,7 @@
     "accredited": "Terakreditasi BAN-PT IAIN Bone",
     "title": "Fakultas Syariah dan Hukum Islam",
     "subtitle": "IAIN Bone",
-    "description": "Mengembangkan pemahaman mendalam tentang hukum Islam dan syariah melalui pendidikan berkualitas tinggi dengan pendekatan modern dan relevan di IAIN Bone.",
+    "description": "Mengembangkan pemahaman tentang hukum Islam dan syariah melalui pendidikan berkualitas tinggi dengan pendekatan modern dan relevan di IAIN Bone.",
     "learnMore": "Pelajari Lebih Lanjut",
     "lecturers": "Tim Kami",
     "activeStudents": "Mahasiswa Aktif FSHI",
@@ -90,21 +90,55 @@
         "description": "Lingkungan belajar yang mendukung dengan komunitas akademik yang inklusif, kolaboratif, dan berorientasi pada pengembangan karakter."
       }
     },
+    "audiences": {
+      "title": "Pilih sesuai kebutuhan Anda",
+      "subtitle": "Calon mahasiswa, mahasiswa, maupun masyarakat dapat langsung menuju informasi yang diperlukan.",
+      "prospective": {
+        "title": "Calon Mahasiswa",
+        "text": "Pelajari tiga program sarjana hukum Islam, lihat akreditasi, lalu daftar melalui penerimaan mahasiswa baru."
+      },
+      "students": {
+        "title": "Mahasiswa",
+        "text": "Baca pengumuman terbaru, masuk ke sistem akademik, dan ikuti perkuliahan daring."
+      },
+      "lecturers": {
+        "title": "Dosen",
+        "text": "Masuk ke sistem akademik, kelola perkuliahan daring, dan baca pengumuman fakultas."
+      },
+      "public": {
+        "title": "Masyarakat dan Mitra",
+        "text": "Kenali kerja sama fakultas, akses informasi publik, atau hubungi kami langsung."
+      }
+    },
+    "paths": {
+      "programs": "Tiga program sarjana di bidang hukum Islam",
+      "accreditation": "Status akreditasi setiap program studi",
+      "services": "PMB, akademik, perpustakaan, dan pengaduan",
+      "announcements": "Informasi akademik dan administrasi terbaru"
+    },
+    "campus": "Kab. Bone",
     "programs": {
       "title": "Program Studi",
-      "subtitle": "Pilih program studi yang sesuai dengan minat dan karir yang Anda inginkan dalam bidang hukum Islam di IAIN Bone.",
+      "subtitle": "Tiga program sarjana di Fakultas Syariah dan Hukum Islam IAIN Bone. Setiap program memiliki laman resmi untuk kurikulum, dosen, dan informasi akademik.",
+      "level": "Sarjana (S1)",
       "constitutionalLaw": {
         "title": "Hukum Tata Negara",
+        "focus": "Siyasah Syar'iyyah",
+        "grade": "Akreditasi Baik Sekali",
         "description": "Program studi yang mempelajari sistem ketatanegaraan Islam, konstitusi, dan hubungan antara agama dengan negara dalam perspektif hukum Islam.",
         "learnMore": "Pelajari Lebih Lanjut"
       },
       "familyLaw": {
         "title": "Hukum Keluarga Islam",
+        "focus": "Ahwalu Syakhsiyah",
+        "grade": "Akreditasi Baik",
         "description": "Program studi yang fokus pada hukum keluarga dalam Islam, termasuk pernikahan, waris, dan hak-hak keluarga.",
         "learnMore": "Pelajari Lebih Lanjut"
       },
       "economicLaw": {
         "title": "Hukum Ekonomi Syariah",
+        "focus": "Muamalah",
+        "grade": "Akreditasi Baik",
         "description": "Program studi yang mendalami hukum-hukum muamalah Islam dan aplikasinya dalam berbagai aspek kehidupan modern.",
         "learnMore": "Pelajari Lebih Lanjut"
       }
@@ -175,7 +209,10 @@
       "peradi": "PERADI",
       "bsi": "BSI",
       "kemenag": "KEMENAG Kab. Bone",
-      "baznas": "BAZNAS"
+      "baznas": "BAZNAS",
+      "kppu": "KPPU Makassar",
+      "kemenhajBone": "Kemenhaj Bone",
+      "kemenhajSulsel": "Kemenhaj Kanwil Sulsel"
     },
     "visionMission": {
       "title": "Visi & Misi"

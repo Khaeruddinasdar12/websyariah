@@ -3,7 +3,7 @@
 import { useLanguage } from '@/context/LanguageContext';
 import { useState, useRef, useEffect } from 'react';
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ variant = 'default' }: { variant?: 'default' | 'onDark' }) {
   const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -36,7 +36,11 @@ export default function LanguageSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-ink-100 transition-colors duration-200 text-sm font-medium text-ink-800"
+        className={`flex items-center gap-2 px-2.5 py-1.5 text-sm font-medium transition-colors duration-200 ${
+          variant === 'onDark'
+            ? 'text-white/90 hover:text-white'
+            : 'text-ink-800 hover:bg-ink-100'
+        }`}
         aria-label="Change language"
       >
         <span className="text-lg">{currentLanguage.flag}</span>
@@ -45,7 +49,7 @@ export default function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-ink-200 py-2 z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-white border border-ink-200 py-1.5 z-50 shadow-none">
           {languages.map((lang) => (
             <button
               key={lang.code}

@@ -27,7 +27,7 @@
     "accredited": "Accredited by BAN-PT IAIN Bone",
     "title": "Faculty of Sharia and Islamic Law",
     "subtitle": "IAIN Bone",
-    "description": "Developing a deep understanding of Islamic law and sharia through high-quality education with modern and relevant approaches at IAIN Bone.",
+    "description": "Developing an understanding of Islamic law and sharia through high-quality education with modern and relevant approaches at IAIN Bone.",
     "learnMore": "Learn More",
     "lecturers": "Our Team",
     "activeStudents": "Active Students FSHI",
@@ -90,21 +90,55 @@
         "description": "A supportive learning environment with an inclusive, collaborative, and character development-oriented academic community."
       }
     },
+    "audiences": {
+      "title": "Find what you need",
+      "subtitle": "Prospective students, current students, and the public can go straight to the information they need.",
+      "prospective": {
+        "title": "Prospective Students",
+        "text": "Explore three bachelor's programs in Islamic law, check accreditation, then apply through new student admissions."
+      },
+      "students": {
+        "title": "Students",
+        "text": "Read the latest announcements, sign in to the academic system, and join online classes."
+      },
+      "lecturers": {
+        "title": "Lecturers",
+        "text": "Sign in to the academic system, manage online classes, and read faculty announcements."
+      },
+      "public": {
+        "title": "Public and Partners",
+        "text": "See the faculty's partnerships, access public information, or contact us directly."
+      }
+    },
+    "paths": {
+      "programs": "Three undergraduate programs in Islamic law",
+      "accreditation": "Accreditation status of each study program",
+      "services": "Admissions, academics, library, and complaints",
+      "announcements": "Latest academic and administrative information"
+    },
+    "campus": "Bone Regency",
     "programs": {
       "title": "Study Programs",
-      "subtitle": "Choose a study program that suits your interests and career goals in Islamic law at IAIN Bone.",
+      "subtitle": "Three bachelor's programs at the Faculty of Sharia and Islamic Law, IAIN Bone. Each program has an official site for curriculum, lecturers, and academic information.",
+      "level": "Bachelor (S1)",
       "constitutionalLaw": {
         "title": "Constitutional Law",
+        "focus": "Siyasah Syar'iyyah",
+        "grade": "Accreditation: Very Good",
         "description": "A study program that studies the Islamic state system, constitution, and the relationship between religion and state from an Islamic law perspective.",
         "learnMore": "Learn More"
       },
       "familyLaw": {
         "title": "Islamic Family Law",
+        "focus": "Ahwalu Syakhsiyah",
+        "grade": "Accreditation: Good",
         "description": "A study program focused on family law in Islam, including marriage, inheritance, and family rights.",
         "learnMore": "Learn More"
       },
       "economicLaw": {
         "title": "Sharia Economic Law",
+        "focus": "Muamalah",
+        "grade": "Accreditation: Good",
         "description": "A study program that delves into Islamic muamalah laws and their applications in various aspects of modern life.",
         "learnMore": "Learn More"
       }
@@ -175,7 +209,10 @@
       "peradi": "PERADI",
       "bsi": "BSI",
       "kemenag": "Ministry of Religion Bone Regency",
-      "baznas": "BAZNAS"
+      "baznas": "BAZNAS",
+      "kppu": "KPPU Makassar",
+      "kemenhajBone": "Ministry of Hajj, Bone",
+      "kemenhajSulsel": "Ministry of Hajj, South Sulawesi Regional Office"
     },
     "visionMission": {
       "title": "Vision & Mission"

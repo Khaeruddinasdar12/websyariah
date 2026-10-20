@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import PageHeader from '@/components/public/PageHeader';
 
 interface Pengumuman {
   id: number;
@@ -160,17 +161,7 @@ export default function PengumumanPage() {
   
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
-      {/* Page Header */}
-      <div className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('announcements.title')}</h1>
-            <p className="text-lg text-ink-500 max-w-2xl mx-auto">
-              {t('announcements.description')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader title={t('announcements.title')} description={t('announcements.description')} />
       
       <div className="flex-grow py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

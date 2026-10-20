@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { getPpidContent } from '@/data/ppid';
+import PageHeader from '@/components/public/PageHeader';
 
 export default function PpidPage() {
   const { t, language } = useLanguage();
@@ -19,21 +20,13 @@ export default function PpidPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
-      <div className="py-16 bg-white border-b border-ink-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 text-white shadow-lg"
-            style={{ background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))' }}>
-            <i className="fas fa-folder-open text-2xl" aria-hidden="true"></i>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-ink-900 mb-3">{t('ppid.title')}</h1>
-          <p className="text-lg text-primary font-medium mb-6">{t('ppid.subtitle')}</p>
-          <div className="max-w-4xl mx-auto space-y-4 text-ink-700 leading-relaxed text-left md:text-center">
-            {content.intro.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
+      <PageHeader title={t('ppid.title')} description={t('ppid.subtitle')}>
+        <div className="mt-6 max-w-3xl space-y-4 text-ink-700 leading-relaxed">
+          {content.intro.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
         </div>
-      </div>
+      </PageHeader>
 
       <section className="py-12 flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

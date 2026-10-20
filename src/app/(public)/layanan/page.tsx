@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import PageHeader from '@/components/public/PageHeader';
 
 export default function LayananPage() {
   const { t } = useLanguage();
@@ -60,17 +61,7 @@ export default function LayananPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
-      {/* Hero Section */}
-      <div className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('services.title')}</h1>
-            <p className="text-xl text-ink-500 max-w-2xl mx-auto">
-              {t('services.subtitle')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader title={t('services.title')} description={t('services.subtitle')} />
       
       {/* Services Grid */}
       <section className="py-12">

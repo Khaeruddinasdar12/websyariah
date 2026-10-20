@@ -1,7 +1,6 @@
-// components/Navbar.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -15,7 +14,21 @@ export default function Navbar() {
   const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
   const { t } = useLanguage();
-  
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setMobileInfoOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileMenuOpen]);
+
   const handleInfoMouseEnter = () => {
     if (dropdownTimeout) {
       clearTimeout(dropdownTimeout);
@@ -23,81 +36,91 @@ export default function Navbar() {
     }
     setInfoDropdownOpen(true);
   };
-  
+
   const handleInfoMouseLeave = () => {
     const timeout = setTimeout(() => {
       setInfoDropdownOpen(false);
-    }, 200); // Delay 200ms sebelum dropdown hilang
+    }, 160);
     setDropdownTimeout(timeout);
   };
-  
+
   const navigation = [
     { name: t('nav.home'), href: '/', key: 'home' },
-    { 
-      name: t('nav.information'), 
+    {
+      name: t('nav.information'),
       key: 'information',
       submenu: [
         { name: t('nav.news'), href: '/berita', key: 'news' },
         { name: t('nav.announcements'), href: '/pengumuman', key: 'announcements' },
-      ]
+      ],
     },
     { name: t('nav.lecturers'), href: '/tim-kami', key: 'lecturers' },
     { name: t('nav.about'), href: '/tentang', key: 'about' },
     { name: t('nav.accreditation'), href: '/akreditasi', key: 'accreditation' },
-    { name: t('nav.ppid'), href: '/ppid', key: 'ppid' },
     { name: t('nav.services'), href: '/layanan', key: 'services' },
     { name: t('nav.contact'), href: '/kontak', key: 'contact' },
   ];
-  
+
   const isInfoActive = pathname.startsWith('/berita') || pathname.startsWith('/pengumuman');
-  
+
   const isActive = (href: string) => {
-    if (href === '/') {
-      return pathname === '/';
-    }
+    if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
   };
-  
-  // Helper function to split title: first 3 words on first line, rest + subtitle on second line
-  const splitTitle = (text: string) => {
-    const words = text.split(' ');
-    if (words.length <= 3) {
-      return { firstLine: text, secondLine: t('home.subtitle') };
-    }
-    const firstLine = words.slice(0, 3).join(' ');
-    const remainingWords = words.slice(3).join(' ');
-    const secondLine = remainingWords ? `${remainingWords} ${t('home.subtitle')}` : t('home.subtitle');
-    return { firstLine, secondLine };
-  };
-  
-  const titleParts = splitTitle(t('home.title'));
-  
+
   return (
-    <nav className="bg-white/95 backdrop-blur-md shadow-lg border-b border-ink-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-16 gap-2 xl:gap-3">
-          <Link href="/" className="flex items-center min-w-0 shrink-0 max-w-[52%] sm:max-w-[42%] xl:max-w-[220px] 2xl:max-w-[260px]">
-            <div className="w-9 h-9 xl:w-10 xl:h-10 rounded-lg flex items-center justify-center mr-2 flex-shrink-0 overflow-hidden bg-white">
-              <Image
-                src="/assets/iain.png"
-                alt="IAIN Bone"
-                width={40}
-                height={40}
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="min-w-0 overflow-hidden">
-              <h1 className="text-[11px] sm:text-xs md:text-sm xl:text-base font-bold text-ink-900 leading-tight truncate xl:whitespace-normal">
-                {titleParts.firstLine}
-                <br className="hidden xl:block" />
-                <span className="text-[10px] sm:text-[11px] md:text-xs xl:text-sm block xl:inline">{titleParts.secondLine}</span>
-              </h1>
-            </div>
-          </Link>
-          
-          {/* Desktop Menu */}
-          <div className="hidden xl:flex items-center ml-auto shrink-0">
-            <div className="flex items-center gap-0.5">
+    <header className="sticky top-0 z-50">
+      <div className="pub-topbar">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between gap-4 text-xs">
+          <p className="truncate">
+            {t('footer.facultyName')} {t('footer.facultySubtitle')}
+          </p>
+          <div className="pub-top-links">
+            <Link
+              href="/ppid"
+              className={`pub-top-link ${pathname.startsWith('/ppid') ? 'is-active' : ''}`}
+            >
+              <i className="fas fa-folder-open" aria-hidden="true"></i>
+              <span>{t('nav.ppid')}</span>
+            </Link>
+            <a
+              href="https://iain-bone.ac.id/tur-virtual/fakultas-syariah"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pub-top-link"
+            >
+              <i className="fas fa-street-view" aria-hidden="true"></i>
+              <span>{t('nav.virtualTour')}</span>
+            </a>
+            <LanguageSwitcher variant="onDark" />
+          </div>
+        </div>
+      </div>
+
+      <nav className="pub-nav" aria-label="Utama">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-16 gap-4">
+            <Link href="/" className="flex items-center min-w-0 gap-3">
+              <span className="pub-brand-mark">
+                <Image
+                  src="/assets/iain.png"
+                  alt="IAIN Bone"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain"
+                />
+              </span>
+              <span className="min-w-0">
+                <span className="pub-brand-title">
+                  {t('footer.facultyName')}
+                </span>
+                <span className="pub-brand-sub">
+                  {t('home.subtitle')}
+                </span>
+              </span>
+            </Link>
+
+            <div className="hidden xl:flex items-center ml-auto">
               {navigation.map((item) => {
                 if (item.submenu) {
                   return (
@@ -108,35 +131,16 @@ export default function Navbar() {
                       onMouseLeave={handleInfoMouseLeave}
                     >
                       <button
-                        className={`px-1.5 py-2 rounded-md text-xs font-medium transition-all duration-300 relative group flex items-center whitespace-nowrap ${
-                          isInfoActive ? '' : 'text-ink-800'
-                        }`}
-                        style={isInfoActive ? {color: 'var(--color-primary)'} : {}}
-                        onMouseEnter={(e) => {
-                          if (!isInfoActive) {
-                            e.currentTarget.style.color = 'var(--color-primary)';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isInfoActive) {
-                            e.currentTarget.style.color = '';
-                          }
-                        }}
+                        className={`pub-nav-link inline-flex items-center gap-1 ${isInfoActive ? 'is-active' : ''}`}
+                        aria-expanded={infoDropdownOpen}
+                        aria-haspopup="true"
                       >
                         {item.name}
-                        <i className="fas fa-chevron-down ml-1 text-xs"></i>
-                        <span
-                          className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ${
-                            isInfoActive ? 'w-full' : 'w-0 group-hover:w-full'
-                          }`}
-                          style={{backgroundColor: 'var(--color-primary)'}}
-                        ></span>
+                        <i className="fas fa-chevron-down text-[10px]" aria-hidden="true"></i>
                       </button>
-                      
-                      {/* Dropdown Menu */}
                       {infoDropdownOpen && (
-                        <div 
-                          className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-ink-200 py-2 z-50"
+                        <div
+                          className="pub-menu absolute top-full left-0 mt-2 w-52 bg-white border border-ink-200 py-1.5 z-50"
                           onMouseEnter={handleInfoMouseEnter}
                           onMouseLeave={handleInfoMouseLeave}
                         >
@@ -144,12 +148,11 @@ export default function Navbar() {
                             <Link
                               key={subItem.key}
                               href={subItem.href}
-                              className={`block px-4 py-2 text-sm transition-colors duration-200 ${
+                              className={`block px-4 py-2.5 text-sm ${
                                 isActive(subItem.href)
-                                  ? 'text-primary bg-primary/10'
+                                  ? 'text-primary bg-ink-50'
                                   : 'text-ink-800 hover:bg-ink-50 hover:text-primary'
                               }`}
-                              style={isActive(subItem.href) ? {color: 'var(--color-primary)'} : {}}
                             >
                               {subItem.name}
                             </Link>
@@ -159,119 +162,58 @@ export default function Navbar() {
                     </div>
                   );
                 }
-                
+
                 return (
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`px-1.5 py-2 rounded-md text-xs font-medium transition-all duration-300 relative group whitespace-nowrap ${
-                      isActive(item.href)
-                        ? ''
-                        : 'text-ink-800'
-                    }`}
-                    style={isActive(item.href) ? {color: 'var(--color-primary)'} : {}}
-                    onMouseEnter={(e) => {
-                      if (!isActive(item.href)) {
-                        e.currentTarget.style.color = 'var(--color-primary)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive(item.href)) {
-                        e.currentTarget.style.color = '';
-                      }
-                    }}
+                    className={`pub-nav-link ${isActive(item.href) ? 'is-active' : ''}`}
                   >
                     {item.name}
-                    <span
-                      className={`absolute bottom-0 left-0 h-0.5 transition-all duration-300 ${
-                        isActive(item.href) ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`}
-                      style={{backgroundColor: 'var(--color-primary)'}}
-                    ></span>
                   </Link>
                 );
               })}
-              
-              {/* Tur Virtual */}
-              <a
-                href="https://iain-bone.ac.id/tur-virtual/fakultas-syariah"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-1.5 py-2 rounded-md text-xs font-medium transition-all duration-300 relative group text-ink-800 whitespace-nowrap"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--color-primary)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '';
-                }}
-              >
-                {t('nav.virtualTour')}
-                <span
-                  className="absolute bottom-0 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full"
-                  style={{backgroundColor: 'var(--color-primary)'}}
-                ></span>
-              </a>
-
             </div>
-            <div className="ml-2 pl-2 border-l border-ink-200">
-              <LanguageSwitcher />
-            </div>
-          </div>
 
-          {/* Mobile/Tablet menu button and language switcher */}
-          <div className="flex items-center gap-2 ml-auto xl:hidden">
-            <LanguageSwitcher />
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-ink-800 transition-colors duration-300"
-              onMouseEnter={(e) => {e.currentTarget.style.color = 'var(--color-primary)';}}
-              onMouseLeave={(e) => {e.currentTarget.style.color = '';}}
-              onFocus={(e) => {e.currentTarget.style.color = 'var(--color-primary)';}}
-              onBlur={(e) => {e.currentTarget.style.color = '';}}
+              type="button"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="pub-nav-toggle"
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
             >
-              <i className="fas fa-bars text-xl"></i>
+              <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`} aria-hidden="true"></i>
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="xl:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 backdrop-blur-md rounded-lg mt-2 shadow-lg">
+          <div className="pub-menu pub-nav-panel xl:hidden">
+            <div className="max-w-7xl mx-auto px-4 py-3 space-y-1">
               {navigation.map((item) => {
                 if (item.submenu) {
                   return (
                     <div key={item.key}>
                       <button
-                        onClick={() => setMobileInfoOpen(!mobileInfoOpen)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 ${
-                          isInfoActive
-                            ? 'bg-opacity-10'
-                            : 'text-ink-800 hover:bg-ink-50'
+                        type="button"
+                        onClick={() => setMobileInfoOpen((open) => !open)}
+                        className={`pub-nav-item w-full flex items-center justify-between px-3 py-3 text-base ${
+                          isInfoActive ? 'is-active' : ''
                         }`}
-                        style={isInfoActive ? {color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)'} : {}}
                       >
                         <span>{item.name}</span>
-                        <i className={`fas fa-chevron-${mobileInfoOpen ? 'up' : 'down'} text-xs ml-2`}></i>
+                        <i className={`fas fa-chevron-${mobileInfoOpen ? 'up' : 'down'} text-xs`} aria-hidden="true"></i>
                       </button>
-                      
-                      {/* Mobile Submenu */}
                       {mobileInfoOpen && (
-                        <div className="pl-4 mt-1 space-y-1">
+                        <div className="pl-3 pb-1">
                           {item.submenu.map((subItem) => (
                             <Link
                               key={subItem.key}
                               href={subItem.href}
-                              className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
-                                isActive(subItem.href)
-                                  ? 'bg-opacity-10'
-                                  : 'text-ink-600 hover:bg-ink-50'
+                              className={`pub-nav-item block px-3 py-2.5 text-sm ${
+                                isActive(subItem.href) ? 'is-active' : ''
                               }`}
-                              style={isActive(subItem.href) ? {color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)'} : {}}
-                              onClick={() => {
-                                setMobileMenuOpen(false);
-                                setMobileInfoOpen(false);
-                              }}
+                              onClick={() => setMobileMenuOpen(false)}
                             >
                               {subItem.name}
                             </Link>
@@ -281,54 +223,24 @@ export default function Navbar() {
                     </div>
                   );
                 }
-                
+
                 return (
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 ${
-                      isActive(item.href)
-                        ? 'bg-opacity-10'
-                        : 'text-ink-800 hover:bg-ink-50'
+                    className={`pub-nav-item block px-3 py-3 text-base ${
+                      isActive(item.href) ? 'is-active' : ''
                     }`}
-                    style={isActive(item.href) ? {color: 'var(--color-primary)', backgroundColor: 'rgba(var(--color-primary-rgb), 0.1)'} : {}}
-                    onMouseEnter={(e) => {
-                      if (!isActive(item.href)) {
-                        e.currentTarget.style.color = 'var(--color-primary)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive(item.href)) {
-                        e.currentTarget.style.color = '';
-                      }
-                    }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.name}
                   </Link>
                 );
               })}
-              
-              {/* Tur Virtual Mobile */}
-              <a
-                href="https://iain-bone.ac.id/tur-virtual/fakultas-syariah"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-3 py-2 rounded-md text-base font-medium text-ink-800 hover:bg-ink-50 transition-colors duration-300"
-                onClick={() => setMobileMenuOpen(false)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--color-primary)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '';
-                }}
-              >
-                {t('nav.virtualTour')}
-              </a>
             </div>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 }

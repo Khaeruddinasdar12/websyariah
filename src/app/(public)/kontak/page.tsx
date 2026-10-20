@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import PageHeader from '@/components/public/PageHeader';
 
 export default function KontakPage() {
   const { t } = useLanguage();
@@ -50,17 +51,7 @@ export default function KontakPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
-      {/* Page Header */}
-      <div className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('contact.title')}</h1>
-            <p className="text-lg text-ink-800 max-w-2xl mx-auto">
-              {t('contact.description')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader title={t('contact.title')} description={t('contact.description')} />
 
       
       <div className="flex-grow py-12">

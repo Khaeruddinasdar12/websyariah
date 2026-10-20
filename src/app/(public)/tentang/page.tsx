@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import PageHeader from '@/components/public/PageHeader';
 
 
 export default function TentangPage() {
@@ -14,20 +15,9 @@ export default function TentangPage() {
   
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
-      {/* Hero Section */}
-      <div className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-ink-500 mb-4">{t('about.title')}</h1>
-            <p className="text-xl text-ink-500 max-w-2xl mx-auto">
-              {t('about.subtitle')}
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Tabs Navigation */}
-      <section className="py-8 bg-white sticky top-16 z-40 shadow-sm">
+      <PageHeader title={t('about.title')} description={t('about.subtitle')} />
+
+      <section className="py-4 bg-white sticky z-40 border-b border-ink-200" style={{ top: 'var(--public-header-h)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-center gap-3">
             <button

@@ -122,8 +122,8 @@ export default function PengumumanDetailPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-ink-900 font-outfit">
       {/* Page Header */}
-      <div className="py-12 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="pub-page-header">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <Link
             href="/pengumuman"
             className="inline-flex items-center text-ink-800 hover:text-primary transition-colors font-medium mb-4 text-base"

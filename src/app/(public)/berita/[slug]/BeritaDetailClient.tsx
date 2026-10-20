@@ -184,8 +184,8 @@ export default function BeritaDetailClient() {
 
   return (
     <div className="min-h-screen bg-ink-50 text-ink-900 font-outfit">
-      <div className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="pub-page-header">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <Link
             href="/berita"
             className="inline-flex items-center text-ink-800 hover:text-primary transition-colors font-medium mb-4 text-base"
@@ -199,15 +199,15 @@ export default function BeritaDetailClient() {
               <span>{formatDate(berita.created_at)}</span>
             </div>
             <span className="hidden sm:inline text-ink-400">•</span>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-primary/10 text-primary">
+            <span className="inline-flex items-center px-3 py-1 text-sm font-semibold bg-primary/10 text-primary">
               {getLocalizedCategory(berita)}
             </span>
           </div>
+          <h1 className="pub-page-title">{getLocalizedTitle(berita)}</h1>
         </div>
       </div>
 
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-ink-900 mb-6">{getLocalizedTitle(berita)}</h1>
+      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {berita.gambar && !imageError ? (
           <>

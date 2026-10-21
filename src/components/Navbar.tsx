@@ -72,8 +72,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-50">
       <div className="pub-topbar">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between gap-4 text-xs">
-          <p className="truncate">
-            {t('footer.facultyName')} {t('footer.facultySubtitle')}
+          <p className="pub-top-name">
+            {t('footer.facultyName')}
           </p>
           <div className="pub-top-links">
             <Link
@@ -99,8 +99,8 @@ export default function Navbar() {
 
       <nav className="pub-nav" aria-label="Utama">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-16 gap-4">
-            <Link href="/" className="flex items-center min-w-0 gap-3">
+          <div className="pub-nav-bar">
+            <Link href="/" className="pub-brand">
               <span className="pub-brand-mark">
                 <Image
                   src="/assets/iain.png"

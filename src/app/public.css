@@ -24,7 +24,7 @@
   --color-ink-700: #333330;
   --color-ink-800: #1f1f1d;
   --color-ink-900: #141413;
-  --public-header-h: 100px;
+  --public-header-h: 108px;
   background: var(--color-ink-50);
   color: var(--color-ink-900);
   font-family: var(--font-public-sans), "Segoe UI", sans-serif;
@@ -1035,11 +1035,19 @@
   color: var(--color-gold-light);
 }
 
+.pub-top-name {
+  min-width: 0;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 .pub-top-links {
   display: flex;
   align-items: center;
   gap: 0.9rem;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .pub-top-link {
@@ -1076,6 +1084,22 @@
   pointer-events: none;
 }
 
+.pub-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 4.5rem;
+  padding: 0.45rem 0;
+}
+
+.pub-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .pub-brand-mark {
   display: grid;
   place-items: center;
@@ -1089,22 +1113,37 @@
 .pub-brand-title {
   display: block;
   color: #fff;
-  font-size: 0.875rem;
+  font-size: 0.92rem;
   font-weight: 600;
   line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
 }
 
 .pub-brand-sub {
   display: block;
+  margin-top: 0.12rem;
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.75rem;
   line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+@media (max-width: 767px) {
+  .pub-top-name {
+    display: none;
+  }
+
+  .pub-brand-title {
+    font-size: 0.84rem;
+    line-height: 1.28;
+  }
+}
+
+@media (min-width: 1280px) {
+  .pub-brand {
+    flex: 0 1 auto;
+    max-width: 22rem;
+  }
 }
 
 .pub-nav-toggle {

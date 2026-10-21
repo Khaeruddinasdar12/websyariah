@@ -430,15 +430,15 @@ export default function HomePage() {
                 </figcaption>
               </figure>
             </div>
-          </div>
 
-          <div className="pub-stats pub-rise-load pub-reveal-d3">
-            {stats.map((item) => (
-              <article key={item.label}>
-                <CountValue value={item.value} />
-                <span>{item.label}</span>
-              </article>
-            ))}
+            <div className="pub-stats pub-rise-load pub-reveal-d3">
+              {stats.map((item) => (
+                <article key={item.label}>
+                  <CountValue value={item.value} />
+                  <span>{item.label}</span>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>

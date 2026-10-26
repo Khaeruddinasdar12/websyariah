@@ -212,7 +212,8 @@
       "baznas": "BAZNAS",
       "kppu": "KPPU Makassar",
       "kemenhajBone": "Kemenhaj Bone",
-      "kemenhajSulsel": "Kemenhaj Kanwil Sulsel"
+      "kemenhajSulsel": "Kemenhaj Kanwil Sulsel",
+      "bnnBone": "BNN Bone"
     },
     "visionMission": {
       "title": "Visi & Misi"
@@ -459,7 +460,7 @@
     "subtitle": "Pejabat Pengelola Informasi dan Dokumentasi",
     "publicInfoList": "Daftar Informasi Publik",
     "view": "Lihat",
-    "download": "Unduh",
+    "download": "Unduh SK",
     "requestInfo": "Ajukan Permohonan Informasi",
     "ctaTitle": "Terhubung Lebih Dekat dengan FSHI!",
     "ctaDescription": "Punya pertanyaan seputar akademik, kegiatan, atau admisi? Kami siap membantu Anda dengan senang hati.",
@@ -469,7 +470,7 @@
       "title": "Judul Informasi",
       "summary": "Ringkasan Isi",
       "unit": "Pejabat/Unit yang Menguasai Informasi",
-      "format": "Bentuk"
+      "action": "Aksi"
     }
   }
 }

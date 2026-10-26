@@ -212,7 +212,8 @@
       "baznas": "BAZNAS",
       "kppu": "KPPU Makassar",
       "kemenhajBone": "Ministry of Hajj, Bone",
-      "kemenhajSulsel": "Ministry of Hajj, South Sulawesi Regional Office"
+      "kemenhajSulsel": "Ministry of Hajj, South Sulawesi Regional Office",
+      "bnnBone": "BNN Bone"
     },
     "visionMission": {
       "title": "Vision & Mission"
@@ -459,7 +460,7 @@
     "subtitle": "Information and Documentation Management Officer",
     "publicInfoList": "Public Information List",
     "view": "View",
-    "download": "Download",
+    "download": "Download SK",
     "requestInfo": "Submit Information Request",
     "ctaTitle": "Stay Connected with FSHI!",
     "ctaDescription": "Have questions about academics, activities, or admissions? We are happy to help you.",
@@ -469,7 +470,7 @@
       "title": "Information Title",
       "summary": "Content Summary",
       "unit": "Information Holder Official/Unit",
-      "format": "Format"
+      "action": "Action"
     }
   }
 }

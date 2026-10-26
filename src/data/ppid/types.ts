@@ -3,7 +3,8 @@ export interface PpidTableRow {
   title: string;
   summary: string;
   unit: string;
-  format: string;
+  /** Tautan berkas. Baris induk tanpa berkas dibiarkan kosong, sama seperti kolom Aksi di FEBI. */
+  href?: string;
   isSubRow?: boolean;
 }
 
@@ -19,4 +20,5 @@ export interface PpidContent {
   intro: string[];
   sections: PpidSection[];
   downloadUrl: string;
+  requestUrl: string;
 }

@@ -75,7 +75,7 @@ export default function PpidPage() {
                               <th className="px-4 py-3 text-left font-semibold min-w-[220px]">{t('ppid.table.title')}</th>
                               <th className="px-4 py-3 text-left font-semibold min-w-[220px]">{t('ppid.table.summary')}</th>
                               <th className="px-4 py-3 text-left font-semibold min-w-[180px]">{t('ppid.table.unit')}</th>
-                              <th className="px-4 py-3 text-left font-semibold whitespace-nowrap">{t('ppid.table.format')}</th>
+                              <th className="px-4 py-3 text-left font-semibold whitespace-nowrap">{t('ppid.table.action')}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -88,7 +88,20 @@ export default function PpidPage() {
                                 <td className={`px-4 py-3 align-top text-ink-900 ${row.isSubRow ? 'pl-8' : ''}`}>{row.title}</td>
                                 <td className="px-4 py-3 align-top text-ink-600">{row.summary}</td>
                                 <td className="px-4 py-3 align-top text-ink-600">{row.unit}</td>
-                                <td className="px-4 py-3 align-top text-ink-600 whitespace-nowrap">{row.format}</td>
+                                <td className="px-4 py-3 align-top whitespace-nowrap">
+                                  {row.href ? (
+                                    <a
+                                      href={row.href}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90"
+                                      style={{ background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))' }}
+                                    >
+                                      {t('ppid.view')}
+                                      <i className="fas fa-external-link-alt" aria-hidden="true"></i>
+                                    </a>
+                                  ) : null}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -101,8 +114,8 @@ export default function PpidPage() {
             })}
           </div>
 
-          <div className="mt-10 flex flex-col items-center gap-4">
-            {/* <a
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
               href={content.downloadUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -111,9 +124,9 @@ export default function PpidPage() {
             >
               <i className="fas fa-download" aria-hidden="true"></i>
               {t('ppid.download')}
-            </a> */}
+            </a>
             <a
-              href="https://ppid.iain-bone.ac.id/informasi-publik/permohonan/form"
+              href={content.requestUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all"

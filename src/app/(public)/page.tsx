@@ -357,6 +357,7 @@ export default function HomePage() {
     { src: '/assets/partners/kppu.png', label: t('home.partnership.kppu') },
     { src: '/assets/partners/kemenhaj.png', label: t('home.partnership.kemenhajBone') },
     { src: '/assets/partners/kemenhaj.png', label: t('home.partnership.kemenhajSulsel') },
+    { src: '/assets/partners/bnn.png', label: t('home.partnership.bnnBone') },
   ];
 
   const featuredNews = berita[0];

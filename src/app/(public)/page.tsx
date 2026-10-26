@@ -129,6 +129,35 @@ function CountValue({ value }: { value: string }) {
   );
 }
 
+function chunkList<T>(items: T[], size: number): T[][] {
+  const pages: T[][] = [];
+  for (let index = 0; index < items.length; index += size) {
+    pages.push(items.slice(index, index + size));
+  }
+  return pages;
+}
+
+function PartnerCards({ partners }: { partners: { src: string; label: string }[] }) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {partners.map((partner) => (
+        <article key={partner.label} className="pub-partner">
+          <div className="pub-partner-logo">
+            <Image
+              src={partner.src}
+              alt=""
+              fill
+              className="object-contain"
+              sizes="240px"
+            />
+          </div>
+          <h3>{partner.label}</h3>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function SectionHead({ title, text }: { title: string; text?: string }) {
   return (
     <div className="max-w-2xl mb-10">
@@ -197,6 +226,7 @@ export default function HomePage() {
   const [berita, setBerita] = useState<Berita[]>([]);
   const [loadingPengumuman, setLoadingPengumuman] = useState(true);
   const [loadingBerita, setLoadingBerita] = useState(true);
+  const [partnerColumns, setPartnerColumns] = useState(4);
 
   const localeMap: Record<string, string> = {
     id: 'id-ID',
@@ -221,6 +251,14 @@ export default function HomePage() {
 
     fetchPengumuman();
   }, [language]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 768px)');
+    const update = () => setPartnerColumns(media.matches ? 4 : 2);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     async function fetchBerita() {
@@ -358,7 +396,9 @@ export default function HomePage() {
     { src: '/assets/partners/kemenhaj.png', label: t('home.partnership.kemenhajBone') },
     { src: '/assets/partners/kemenhaj.png', label: t('home.partnership.kemenhajSulsel') },
     { src: '/assets/partners/bnn.png', label: t('home.partnership.bnnBone') },
+    { src: '/assets/partners/pemda-bone.png', label: t('home.partnership.pemdaBone') },
   ];
+  const partnerPages = chunkList(partners, partnerColumns * 3);
 
   const featuredNews = berita[0];
   const otherNews = berita.slice(1, 4);
@@ -657,22 +697,24 @@ export default function HomePage() {
       <section id="kerjasama" className="pub-section pub-reveal pub-section-alt">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHead title={t('home.partnership.title')} text={t('home.partnership.subtitle')} />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {partners.map((partner) => (
-              <article key={partner.label} className="pub-partner">
-                <div className="pub-partner-logo">
-                  <Image
-                    src={partner.src}
-                    alt=""
-                    fill
-                    className="object-contain"
-                    sizes="240px"
-                  />
-                </div>
-                <h3>{partner.label}</h3>
-              </article>
-            ))}
-          </div>
+          {partnerPages.length > 1 ? (
+            <Swiper
+              key={partnerColumns}
+              modules={[Navigation, Pagination]}
+              navigation
+              pagination={{ clickable: true }}
+              spaceBetween={12}
+              className="partner-swiper"
+            >
+              {partnerPages.map((page, index) => (
+                <SwiperSlide key={index}>
+                  <PartnerCards partners={page} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <PartnerCards partners={partners} />
+          )}
         </div>
       </section>
     </div>

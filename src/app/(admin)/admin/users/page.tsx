@@ -2,10 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { supabase } from '@/lib/supabase';
 import AdminTableActions from '@/components/admin/AdminTableActions';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
+import { useConfirm } from '@/hooks/useConfirm';
+import ConfirmDialog from '@/components/ui/confirm-dialog/ConfirmDialog';
 
 interface User {
   id: number; // bigint (auto-increment)
@@ -17,6 +22,10 @@ interface User {
 }
 
 export default function UsersPage() {
+  const router = useRouter();
+  const { user: sessionUser } = useAuth();
+  const toast = useToast();
+  const { confirm, isOpen, options, isLoading, handleConfirm, handleCancel } = useConfirm();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,31 +43,14 @@ export default function UsersPage() {
 
       if (usersError) throw usersError;
 
-      // Get emails from auth.users using user_id (UUID), not id (bigint)
-      const usersWithEmail = await Promise.all(
-        (usersData || []).map(async (user) => {
-          // Use user_id (UUID) to get auth user, not id (bigint)
-          if (user.user_id) {
-            try {
-              const { data: authData } = await supabase.auth.admin.getUserById(user.user_id);
-              return {
-                ...user,
-                email: authData?.user?.email || '',
-              };
-            } catch (error) {
-              console.error(`Error fetching auth user for user_id ${user.user_id}:`, error);
-              return {
-                ...user,
-                email: '',
-              };
-            }
-          }
-          return {
-            ...user,
-            email: '',
-          };
-        })
-      );
+      const { data: sessionData } = await supabase.auth.getSession();
+      const currentAuthId = sessionData.session?.user.id;
+      const currentEmail = sessionData.session?.user.email || '';
+
+      const usersWithEmail = (usersData || []).map((user) => ({
+        ...user,
+        email: user.user_id && user.user_id === currentAuthId ? currentEmail : '',
+      }));
 
       setUsers(usersWithEmail as User[]);
     } catch (error: any) {
@@ -78,24 +70,31 @@ export default function UsersPage() {
   };
 
   const handleEdit = (user: User) => {
-    // Navigate to edit page
-    window.location.href = `/admin/users/${user.id}/edit`;
+    router.push(`/admin/users/${user.id}/edit`);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+  const handleDelete = async (target: User) => {
+    if (sessionUser?.id && target.user_id === sessionUser.id) {
+      toast.showError('Tidak bisa menghapus', 'Akun yang sedang dipakai tidak dapat dihapus.');
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: 'Hapus User',
+      message: `Hapus ${target.nama}? Profil akan dihapus dari daftar pengguna.`,
+      type: 'danger',
+      confirmText: 'Hapus',
+    });
+    if (!confirmed) return;
 
     try {
-      // Delete from users table using id (bigint)
-      const { error: userError } = await supabase.from('users').delete().eq('id', id);
+      const { error: userError } = await supabase.from('users').delete().eq('id', target.id);
       if (userError) throw userError;
-
-      // Note: Deleting from auth.users requires admin privileges
-      // You might need to handle this server-side or through Supabase dashboard
+      toast.showSuccess('Berhasil', 'User berhasil dihapus');
       fetchUsers();
-    } catch (error: any) {
-      console.error('Error deleting user:', error);
-      alert('Error deleting user: ' + error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Gagal menghapus user';
+      toast.showError('Gagal menghapus', message);
     }
   };
 
@@ -133,7 +132,13 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                    Belum ada user
+                  </td>
+                </tr>
+              ) : users.map((user) => (
                 <tr
                   key={user.id}
                   className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -148,7 +153,7 @@ export default function UsersPage() {
                   <td className="px-4 py-3">
                     <AdminTableActions
                       onEdit={() => handleEdit(user)}
-                      onDelete={() => handleDelete(user.id)}
+                      onDelete={() => handleDelete(user)}
                       editLabel="Edit user"
                       deleteLabel="Hapus user"
                     />
@@ -159,6 +164,19 @@ export default function UsersPage() {
           </table>
         </div>
       </ComponentCard>
+      {options && (
+        <ConfirmDialog
+          isOpen={isOpen}
+          onClose={handleCancel}
+          onConfirm={handleConfirm}
+          title={options.title}
+          message={options.message}
+          confirmText={options.confirmText}
+          cancelText={options.cancelText}
+          type={options.type}
+          isLoading={isLoading}
+        />
+      )}
     </div>
   );
 }

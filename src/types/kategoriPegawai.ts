@@ -3,4 +3,5 @@ export interface KategoriPegawai {
   nama: string;
   nama_en?: string;
   nama_ar?: string;
+  urut?: number;
 }

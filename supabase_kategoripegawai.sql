@@ -25,6 +25,19 @@ GRANT INSERT, UPDATE, DELETE ON public.kategoripegawai TO authenticated, service
 -- Setelah membuat/mengubah tabel, reload schema cache di Supabase:
 -- Settings → API → Reload schema cache
 
+-- Urutan tampil. Aman dijalankan ulang pada tabel yang sudah ada.
+ALTER TABLE public.kategoripegawai
+  ADD COLUMN IF NOT EXISTS urut integer;
+
+UPDATE public.kategoripegawai AS k
+SET urut = ranked.urut
+FROM (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS urut
+  FROM public.kategoripegawai
+) AS ranked
+WHERE k.id = ranked.id
+  AND k.urut IS NULL;
+
 -- Contoh data awal (jalankan sekali jika tabel masih kosong)
 -- INSERT INTO public.kategoripegawai (nama, urut) VALUES
 --   ('Pejabat', 1),

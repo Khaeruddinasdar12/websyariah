@@ -435,7 +435,9 @@
     "previous": "السابق",
     "next": "التالي",
     "education": "التعليم",
-    "expertise": "التخصص"
+    "expertise": "التخصص",
+    "alumniTitle": "أساتذتنا خريجو",
+    "alumnus": "خريج {{campus}}"
   },
   "accreditation": {
     "title": "الاعتماد",

@@ -37,8 +37,26 @@ interface DosenDisplay {
   kategoriIds: string[];
   expertise: string[];
   pendidikan: string;
+  degree: string;
+  campus: string;
   imageUrl?: string;
   urut: number;
+}
+
+const DEGREE_PATTERN = /^(S[123]|D[1-4]|Ph\.?D\.?)$/i;
+
+function parsePendidikan(raw: string): { degree: string; campus: string } {
+  const text = raw.trim();
+  if (!text) return { degree: '', campus: '' };
+
+  const parts = text.split(/\s*[,|]\s*/).filter(Boolean);
+  if (parts.length >= 2 && DEGREE_PATTERN.test(parts[0])) {
+    return { degree: parts[0].toUpperCase(), campus: parts.slice(1).join(', ') };
+  }
+  if (DEGREE_PATTERN.test(text)) {
+    return { degree: text.toUpperCase(), campus: '' };
+  }
+  return { degree: '', campus: text };
 }
 
 function parseKeahlian(keahlian?: string): string[] {
@@ -59,6 +77,7 @@ function transformDosenItem(
 ): DosenDisplay {
   const kategoriIds = normalizeKategoriIds(item.prodi);
   const keahlianText = getLangValue(item, 'keahlian', language);
+  const parsed = parsePendidikan(item.pendidikan || '');
 
   return {
     id: item.id,
@@ -68,6 +87,8 @@ function transformDosenItem(
     kategoriIds,
     expertise: parseKeahlian(keahlianText),
     pendidikan: item.pendidikan || '',
+    degree: parsed.degree,
+    campus: parsed.campus,
     imageUrl: resolveDosenImageUrl(item),
     urut: item.urut || 999,
   };
@@ -205,6 +226,7 @@ export default function TimKamiPage() {
           item.name.toLowerCase().includes(term) ||
           item.position.toLowerCase().includes(term) ||
           item.pendidikan.toLowerCase().includes(term) ||
+          item.campus.toLowerCase().includes(term) ||
           item.expertise.some((skill) => skill.toLowerCase().includes(term))
       );
     }
@@ -218,8 +240,19 @@ export default function TimKamiPage() {
   const endIndex = startIndex + itemsPerPage;
   const currentDosen = filteredDosen.slice(startIndex, endIndex);
 
-  // "Semua" selalu pertama; kategori lain mengikuti urutan id dari database
+  // "Semua" selalu pertama; kategori lain mengikuti kolom urut
   const filterCategories = useMemo(() => kategoriList, [kategoriList]);
+
+  const alumniCampuses = useMemo(() => {
+    const seen = new Set<string>();
+    const campuses: string[] = [];
+    dosen.forEach((person) => {
+      if (!person.campus || seen.has(person.campus)) return;
+      seen.add(person.campus);
+      campuses.push(person.campus);
+    });
+    return campuses;
+  }, [dosen]);
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
@@ -328,6 +361,26 @@ export default function TimKamiPage() {
             </div>
           )}
 
+          {!loading && !error && alumniCampuses.length > 0 && (
+            <div className="mb-8 rounded-2xl border border-ink-100 bg-ink-50 px-5 py-4">
+              <p className="text-sm font-semibold text-ink-800 mb-3">
+                <i className="fas fa-graduation-cap mr-2 text-primary" aria-hidden="true"></i>
+                {t('team.alumniTitle')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {alumniCampuses.map((campus) => (
+                  <span
+                    key={campus}
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-medium text-ink-800 border border-ink-200"
+                  >
+                    <i className="fas fa-graduation-cap text-xs" style={{ color: '#8d7348' }} aria-hidden="true"></i>
+                    {campus}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {!loading && !error && currentDosen.length > 0 && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -341,41 +394,40 @@ export default function TimKamiPage() {
                         <DosenPhoto src={item.imageUrl} name={item.name} />
                         <h3 className="text-lg font-bold text-ink-900 mb-1">{item.name}</h3>
                         <p className="text-sm text-primary font-medium mb-1">{item.position}</p>
+                        {item.campus && (
+                          <p
+                            className="mt-2 mb-2 inline-flex max-w-full items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold leading-snug"
+                            style={{
+                              background:
+                                'linear-gradient(135deg, rgba(141, 115, 72, 0.16), rgba(220, 201, 164, 0.55))',
+                              color: '#6b542f',
+                              border: '1px solid rgba(141, 115, 72, 0.35)',
+                            }}
+                          >
+                            <i className="fas fa-graduation-cap" aria-hidden="true"></i>
+                            {t('team.alumnus', { campus: item.campus })}
+                          </p>
+                        )}
                         <p className="text-xs text-ink-500 mb-4">{item.studyProgram}</p>
                       </div>
 
                       <div className="border-t border-ink-100 pt-4">
-                        {item.pendidikan && (
+                        {(item.degree || (item.pendidikan && !item.campus)) && (
                           <div className="mb-3">
                             <p className="text-xs font-semibold text-ink-700 mb-1">
-                              <i className="fas fa-graduation-cap mr-1 text-primary"></i>
+                              <i className="fas fa-user-graduate mr-1 text-primary"></i>
                               {t('team.education')}
                             </p>
-                            <p className="text-xs text-ink-600 leading-relaxed">{item.pendidikan}</p>
+                            <p className="text-xs text-ink-600 leading-relaxed">
+                              {item.degree || item.pendidikan}
+                            </p>
                           </div>
                         )}
                         {item.expertise.length > 0 && (
-                          <div>
-                            <p className="text-xs font-semibold text-ink-700 mb-2">
-                              <i className="fas fa-star mr-1 text-primary"></i>
-                              {t('team.expertise')}
-                            </p>
-                            <div className="flex flex-wrap gap-1.5 justify-center">
-                              {item.expertise.map((skill, index) => (
-                                <span
-                                  key={index}
-                                  className="px-2.5 py-1 text-xs rounded-lg font-medium"
-                                  style={{
-                                    backgroundColor: 'rgba(var(--color-primary-rgb), 0.12)',
-                                    color: 'var(--color-primary)',
-                                    border: '1px solid rgba(var(--color-primary-rgb), 0.2)',
-                                  }}
-                                >
-                                  {skill}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
+                          <p className="text-[11px] leading-relaxed text-ink-400">
+                            <span className="text-ink-500">{t('team.expertise')}: </span>
+                            {item.expertise.join(', ')}
+                          </p>
                         )}
                       </div>
                     </div>

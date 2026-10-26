@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import type { KategoriPegawai } from '@/types/kategoriPegawai';
+import { orderKategoriPegawai } from '@/lib/kategoriPegawaiOrder';
 
 const TABLE_CANDIDATES = ['kategoripegawai', 'kategori_pegawai'] as const;
 
@@ -20,7 +21,16 @@ export function getSupabaseErrorMessage(err: unknown, fallback: string): string 
   return fallback;
 }
 
-function mapKategoriRow(row: Record<string, unknown>): KategoriPegawai | null {
+function readUrut(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return undefined;
+}
+
+export function mapKategoriPegawaiRow(row: Record<string, unknown>): KategoriPegawai | null {
   if (row.id == null) return null;
 
   const nama =
@@ -36,22 +46,8 @@ function mapKategoriRow(row: Record<string, unknown>): KategoriPegawai | null {
     nama,
     nama_en: typeof row.nama_en === 'string' ? row.nama_en : undefined,
     nama_ar: typeof row.nama_ar === 'string' ? row.nama_ar : undefined,
+    urut: readUrut(row.urut),
   };
-}
-
-export function sortKategoriPegawai(list: KategoriPegawai[]): KategoriPegawai[] {
-  return [...list].sort((a, b) => compareKategoriId(a.id, b.id));
-}
-
-function compareKategoriId(a: string, b: string): number {
-  const numA = Number(a);
-  const numB = Number(b);
-
-  if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
-    return numA - numB;
-  }
-
-  return a.localeCompare(b);
 }
 
 export async function fetchKategoriPegawai(): Promise<{
@@ -69,11 +65,11 @@ export async function fetchKategoriPegawai(): Promise<{
 
     if (!error && data) {
       const mapped = data
-        .map((row) => mapKategoriRow(row as Record<string, unknown>))
+        .map((row) => mapKategoriPegawaiRow(row as Record<string, unknown>))
         .filter((row): row is KategoriPegawai => row !== null);
 
       return {
-        data: sortKategoriPegawai(mapped),
+        data: await orderKategoriPegawai(mapped),
         error: null,
         table,
       };

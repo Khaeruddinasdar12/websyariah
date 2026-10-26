@@ -64,6 +64,11 @@ const AppSidebar: React.FC = () => {
       path: "/admin/dosen",
     },
     {
+      icon: ListIcon,
+      name: "Kategori Pegawai",
+      path: "/admin/kategori-pegawai",
+    },
+    {
       icon: UserCircleIcon,
       name: "Users",
       path: "/admin/users",

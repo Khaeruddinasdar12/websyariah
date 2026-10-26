@@ -435,7 +435,9 @@
     "previous": "Previous",
     "next": "Next",
     "education": "Education",
-    "expertise": "Expertise"
+    "expertise": "Expertise",
+    "alumniTitle": "Our lecturers graduated from",
+    "alumnus": "Alumnus of {{campus}}"
   },
   "accreditation": {
     "title": "Accreditation",

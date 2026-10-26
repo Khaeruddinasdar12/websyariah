@@ -435,7 +435,9 @@
     "previous": "Sebelumnya",
     "next": "Selanjutnya",
     "education": "Pendidikan",
-    "expertise": "Keahlian"
+    "expertise": "Keahlian",
+    "alumniTitle": "Dosen FSHI lulusan",
+    "alumnus": "Alumni {{campus}}"
   },
   "accreditation": {
     "title": "Akreditasi",

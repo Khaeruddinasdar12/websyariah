@@ -319,7 +319,7 @@ export default function EditDosenPage() {
               type="text"
               value={formData.pendidikan}
               onChange={(e) => handleInputChange('pendidikan', e.target.value)}
-              placeholder="Masukkan pendidikan"
+              placeholder="Contoh: S3, UIN Syarif Hidayatullah Jakarta"
               required
             />
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Label from "@/components/form/Label";
 import type { KategoriPegawai } from "@/types/kategoriPegawai";
 import { fetchKategoriPegawai } from "@/lib/fetchKategoriPegawai";
@@ -97,8 +98,10 @@ export default function KategoriPegawaiMultiSelect({
 
       {!loading && !error && categories.length === 0 && (
         <p className="text-sm text-amber-600 dark:text-amber-400">
-          Tabel kategoripegawai dapat diakses, tetapi belum ada data. Tambahkan baris
-          kategori di Supabase Table Editor.
+          Belum ada kategori pegawai.{" "}
+          <Link href="/admin/kategori-pegawai/new" className="underline">
+            Tambah kategori
+          </Link>
         </p>
       )}
 

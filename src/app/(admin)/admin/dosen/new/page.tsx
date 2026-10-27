@@ -6,6 +6,7 @@ import ComponentCard from '@/components/common/ComponentCard';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import KategoriPegawaiMultiSelect from '@/components/admin/KategoriPegawaiMultiSelect';
+import DosenPendidikanField from '@/components/admin/DosenPendidikanField';
 import { normalizeKategoriIds } from '@/utils/kategoriPegawai';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -338,17 +339,10 @@ export default function NewDosenPage() {
             />
           </div>
 
-          {/* Pendidikan */}
-          <div>
-            <Label>Pendidikan *</Label>
-            <Input
-              type="text"
-              value={formData.pendidikan}
-              onChange={(e) => handleInputChange('pendidikan', e.target.value)}
-              placeholder="Contoh: S3, UIN Syarif Hidayatullah Jakarta"
-              required
-            />
-          </div>
+          <DosenPendidikanField
+            value={formData.pendidikan}
+            onChange={(value) => handleInputChange('pendidikan', value)}
+          />
 
           {/* Keahlian */}
           <div>

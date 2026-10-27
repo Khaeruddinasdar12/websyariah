@@ -76,6 +76,16 @@
       "quote": "We are very pleased to present this website as a medium of information and communication for the academic community, students, the public, and our partners. Through this portal, we hope to showcase various study programs, academic activities, and student activities.",
       "description": "Our faculty is committed to providing quality higher education, innovative research, and beneficial community service. Through this website, we hope to provide a complete picture of our vision, mission, study programs, academic activities, and various achievements we have made. We invite all members of the academic community to actively participate in every activity we organize. Let us work together to realize the vision and mission of the Faculty of Sharia and Islamic Law to create an innovative and moderate academic environment."
     },
+    "professors": {
+      "kicker": "Professor home base",
+      "title": "Professors teach in your classroom",
+      "lead": "Of the 20 professors at IAIN Bone, 4 make the Faculty of Sharia and Islamic Law their academic home. Students here meet them in class, in discussions of Islamic law, and while preparing a final project.",
+      "factsLabel": "IAIN Bone professors and FSHI home base",
+      "statInstitute": "professors at IAIN Bone",
+      "statFaculty": "based at this faculty",
+      "badge": "Professor",
+      "cta": "Meet the professors"
+    },
     "aboutCards": {
       "qualityEducation": {
         "title": "Quality Education",

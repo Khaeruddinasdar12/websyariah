@@ -10,6 +10,7 @@ import 'swiper/css/pagination';
 import { useLanguage } from '@/context/LanguageContext';
 import { fetchAnnouncementsI18n, fetchBeritaI18n } from '@/lib/supabase-i18n';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import HomeProfessors from '@/components/public/HomeProfessors';
 
 interface Pengumuman {
   id: number;
@@ -509,6 +510,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <HomeProfessors />
 
       <section id="program-studi" className="pub-section pub-reveal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

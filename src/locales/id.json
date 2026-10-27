@@ -76,6 +76,16 @@
       "quote": "Kami sangat senang dapat mempersembahkan website ini sebagai media informasi dan komunikasi bagi civitas akademika, mahasiswa, masyarakat, dan para mitra kerja. Melalui portal ini, kami berharap dapat menampilkan berbagai program studi, kegiatan akademik, dan kemahasiswaan.",
       "description": "Fakultas kami berkomitmen untuk menyelenggarakan pendidikan tinggi yang berkualitas, penelitian yang inovatif, serta pengabdian masyarakat yang bermanfaat. Melalui website ini, kami berharap dapat memberikan gambaran lengkap tentang visi, misi, program studi, kegiatan akademik, dan berbagai prestasi yang telah kami capai. Kami mengajak seluruh Civitas akademika untuk berpartisipasi aktif dalam setiap kegiatan yang kami selenggarakan. Mari bersama-sama mewujudkan visi dan misi Fakultas Syariah dan Hukum Islam untuk menciptakan lingkungan akademik yang inovatif dan moderat."
     },
+    "professors": {
+      "kicker": "Homebase profesor",
+      "title": "Guru besar mengajar di kelas Anda",
+      "lead": "Dari 20 profesor di IAIN Bone, 4 berhomebase di Fakultas Syariah dan Hukum Islam. Calon mahasiswa FSHI bertemu mereka di ruang kuliah, dalam diskusi hukum Islam, dan saat menyusun tugas akhir.",
+      "factsLabel": "Profesor IAIN Bone dan homebase FSHI",
+      "statInstitute": "profesor di IAIN Bone",
+      "statFaculty": "berhomebase di FSHI",
+      "badge": "Guru Besar",
+      "cta": "Kenali para guru besar"
+    },
     "aboutCards": {
       "qualityEducation": {
         "title": "Pendidikan Berkualitas",

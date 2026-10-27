@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import PageHeader from '@/components/public/PageHeader';
 import { formatKategoriNames, getLocalizedKategoriName, normalizeKategoriIds } from '@/utils/kategoriPegawai';
 import { resolveDosenImageUrl } from '@/utils/dosenImage';
+import { parsePendidikan } from '@/utils/dosenPendidikan';
 import { fetchKategoriPegawai } from '@/lib/fetchKategoriPegawai';
 import { getLangValue, type Language } from '@/lib/supabase-i18n';
 import type { KategoriPegawai } from '@/types/kategoriPegawai';
@@ -43,20 +44,18 @@ interface DosenDisplay {
   urut: number;
 }
 
-const DEGREE_PATTERN = /^(S[123]|D[1-4]|Ph\.?D\.?)$/i;
+function categoryMatchesQuery(category: KategoriPegawai, query: string): boolean {
+  if (category.id === query) return true;
 
-function parsePendidikan(raw: string): { degree: string; campus: string } {
-  const text = raw.trim();
-  if (!text) return { degree: '', campus: '' };
+  const names = [category.nama, category.nama_en, category.nama_ar]
+    .filter((name): name is string => Boolean(name))
+    .map((name) => name.trim().toLowerCase());
 
-  const parts = text.split(/\s*[,|]\s*/).filter(Boolean);
-  if (parts.length >= 2 && DEGREE_PATTERN.test(parts[0])) {
-    return { degree: parts[0].toUpperCase(), campus: parts.slice(1).join(', ') };
+  if (names.includes(query)) return true;
+  if (query === 'profesor' || query === 'professor') {
+    return names.some((name) => /profesor|professor|أستاذ/.test(name));
   }
-  if (DEGREE_PATTERN.test(text)) {
-    return { degree: text.toUpperCase(), campus: '' };
-  }
-  return { degree: '', campus: text };
+  return false;
 }
 
 function parseKeahlian(keahlian?: string): string[] {
@@ -151,11 +150,7 @@ export default function TimKamiPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
-
-  useEffect(() => {
-    setSelectedFilter('');
-    setCurrentPage(1);
-  }, [kategoriList]);
+  const categoryQueryRef = useRef('');
 
   useEffect(() => {
     async function fetchData() {
@@ -177,6 +172,16 @@ export default function TimKamiPage() {
         if (dosenResult.error) throw dosenResult.error;
 
         const categories = kategoriResult.data;
+        const categoryQuery = new URLSearchParams(window.location.search)
+          .get('kategori')
+          ?.trim()
+          .toLowerCase() || '';
+        const matchedCategory = categoryQuery
+          ? categories.find((category) => categoryMatchesQuery(category, categoryQuery))
+          : undefined;
+
+        categoryQueryRef.current = matchedCategory ? categoryQuery : '';
+        if (matchedCategory) setSelectedFilter(matchedCategory.id);
         setKategoriList(categories);
 
         if (dosenResult.data && Array.isArray(dosenResult.data)) {
@@ -201,6 +206,17 @@ export default function TimKamiPage() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (loading || !selectedFilter || !categoryQueryRef.current) return;
+
+    categoryQueryRef.current = '';
+    const target = document.getElementById('tim-kategori');
+    if (!target) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [loading, selectedFilter]);
 
   const dosen = useMemo(
     () => rawDosen.map((item) => transformDosenItem(item, kategoriList, language)),
@@ -292,7 +308,7 @@ export default function TimKamiPage() {
                 )}
               </div>
 
-              <div>
+              <div id="tim-kategori">
                 <label className="block text-sm font-semibold text-ink-800 mb-3">
                   <i className="fas fa-filter mr-2 text-primary"></i>
                   {t('team.filterCategory')}

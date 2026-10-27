@@ -44,18 +44,36 @@ interface DosenDisplay {
   urut: number;
 }
 
+function categorySlug(category: KategoriPegawai): string {
+  const source = (category.nama || category.id).trim();
+  const slug = source
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return slug || String(category.id);
+}
+
 function categoryMatchesQuery(category: KategoriPegawai, query: string): boolean {
-  if (category.id === query) return true;
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return false;
+  if (category.id === normalized) return true;
+  if (categorySlug(category) === normalized) return true;
 
   const names = [category.nama, category.nama_en, category.nama_ar]
     .filter((name): name is string => Boolean(name))
     .map((name) => name.trim().toLowerCase());
 
-  if (names.includes(query)) return true;
-  if (query === 'profesor' || query === 'professor') {
+  if (names.includes(normalized)) return true;
+  if (normalized === 'profesor' || normalized === 'professor') {
     return names.some((name) => /profesor|professor|أستاذ/.test(name));
   }
   return false;
+}
+
+function teamCategoryHref(slug: string): string {
+  return slug ? `/tim-kami?kategori=${encodeURIComponent(slug)}` : '/tim-kami';
 }
 
 function parseKeahlian(keahlian?: string): string[] {
@@ -207,6 +225,29 @@ export default function TimKamiPage() {
     fetchData();
   }, []);
 
+  const selectCategory = (id: string) => {
+    setSelectedFilter(id);
+    const category = kategoriList.find((item) => item.id === id);
+    const href = teamCategoryHref(category ? categorySlug(category) : '');
+    const current = `${window.location.pathname}${window.location.search}`;
+    if (current !== href) {
+      window.history.pushState(null, '', href);
+    }
+  };
+
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const query = new URLSearchParams(window.location.search).get('kategori')?.trim().toLowerCase() || '';
+      const match = query
+        ? kategoriList.find((category) => categoryMatchesQuery(category, query))
+        : undefined;
+      setSelectedFilter(match?.id || '');
+    };
+
+    window.addEventListener('popstate', syncFromUrl);
+    return () => window.removeEventListener('popstate', syncFromUrl);
+  }, [kategoriList]);
+
   useEffect(() => {
     if (loading || !selectedFilter || !categoryQueryRef.current) return;
 
@@ -330,7 +371,7 @@ export default function TimKamiPage() {
                           }
                         : {}
                     }
-                    onClick={() => setSelectedFilter('')}
+                    onClick={() => selectCategory('')}
                   >
                     {t('team.filters.all')}
                   </button>
@@ -352,7 +393,7 @@ export default function TimKamiPage() {
                             }
                           : {}
                       }
-                      onClick={() => setSelectedFilter(category.id)}
+                      onClick={() => selectCategory(category.id)}
                     >
                       {getLocalizedKategoriName(category, language)}
                     </button>

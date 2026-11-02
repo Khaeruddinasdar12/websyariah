@@ -16,6 +16,7 @@ import { formatKategoriNames, normalizeKategoriIds } from '@/utils/kategoriPegaw
 import { fetchKategoriPegawai } from '@/lib/fetchKategoriPegawai';
 import { resolveDosenImageUrl } from '@/utils/dosenImage';
 import Input from '@/components/form/input/InputField';
+import { downloadDosenExcel } from '@/utils/dosenExcel';
 
 interface Dosen {
   id?: number;
@@ -42,6 +43,7 @@ export default function DosenPage() {
   const [kategoriList, setKategoriList] = useState<KategoriPegawai[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     if (!authLoading) {
@@ -109,6 +111,43 @@ export default function DosenPage() {
     });
   }, [dosens, kategoriList, query]);
 
+  const handleExport = async () => {
+    try {
+      setExporting(true);
+      const pageSize = 1000;
+      const rows: Record<string, unknown>[] = [];
+      let from = 0;
+
+      while (true) {
+        const { data, error } = await supabase
+          .from('dosens')
+          .select('*')
+          .order('urut', { ascending: true, nullsFirst: false })
+          .order('id', { ascending: true })
+          .range(from, from + pageSize - 1);
+
+        if (error) throw error;
+        const batch = data || [];
+        rows.push(...batch);
+        if (batch.length < pageSize) break;
+        from += pageSize;
+      }
+
+      if (rows.length === 0) {
+        toast.showError('Tidak ada data', 'Belum ada dosen yang bisa diekspor');
+        return;
+      }
+
+      downloadDosenExcel(rows, kategoriList);
+      toast.showSuccess('Berhasil', `${rows.length} dosen diekspor ke Excel`);
+    } catch (error: any) {
+      console.error('Error exporting dosens:', error);
+      toast.showError('Gagal mengekspor', error.message || 'Tidak dapat membuat file Excel');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleEdit = (dosen: Dosen) => {
     router.push(`/admin/dosen/${dosen.id}/edit`);
   };
@@ -162,12 +201,22 @@ export default function DosenPage() {
       <PageBreadcrumb pageTitle="Dosen Management" />
       <ComponentCard title="Dosen List">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <button
-            onClick={() => router.push('/admin/dosen/new')}
-            className="px-4 py-2 text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors"
-          >
-            Add New Dosen
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push('/admin/dosen/new')}
+              className="px-4 py-2 text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors"
+            >
+              Add New Dosen
+            </button>
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={exporting || dosens.length === 0}
+              className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              {exporting ? 'Mengekspor...' : 'Export Excel'}
+            </button>
+          </div>
           <form
             className="w-full sm:max-w-sm"
             onSubmit={(event) => event.preventDefault()}

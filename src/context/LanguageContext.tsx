@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import idTranslations from '@/locales/id.json';
 
 export type Language = 'id' | 'en' | 'ar';
 
@@ -14,7 +15,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('id');
-  const [translations, setTranslations] = useState<Record<string, any>>({});
+  // Teks Indonesia ikut dirender di server, jadi HTML awal berisi kalimat, bukan kunci terjemahan.
+  const [translations, setTranslations] = useState<Record<string, any>>(idTranslations);
 
   // Load language from localStorage on mount
   useEffect(() => {
@@ -28,28 +30,20 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function loadTranslations() {
       try {
-        let translationsModule;
         switch (language) {
           case 'en':
-            translationsModule = await import('@/locales/en.json');
+            setTranslations((await import('@/locales/en.json')).default);
             break;
           case 'ar':
-            translationsModule = await import('@/locales/ar.json');
+            setTranslations((await import('@/locales/ar.json')).default);
             break;
           default:
-            translationsModule = await import('@/locales/id.json');
+            setTranslations(idTranslations);
         }
-        setTranslations(translationsModule.default || translationsModule);
       } catch (error) {
         console.error(`Failed to load translations for ${language}:`, error);
         // Fallback to Indonesian if translation file doesn't exist
-        try {
-          const fallback = await import('@/locales/id.json');
-          setTranslations(fallback.default || fallback);
-        } catch (fallbackError) {
-          console.error('Failed to load fallback translations:', fallbackError);
-          setTranslations({});
-        }
+        setTranslations(idTranslations);
       }
     }
     loadTranslations();
@@ -70,19 +64,20 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const t = (key: string, params?: Record<string, string | number>): string => {
-    const keys = key.split('.');
-    let value: any = translations;
-    
-    for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k];
-      } else {
-        return key; // Return key if translation not found
-      }
+  const lookup = (source: unknown, key: string): string | undefined => {
+    let value = source;
+    for (const k of key.split('.')) {
+      if (!value || typeof value !== 'object') return undefined;
+      value = (value as Record<string, unknown>)[k];
     }
+    return typeof value === 'string' ? value : undefined;
+  };
 
-    if (typeof value !== 'string') {
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    // Kunci yang belum ada di bahasa aktif memakai teks Indonesia, bukan menampilkan nama kuncinya.
+    const value = lookup(translations, key) ?? lookup(idTranslations, key);
+
+    if (value === undefined) {
       return key;
     }
 

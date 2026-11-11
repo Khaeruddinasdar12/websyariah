@@ -67,7 +67,24 @@
     },
     "hero": {
       "illustrationTitle": "Islamic Law Education",
-      "illustrationSubtitle": "Sharia & Modern Based"
+      "illustrationSubtitle": "Sharia & Modern Based",
+      "title": "Three bachelor's paths in law at IAIN Bone",
+      "titleAccent": "law",
+      "apply": "Apply for admission",
+      "compare": "Compare the three programs",
+      "statProfessors": "Professors, of 20 at IAIN Bone"
+    },
+    "kickers": {
+      "dean": "Faculty Leadership",
+      "programs": "Study Options",
+      "updates": "Faculty Information",
+      "partnership": "Partner Network"
+    },
+    "updates": {
+      "title": "Latest updates",
+      "subtitle": "Academic announcements and news from the faculty.",
+      "allAnnouncements": "All announcements",
+      "allNews": "All news"
     },
     "dean": {
       "title": "Dean's Welcome",
@@ -131,6 +148,8 @@
       "title": "Study Programs",
       "subtitle": "Three bachelor's programs at the Faculty of Sharia and Islamic Law, IAIN Bone. Each program has an official site for curriculum, lecturers, and academic information.",
       "level": "Bachelor (S1)",
+      "facilitiesLink": "See campus facilities",
+      "alumniLink": "Read alumni stories",
       "constitutionalLaw": {
         "title": "Constitutional Law",
         "focus": "Siyasah Syar'iyyah",

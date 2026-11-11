@@ -67,7 +67,24 @@
     },
     "hero": {
       "illustrationTitle": "Pendidikan Hukum Islam",
-      "illustrationSubtitle": "Berbasis Syariah & Modern"
+      "illustrationSubtitle": "Berbasis Syariah & Modern",
+      "title": "Tiga jalur sarjana hukum di IAIN Bone",
+      "titleAccent": "sarjana hukum",
+      "apply": "Daftar PMB",
+      "compare": "Bandingkan tiga prodi",
+      "statProfessors": "Profesor, dari 20 di IAIN Bone"
+    },
+    "kickers": {
+      "dean": "Pimpinan Fakultas",
+      "programs": "Pilihan Studi",
+      "updates": "Informasi Fakultas",
+      "partnership": "Jejaring Mitra"
+    },
+    "updates": {
+      "title": "Kabar terbaru",
+      "subtitle": "Pengumuman akademik dan berita dari fakultas.",
+      "allAnnouncements": "Semua pengumuman",
+      "allNews": "Semua berita"
     },
     "dean": {
       "title": "Sambutan Dekan",
@@ -131,6 +148,8 @@
       "title": "Program Studi",
       "subtitle": "Tiga program sarjana di Fakultas Syariah dan Hukum Islam IAIN Bone. Setiap program memiliki laman resmi untuk kurikulum, dosen, dan informasi akademik.",
       "level": "Sarjana (S1)",
+      "facilitiesLink": "Lihat fasilitas kampus",
+      "alumniLink": "Baca cerita alumni",
       "constitutionalLaw": {
         "title": "Hukum Tata Negara",
         "focus": "Siyasah Syar'iyyah",

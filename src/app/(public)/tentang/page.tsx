@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
@@ -8,10 +8,48 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import PageHeader from '@/components/public/PageHeader';
 
 
+const TABS = [
+  { id: 'visi-misi', icon: 'fa-eye', label: 'about.visionMission' },
+  { id: 'sejarah', icon: 'fa-history', label: 'about.history' },
+  { id: 'struktur', icon: 'fa-sitemap', label: 'about.structure' },
+  { id: 'nilai', icon: 'fa-heart', label: 'about.values' },
+  { id: 'fasilitas', icon: 'fa-building', label: 'home.facilities.title' },
+  { id: 'testimoni', icon: 'fa-quote-left', label: 'home.testimonials.title' },
+];
+
+const FACILITIES = [
+  { key: 'library', icon: 'fa-book' },
+  { key: 'computerLab', icon: 'fa-desktop' },
+  { key: 'discussionRoom', icon: 'fa-comments' },
+  { key: 'wifi', icon: 'fa-wifi' },
+  { key: 'falakLab', icon: 'fa-moon' },
+  { key: 'yustisiLab', icon: 'fa-balance-scale' },
+];
+
+const TESTIMONIALS = [
+  { initials: 'PR', key: 'putra' },
+  { initials: 'AA', key: 'ahmad' },
+  { initials: 'VS', key: 'vivin' },
+  { initials: 'AT', key: 'taufiq' },
+];
+
 export default function TentangPage() {
   const { t } = useLanguage();
   usePageTitle(t('nav.about'));
-  const [activeTab, setActiveTab] = useState('visi-misi');
+  const [activeTab, setActiveTab] = useState(TABS[0].id);
+
+  // Tautan seperti /tentang?tab=fasilitas membuka tab itu secara langsung.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get('tab');
+    if (requested && TABS.some((tab) => tab.id === requested)) {
+      setActiveTab(requested);
+    }
+  }, []);
+
+  const selectTab = (id: string) => {
+    setActiveTab(id);
+    window.history.replaceState(null, '', id === TABS[0].id ? '/tentang' : `/tentang?tab=${id}`);
+  };
   
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
@@ -20,69 +58,24 @@ export default function TentangPage() {
       <section className="py-4 bg-white sticky z-40 border-b border-ink-200" style={{ top: 'var(--public-header-h)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap justify-center gap-3">
-            <button
-              className={`whitespace-nowrap text-sm font-medium transition-all duration-200 rounded-xl px-6 py-3 ${
-                activeTab === 'visi-misi'
-                  ? 'text-white shadow-lg transform scale-105'
-                  : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
-              }`}
-              style={activeTab === 'visi-misi' ? {
-                background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
-                borderColor: 'var(--color-primary)'
-              } : {}}
-              onClick={() => setActiveTab('visi-misi')}
-            >
-              <i className="fas fa-eye mr-2"></i>
-              {t('about.visionMission')}
-            </button>
-
-            <button
-              className={`whitespace-nowrap text-sm font-medium transition-all duration-200 rounded-xl px-6 py-3 ${
-                activeTab === 'sejarah'
-                  ? 'text-white shadow-lg transform scale-105'
-                  : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
-              }`}
-              style={activeTab === 'sejarah' ? {
-                background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
-                borderColor: 'var(--color-primary)'
-              } : {}}
-              onClick={() => setActiveTab('sejarah')}
-            >
-              <i className="fas fa-history mr-2"></i>
-              {t('about.history')}
-            </button>
-
-            <button
-              className={`whitespace-nowrap text-sm font-medium transition-all duration-200 rounded-xl px-6 py-3 ${
-                activeTab === 'struktur'
-                  ? 'text-white shadow-lg transform scale-105'
-                  : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
-              }`}
-              style={activeTab === 'struktur' ? {
-                background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
-                borderColor: 'var(--color-primary)'
-              } : {}}
-              onClick={() => setActiveTab('struktur')}
-            >
-              <i className="fas fa-sitemap mr-2"></i>
-              {t('about.structure')}
-            </button>
-
-            <button
-              className={`whitespace-nowrap text-sm font-medium transition-all duration-200 rounded-xl px-6 py-3 ${
-                activeTab === 'nilai'
-                  ? 'text-white shadow-lg transform scale-105'
-                  : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
-              }`}
-              style={activeTab === 'nilai' ? {
-                background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
-                borderColor: 'var(--color-primary)'
-              } : {}}
-              onClick={() => setActiveTab('nilai')}
-            >
-              <i className="fas fa-heart mr-2"></i>
-              {t('about.values')}
-            </button>
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                className={`whitespace-nowrap text-sm font-medium transition-all duration-200 rounded-xl px-6 py-3 ${
+                  activeTab === tab.id
+                    ? 'text-white shadow-lg transform scale-105'
+                    : 'bg-white text-ink-800 border-2 border-ink-200 hover:border-primary hover:text-primary hover:shadow-md'
+                }`}
+                style={activeTab === tab.id ? {
+                  background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
+                  borderColor: 'var(--color-primary)'
+                } : {}}
+                onClick={() => selectTab(tab.id)}
+              >
+                <i className={`fas ${tab.icon} mr-2`}></i>
+                {t(tab.label)}
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -395,6 +388,63 @@ export default function TentangPage() {
     </div>
   </div>
   )}
+
+          {/* Fasilitas Tab */}
+          {activeTab === 'fasilitas' && (
+            <div className="space-y-12">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-ink-900 mb-4">{t('home.facilities.title')}</h2>
+                <div className="w-20 h-1 gradient-primary mx-auto mb-6"></div>
+                <p className="text-lg text-ink-600 max-w-2xl mx-auto">
+                  {t('home.facilities.subtitle')}
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {FACILITIES.map((item) => (
+                  <article key={item.key} className="pub-card p-5 flex gap-4">
+                    <span className="w-10 h-10 shrink-0 bg-ink-50 text-primary flex items-center justify-center">
+                      <i className={`fas ${item.icon}`} aria-hidden="true"></i>
+                    </span>
+                    <div>
+                      <h3 className="text-lg text-ink-900">{t(`home.facilities.${item.key}.title`)}</h3>
+                      <p className="mt-1 text-sm text-ink-600 leading-relaxed">{t(`home.facilities.${item.key}.description`)}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Testimoni Tab */}
+          {activeTab === 'testimoni' && (
+            <div className="space-y-12">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-ink-900 mb-4">{t('home.testimonials.title')}</h2>
+                <div className="w-20 h-1 gradient-primary mx-auto mb-6"></div>
+                <p className="text-lg text-ink-600 max-w-2xl mx-auto">
+                  {t('home.testimonials.subtitle')}
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {TESTIMONIALS.map((item) => (
+                  <article key={item.key} className="pub-quote-card">
+                    <div className="flex items-center gap-3">
+                      <span className="pub-avatar">{item.initials}</span>
+                      <div>
+                        <h3 className="text-base text-ink-900">{t(`home.testimonialItems.${item.key}.name`)}</h3>
+                        <p className="text-xs text-ink-500 mt-0.5">{t(`home.testimonialItems.${item.key}.role`)}</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-sm text-ink-700 leading-relaxed flex-1">
+                      “{t(`home.testimonialItems.${item.key}.quote`)}”
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
 </div>
 </section>
 </div>

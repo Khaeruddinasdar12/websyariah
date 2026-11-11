@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -29,17 +30,29 @@ function isProfessorCategory(category: KategoriPegawai): boolean {
   );
 }
 
+// Hanya host yang terdaftar di next.config.ts yang boleh lewat pengoptimal gambar.
+function canOptimize(url: string): boolean {
+  if (url.startsWith("/")) return true;
+  try {
+    const { protocol, hostname } = new URL(url);
+    return protocol === "https:" && hostname.endsWith(".supabase.co");
+  } catch {
+    return false;
+  }
+}
+
 function ProfessorPortrait({ person }: { person: ProfessorCard }) {
   const [failed, setFailed] = useState(false);
-  const showImage = Boolean(person.imageUrl) && !failed;
 
   return (
     <div className="pub-prof-photo">
-      {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+      {person.imageUrl && !failed ? (
+        <Image
           src={person.imageUrl}
           alt=""
+          fill
+          sizes="(max-width: 1023px) 50vw, 300px"
+          unoptimized={!canOptimize(person.imageUrl)}
           onError={() => setFailed(true)}
         />
       ) : (

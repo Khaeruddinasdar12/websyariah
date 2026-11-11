@@ -120,7 +120,7 @@ export default function Navbar() {
               </span>
             </Link>
 
-            <div className="hidden xl:flex items-center ml-auto">
+            <div className="pub-nav-links hidden xl:flex items-center ml-auto">
               {navigation.map((item) => {
                 if (item.submenu) {
                   return (

@@ -19,6 +19,7 @@ import {
   UserCircleIcon,
   DocsIcon,
   ArrowRightIcon,
+  ChatIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { renderIcon } from "@/utils/renderIcon";
@@ -67,6 +68,11 @@ const AppSidebar: React.FC = () => {
       icon: ListIcon,
       name: "Kategori Pegawai",
       path: "/admin/kategori-pegawai",
+    },
+    {
+      icon: ChatIcon,
+      name: "Testimoni",
+      path: "/admin/testimoni",
     },
     {
       icon: UserCircleIcon,

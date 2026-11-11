@@ -130,7 +130,7 @@ function CountValue({ value, locale }: { value: string; locale: string }) {
   );
 }
 
-const PMB_URL = 'https://pmb.iain-bone.ac.id/';
+const PMB_URL = 'https://admisi.iain-bone.ac.id/';
 
 function PartnerCard({ partner }: { partner: { src: string; label: string } }) {
   return (

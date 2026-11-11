@@ -12,7 +12,7 @@ export default function LayananPage() {
     { 
       name: t('services.items.pmb.name'), 
       description: t('services.items.pmb.description'), 
-      url: 'https://pmb.iain-bone.ac.id/',
+      url: 'https://admisi.iain-bone.ac.id/',
       icon: 'fa-user-graduate'
     },
     { 

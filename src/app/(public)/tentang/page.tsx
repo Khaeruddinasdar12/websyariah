@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import PageHeader from '@/components/public/PageHeader';
+import { fetchPublicTestimoni, localizedTestimoni } from '@/lib/testimoni';
 
 
 const TABS = [
@@ -33,10 +34,20 @@ const TESTIMONIALS = [
   { initials: 'AT', key: 'taufiq' },
 ];
 
+type TestimoniCard = {
+  id: string;
+  initials: string;
+  name: string;
+  role: string;
+  quote: string;
+};
+
 export default function TentangPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   usePageTitle(t('nav.about'));
   const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const [testimoniCards, setTestimoniCards] = useState<TestimoniCard[] | null>(null);
+  const [testimoniLoading, setTestimoniLoading] = useState(true);
 
   // Tautan seperti /tentang?tab=fasilitas membuka tab itu secara langsung.
   useEffect(() => {
@@ -50,6 +61,38 @@ export default function TentangPage() {
     setActiveTab(id);
     window.history.replaceState(null, '', id === TABS[0].id ? '/tentang' : `/tentang?tab=${id}`);
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadTestimoni = async () => {
+      setTestimoniLoading(true);
+      try {
+        const rows = await fetchPublicTestimoni();
+        if (!cancelled) {
+          setTestimoniCards(rows.map((row) => localizedTestimoni(row, language)));
+        }
+      } catch {
+        if (!cancelled) setTestimoniCards(null);
+      } finally {
+        if (!cancelled) setTestimoniLoading(false);
+      }
+    };
+
+    loadTestimoni();
+    return () => {
+      cancelled = true;
+    };
+  }, [language]);
+
+  const fallbackTestimoni: TestimoniCard[] = TESTIMONIALS.map((item) => ({
+    id: item.key,
+    initials: item.initials,
+    name: t(`home.testimonialItems.${item.key}.name`),
+    role: t(`home.testimonialItems.${item.key}.role`),
+    quote: t(`home.testimonialItems.${item.key}.quote`),
+  }));
+  const visibleTestimoni = testimoniCards ?? fallbackTestimoni;
   
   return (
     <div className="min-h-screen flex flex-col bg-ink-50 text-ink-900 font-outfit">
@@ -427,22 +470,38 @@ export default function TentangPage() {
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                {TESTIMONIALS.map((item) => (
-                  <article key={item.key} className="pub-quote-card">
-                    <div className="flex items-center gap-3">
-                      <span className="pub-avatar">{item.initials}</span>
-                      <div>
-                        <h3 className="text-base text-ink-900">{t(`home.testimonialItems.${item.key}.name`)}</h3>
-                        <p className="text-xs text-ink-500 mt-0.5">{t(`home.testimonialItems.${item.key}.role`)}</p>
+              {testimoniLoading ? (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {[1, 2, 3, 4].map((item) => (
+                    <div key={item} className="pub-quote-card h-40 bg-ink-100 animate-pulse" />
+                  ))}
+                </div>
+              ) : visibleTestimoni.length === 0 ? (
+                <p className="text-center text-ink-600">
+                  {language === 'en'
+                    ? 'No testimonials yet.'
+                    : language === 'ar'
+                      ? 'لا توجد شهادات بعد.'
+                      : 'Belum ada testimoni.'}
+                </p>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {visibleTestimoni.map((item) => (
+                    <article key={item.id} className="pub-quote-card">
+                      <div className="flex items-center gap-3">
+                        <span className="pub-avatar">{item.initials}</span>
+                        <div>
+                          <h3 className="text-base text-ink-900">{item.name}</h3>
+                          <p className="text-xs text-ink-500 mt-0.5">{item.role}</p>
+                        </div>
                       </div>
-                    </div>
-                    <p className="mt-4 text-sm text-ink-700 leading-relaxed flex-1">
-                      “{t(`home.testimonialItems.${item.key}.quote`)}”
-                    </p>
-                  </article>
-                ))}
-              </div>
+                      <p className="mt-4 text-sm text-ink-700 leading-relaxed flex-1">
+                        “{item.quote}”
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 </div>
